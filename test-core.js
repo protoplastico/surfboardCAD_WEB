@@ -3190,6 +3190,12 @@ if (sectionEnabled("rocker")) {
     rockerRuntimeBaseBottom: null,
     rockerRuntimeBaseDeck: null
   };
+  const flatProject = api.makeBoardProject(flatBoard);
+  const flatRoundTrip = api.parseBoardProject(flatProject, "flat.boardcad.json");
+  assert(JSON.stringify(flatRoundTrip.bottom) === JSON.stringify(flatBoard.bottom), "project: bottom spline should roundtrip without junction correction");
+  assert(JSON.stringify(flatRoundTrip.deck) === JSON.stringify(flatBoard.deck), "project: deck spline should roundtrip without junction correction");
+  assert(Math.abs(api._test.boardCadThicknessAtPos(flatRoundTrip, 0) - 6) < 1e-9, "project: tail thickness should remain lossless");
+  assert(Math.abs(api._test.boardCadThicknessAtPos(flatRoundTrip, flatLength) - 6) < 1e-9, "project: nose thickness should remain lossless");
   const flatApex = api._test.boardCadRockerApexPos(flatBoard);
   assert(Math.abs(flatApex - flatLength / 2) < 0.1, "rocker: a flat rocker should resolve its apex at the center of the minimum plateau");
   const flatThicknessXs = [0, 25, 50, 100, 150, 175, 200];

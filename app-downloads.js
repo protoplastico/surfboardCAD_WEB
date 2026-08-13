@@ -16,6 +16,14 @@ function downloadBrd() {
   els.status.textContent = "BRDを書き出しました。Bezier制御点を保持し、ノーズ/テールのデッキ・ハル接合を保存用に補正しています。";
 }
 
+function downloadBoardProject() {
+  if (!state.board) return;
+  const source = state.board.name || state.board.filename || "board";
+  const base = safeName(String(source).replace(/\.(?:boardcad\.json|brd)$/i, ""));
+  downloadBlob(`${base}.boardcad.json`, makeBoardProject(state.board), "application/json");
+  els.status.textContent = "非破壊プロジェクトを保存しました。曲線・制御ハンドル・厚みは変更されません。";
+}
+
 function downloadBrdAs() {
   if (!state.board) return;
   const fallback = defaultBrdFilename();
@@ -104,6 +112,7 @@ function downloadCncGCode() {
 Object.assign(window, {
   downloadPdf,
   downloadTemplatePdf,
+  downloadBoardProject,
   downloadBrd,
   downloadBrdAs,
   downloadOtl,

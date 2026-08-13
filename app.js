@@ -284,7 +284,8 @@ const I18N = {
     dxf_cross_section_polyline: "DXF断面 ポリライン",
     gcode_laser_outline: "レーザーカッター用Gコード",
     gcode_cnc: "CNC用Gコード",
-    save_brd: "BRDを保存",
+    save_project: "非破壊プロジェクトを保存",
+    save_brd: "BRD互換形式を書き出す",
     save_brd_as: "BRDに名前を付けて保存",
     export_outline_otl: "アウトラインを書き出し (.otl)",
     export_profile_pfl: "プロファイルを書き出し (.pfl)",
@@ -1060,7 +1061,8 @@ I18N.en = {
   dxf_cross_section_polyline: "DXF Cross section Polyline",
   gcode_laser_outline: "G-Code Laser Outline",
   gcode_cnc: "G-Code CNC",
-  save_brd: "Save BRD",
+  save_project: "Save lossless project",
+  save_brd: "Export BRD compatibility file",
   save_brd_as: "Save BRD as",
   export_outline_otl: "Export Outline (.otl)",
   export_profile_pfl: "Export Profile (.pfl)",
@@ -1811,6 +1813,7 @@ const els = {
   crossSectionInput: document.getElementById("crossSectionInput"),
   sampleSelect: document.getElementById("sampleSelect"),
   sampleButton: document.getElementById("sampleButton"),
+  saveProjectButton: document.getElementById("saveProjectButton"),
   saveBrdButton: document.getElementById("saveBrdButton"),
   saveBrdAsButton: document.getElementById("saveBrdAsButton"),
   exportOtlButton: document.getElementById("exportOtlButton"),
@@ -2218,6 +2221,7 @@ const ACTION_HANDLERS = Object.freeze({
   "scan-new-board": () => startScanNewBoard(),
   "pdf": () => window.downloadPdf(),
   "template-pdf": () => window.downloadTemplatePdf(),
+  "save-project": () => window.downloadBoardProject(),
   "save-brd": () => window.downloadBrd(),
   "save-brd-as": () => window.downloadBrdAs(),
   "export-otl": () => window.downloadOtl(),
@@ -2335,6 +2339,8 @@ els.fileInput.addEventListener("change", async event => {
     importProfileText(text, file.name);
   } else if (/\.csv$/i.test(file.name)) {
     importProbeMeasurementsText(text, file.name);
+  } else if (/\.boardcad\.json$/i.test(file.name) || /\.json$/i.test(file.name)) {
+    loadBoardProject(text, file.name);
   } else {
     loadBoard(text, file.name);
   }
@@ -2786,6 +2792,15 @@ window.addEventListener("pointerup", onCanvasPointerUp);
 function loadBoard(text, filename) {
   try {
     activateBoard(parseBrd(text, filename), t("status_board_loaded", { filename }));
+  } catch (error) {
+    console.error(error);
+    setStatus("status_load_failed", { message: error.message });
+  }
+}
+
+function loadBoardProject(text, filename) {
+  try {
+    activateBoard(parseBoardProject(text, filename), t("status_board_loaded", { filename }));
   } catch (error) {
     console.error(error);
     setStatus("status_load_failed", { message: error.message });
@@ -10725,7 +10740,10 @@ function drawProfile(board, rect) {
   }
   drawContextToolpaths(renderBoard, rawTransform, "profile");
   drawScanGhostProfile(ghost, transform);
-  if (state.viewOptions.showBaseLine) drawBaseline(profile.displayBoard, transform);
+  if (state.viewOptions.showBaseLine) {
+    drawBaseline(profile.displayBoard, transform);
+    drawProfileReferenceGuides(renderBoard, rawTransform);
+  }
   if (state.viewOptions.showCrossSectionPositions) drawCrossSectionPositionMarkers(renderBoard, transform, "profile");
   if (state.viewOptions.showFlowlines) drawSurfaceAngleLines(renderBoard, transform, "profile", [10, 27.5, 45], "#5ac8fa");
   if (state.viewOptions.showApexLine) drawSurfaceAngleLines(renderBoard, transform, "profile", [90], "#30d158");
@@ -10756,6 +10774,25 @@ function drawProfile(board, rect) {
     ], rawTransform);
     drawEditHandles();
   }
+}
+
+function drawProfileReferenceGuides(board, transform) {
+  if (!board || !(board.length > 0)) return;
+  const apex = boardCadRockerApex(board);
+  const stations = sortedUnique([0, board.length * 0.25, apex.x, board.length * 0.5, board.length * 0.75, board.length], 0.001);
+  ctx.save();
+  ctx.globalAlpha = 0.72;
+  ctx.setLineDash([5, 5]);
+  line(transform.x(0), transform.y(apex.rocker), transform.x(board.length), transform.y(apex.rocker), "#30d158", 1);
+  ctx.setLineDash([]);
+  stations.forEach(x => {
+    line(
+      transform.x(x), transform.y(boardCadRockerAtPos(board, x)),
+      transform.x(x), transform.y(boardCadDeckAtPos(board, x)),
+      "#ffd60a", 1
+    );
+  });
+  ctx.restore();
 }
 
 function drawRockerTargetPreview(board, transform, profile, points = null, config = null) {
@@ -21094,7 +21131,7 @@ function updateHistoryButtons() {
   if (els.undoButton) els.undoButton.disabled = !state.history.undo.length;
   if (els.redoButton) els.redoButton.disabled = !state.history.redo.length;
   setDisabled([
-    els.saveBrdButton, els.saveBrdAsButton, els.exportOtlButton, els.exportPflButton, els.pdfButton, els.templatePdfButton,
+    els.saveProjectButton, els.saveBrdButton, els.saveBrdAsButton, els.exportOtlButton, els.exportPflButton, els.pdfButton, els.templatePdfButton,
     els.dxfOutlineSplineButton, els.dxfProfileSplineButton, els.dxfOutlineButton, els.dxfProfileButton,
     els.gcodeButton, els.cncButton
   ], !state.board);
@@ -21322,6 +21359,33 @@ const BRD_WRITE_ORDER = [
 const BRD_STRING_FIELDS = new Set([7, 8, 43, 45, 48, 49, 51, 54, 55, 56, 57, 58, 61, 62, 68, 71, 75, EDGE_TYPE_FIELD_ID, BOTTOM_FEATURE_FIELD_ID, BOTTOM_PRESET_FIELD_ID, ROCKER_PRESET_FIELD_ID, ROCKER_CONFIG_FIELD_ID]);
 const BRD_ARRAY_FIELDS = new Set([50]);
 const BRD_BOOLEAN_FIELDS = new Set([41]);
+
+const BOARDCAD_PROJECT_FORMAT = "boardcad-web-project";
+const BOARDCAD_PROJECT_VERSION = 1;
+
+function makeBoardProject(board) {
+  if (!board) throw new Error("Board data is missing.");
+  return JSON.stringify({
+    format: BOARDCAD_PROJECT_FORMAT,
+    version: BOARDCAD_PROJECT_VERSION,
+    savedAt: new Date().toISOString(),
+    board: cloneBoard(board)
+  }, null, 2) + "\n";
+}
+
+function parseBoardProject(text, filename = "board.boardcad.json") {
+  const payload = JSON.parse(String(text || ""));
+  if (payload?.format !== BOARDCAD_PROJECT_FORMAT || payload?.version !== BOARDCAD_PROJECT_VERSION) {
+    throw new Error("Unsupported BoardCAD Web project format.");
+  }
+  const board = payload.board;
+  if (!board || !Array.isArray(board.outline) || !Array.isArray(board.bottom) || !Array.isArray(board.deck) || !Array.isArray(board.sections)) {
+    throw new Error("BoardCAD Web project geometry is incomplete.");
+  }
+  const restored = cloneBoard(board);
+  restored.filename = filename;
+  return restored;
+}
 
 function makeBrd(board) {
   const exportBoard = prepareBoardForBrdExport(board);
@@ -22808,6 +22872,8 @@ function downloadBlob(filename, content, type) {
 window.boardcadWeb = {
   state,
   parseBrd,
+  makeBoardProject,
+  parseBoardProject,
   makeBrd,
   makeOtl,
   makePfl,
@@ -22927,6 +22993,8 @@ window.boardcadWeb = {
     outlineFullPoints,
     tailAdjustedProfileGeometry,
     scaleBoardTo,
+    makeBoardProject,
+    parseBoardProject,
     makeBrd,
     makeOtl,
     makePfl,
