@@ -4666,6 +4666,31 @@ function splineFromPoints(points, options = {}) {
   });
 }
 
+function splineFromFunctionAtXs(xs, valueAt, domainLength, options = {}) {
+  const sorted = sortedUnique(xs, 0.001);
+  const zeroSlopeXs = Array.isArray(options.zeroSlopeXs) ? options.zeroSlopeXs : [];
+  const derivativeAt = x => {
+    if (zeroSlopeXs.some(value => Math.abs(value - x) <= 0.001)) return 0;
+    const h = Math.max(0.01, domainLength * 0.005);
+    const left = Math.max(0, x - h);
+    const right = Math.min(domainLength, x + h);
+    return right > left ? (valueAt(right) - valueAt(left)) / (right - left) : 0;
+  };
+  return sorted.map((x, index) => {
+    const y = valueAt(x);
+    const slope = derivativeAt(x);
+    const prevDx = index > 0 ? (x - sorted[index - 1]) / 3 : 0;
+    const nextDx = index < sorted.length - 1 ? (sorted[index + 1] - x) / 3 : 0;
+    return {
+      p: { x, y },
+      prev: { x: x - prevDx, y: y - (slope * prevDx) },
+      next: { x: x + nextDx, y: y + (slope * nextDx) },
+      continuous: true,
+      other: false
+    };
+  });
+}
+
 function splineFromOrderedPoints(points) {
   const ordered = dedupeConsecutivePoints(points.map(point => ({ x: point.x, y: point.y })));
   return ordered.map((point, index) => {
@@ -8296,30 +8321,17 @@ function applyRockerConfigToBoard(board, config = null) {
     return interpolatePolyline(targetPoints, clampedX);
   };
   const originalThicknessAt = x => boardCadSplineValueAt(originalDeck, x) - boardCadSplineValueAt(originalBottom, x);
-  const sampleXs = [];
-  originalBottom.forEach((knot, index) => {
-    const x = Number(knot?.p?.x) || 0;
-    sampleXs.push(x);
-    if (index < originalBottom.length - 1) {
-      const nextX = Number(originalBottom[index + 1]?.p?.x) || x;
-      sampleXs.push((x + nextX) * 0.5);
-    }
-  });
-  const preservationSegments = 24;
-  for (let i = 0; i <= preservationSegments; i++) {
-    sampleXs.push(length * (i / preservationSegments));
-  }
-  sampleXs.push(apexX);
+  const sampleXs = sortedUnique([
+    0,
+    apexX * 0.5,
+    apexX,
+    apexX + ((length - apexX) * 0.5),
+    length
+  ], 0.001);
   const uniqueXs = sortedUnique(sampleXs, 0.001);
-  board.bottom = splineFromPoints(uniqueXs.map(x => ({
-    x,
-    y: targetAt(x)
-  })), { lockExtremaTangents: true });
+  board.bottom = splineFromFunctionAtXs(uniqueXs, targetAt, length, { zeroSlopeXs: [apexX] });
   if (normalized.preserveFoil && !normalized.preserveDeck && originalDeck.length >= 2) {
-    board.deck = splineFromPoints(uniqueXs.map(x => ({
-      x,
-      y: targetAt(x) + originalThicknessAt(x)
-    })), { lockExtremaTangents: true });
+    board.deck = splineFromFunctionAtXs(uniqueXs, x => targetAt(x) + originalThicknessAt(x), length);
   }
   board.rockerPreset = normalized.preset;
   board.rockerConfig = normalized;
