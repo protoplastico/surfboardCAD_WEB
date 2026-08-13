@@ -3248,6 +3248,20 @@ if (sectionEnabled("rocker")) {
   assert(api._test.applyRockerConfigToBoard(cleanRoundPin, cleanRockerConfig), "clean round pin: rocker apply should succeed");
   assert(cleanRoundPin.bottom.length >= 3 && cleanRoundPin.bottom.length <= 5, `clean round pin: applied bottom should use 3-5 CPs, got ${cleanRoundPin.bottom.length}`);
   assert(cleanRoundPin.deck.length >= 3 && cleanRoundPin.deck.length <= 5, `clean round pin: applied deck should use 3-5 CPs, got ${cleanRoundPin.deck.length}`);
+  [cleanRoundPin.bottom, cleanRoundPin.deck].forEach((knots, surfaceIndex) => {
+    const firstEndX = knots[1].p.x;
+    const endpointMin = Math.min(knots[0].p.y, knots[1].p.y) - 1e-6;
+    const endpointMax = Math.max(knots[0].p.y, knots[1].p.y) + 1e-6;
+    const tailSamples = api._test.boardCadSplineSamples(knots, 80).filter(point => point.x <= firstEndX + 1e-6);
+    const tailOvershoot = tailSamples.reduce((max, point) => Math.max(max, endpointMin - point.y, point.y - endpointMax), 0);
+    assert(tailOvershoot < 0.025, `clean round pin: ${surfaceIndex ? "deck" : "bottom"} tail segment overshoot is ${tailOvershoot}`);
+    const lastStartX = knots.at(-2).p.x;
+    const noseMin = Math.min(knots.at(-2).p.y, knots.at(-1).p.y) - 1e-6;
+    const noseMax = Math.max(knots.at(-2).p.y, knots.at(-1).p.y) + 1e-6;
+    const noseSamples = api._test.boardCadSplineSamples(knots, 80).filter(point => point.x >= lastStartX - 1e-6);
+    const noseOvershoot = noseSamples.reduce((max, point) => Math.max(max, noseMin - point.y, point.y - noseMax), 0);
+    assert(noseOvershoot < 0.025, `clean round pin: ${surfaceIndex ? "deck" : "bottom"} nose segment overshoot is ${noseOvershoot}`);
+  });
   const appliedCenter = cleanRoundPin.bottom.find(knot => Math.abs(knot.p.x - cleanRoundPin.length / 2) < 0.001);
   assert(appliedCenter, "clean round pin: applied rocker should retain one center apex knot");
   assert(Math.abs(appliedCenter.prev.y - appliedCenter.p.y) < 1e-6, "clean round pin: applied incoming apex tangent should be horizontal");
@@ -3258,7 +3272,8 @@ if (sectionEnabled("rocker")) {
     assert(Math.abs(incoming - outgoing) < 1e-7, `clean round pin: rocker introduced a tangent break at x=${knot.p.x}`);
   });
   cleanStations.forEach((x, index) => {
-    assert(Math.abs(api._test.boardCadThicknessAtPos(cleanRoundPin, x) - cleanThickness[index]) < 0.08, `clean round pin: rocker changed thickness at x=${x}`);
+    const appliedThickness = api._test.boardCadThicknessAtPos(cleanRoundPin, x);
+    assert(Math.abs(appliedThickness - cleanThickness[index]) < 0.08, `clean round pin: rocker changed thickness at x=${x} (${appliedThickness} vs ${cleanThickness[index]})`);
   });
   let worstThickness = { x: 0, delta: 0 };
   for (let i = 0; i <= 400; i++) {

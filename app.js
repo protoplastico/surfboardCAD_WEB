@@ -4669,16 +4669,17 @@ function splineFromPoints(points, options = {}) {
 function splineFromFunctionAtXs(xs, valueAt, domainLength, options = {}) {
   const sorted = sortedUnique(xs, 0.001);
   const zeroSlopeXs = Array.isArray(options.zeroSlopeXs) ? options.zeroSlopeXs : [];
-  const derivativeAt = x => {
+  const values = sorted.map(valueAt);
+  const slopes = sorted.map((x, index) => {
     if (zeroSlopeXs.some(value => Math.abs(value - x) <= 0.001)) return 0;
     const h = Math.max(0.01, domainLength * 0.005);
     const left = Math.max(0, x - h);
     const right = Math.min(domainLength, x + h);
     return right > left ? (valueAt(right) - valueAt(left)) / (right - left) : 0;
-  };
+  });
   return sorted.map((x, index) => {
-    const y = valueAt(x);
-    const slope = derivativeAt(x);
+    const y = values[index];
+    const slope = slopes[index];
     const prevDx = index > 0 ? (x - sorted[index - 1]) / 3 : 0;
     const nextDx = index < sorted.length - 1 ? (sorted[index + 1] - x) / 3 : 0;
     return {
@@ -8321,17 +8322,89 @@ function applyRockerConfigToBoard(board, config = null) {
     return interpolatePolyline(targetPoints, clampedX);
   };
   const originalThicknessAt = x => boardCadSplineValueAt(originalDeck, x) - boardCadSplineValueAt(originalBottom, x);
-  const sampleXs = sortedUnique([
-    0,
-    apexX * 0.5,
-    apexX,
-    apexX + ((length - apexX) * 0.5),
-    length
-  ], 0.001);
+  const originalDeckXs = originalDeck.map(knot => clampNumber(Number(knot?.p?.x), 0, length, 0));
+  let sampleXs;
+  if (originalDeckXs.length >= 3 && originalDeckXs.length <= 5) {
+    const aligned = originalDeckXs.slice();
+    let nearestApexIndex = 1;
+    for (let index = 2; index < aligned.length - 1; index++) {
+      if (Math.abs(aligned[index] - apexX) < Math.abs(aligned[nearestApexIndex] - apexX)) nearestApexIndex = index;
+    }
+    aligned[0] = 0;
+    aligned[nearestApexIndex] = apexX;
+    aligned[aligned.length - 1] = length;
+    sampleXs = sortedUnique(aligned, 0.001);
+  } else {
+    sampleXs = sortedUnique([0, apexX * 0.5, apexX, apexX + ((length - apexX) * 0.5), length], 0.001);
+  }
   const uniqueXs = sortedUnique(sampleXs, 0.001);
   board.bottom = splineFromFunctionAtXs(uniqueXs, targetAt, length, { zeroSlopeXs: [apexX] });
   if (normalized.preserveFoil && !normalized.preserveDeck && originalDeck.length >= 2) {
-    board.deck = splineFromFunctionAtXs(uniqueXs, x => targetAt(x) + originalThicknessAt(x), length);
+    const matchingFoilControls = originalBottom.length === originalDeck.length
+      && originalBottom.length === board.bottom.length
+      && originalBottom.every((knot, index) => ["p", "prev", "next"].every(key => (
+        Math.abs(knot[key].x - originalDeck[index][key].x) < 0.001
+      )))
+      && originalBottom.every((knot, index) => Math.abs(knot.p.x - board.bottom[index].p.x) < 0.001);
+    if (matchingFoilControls) {
+      board.bottom.forEach((knot, index) => {
+        ["prev", "next"].forEach(key => {
+          knot[key].x = originalBottom[index][key].x;
+          const dx = knot[key].x - knot.p.x;
+          const slope = key === "prev"
+            ? (knot.p.y - knot.prev.y) / Math.max(1e-9, knot.p.x - knot.prev.x)
+            : (knot.next.y - knot.p.y) / Math.max(1e-9, knot.next.x - knot.p.x);
+          knot[key].y = knot.p.y + (slope * dx);
+        });
+      });
+      board.deck = board.bottom.map((knot, index) => ({
+        p: { x: knot.p.x, y: knot.p.y + originalDeck[index].p.y - originalBottom[index].p.y },
+        prev: { x: knot.prev.x, y: knot.prev.y + originalDeck[index].prev.y - originalBottom[index].prev.y },
+        next: { x: knot.next.x, y: knot.next.y + originalDeck[index].next.y - originalBottom[index].next.y },
+        continuous: originalDeck[index].continuous,
+        other: originalDeck[index].other
+      }));
+    } else {
+      board.deck = splineFromFunctionAtXs(uniqueXs, x => targetAt(x) + originalThicknessAt(x), length);
+    }
+    const constrainEndSegment = (knots, fromStart) => {
+      const firstIndex = fromStart ? 0 : knots.length - 1;
+      const secondIndex = fromStart ? 1 : knots.length - 2;
+      const first = knots[firstIndex];
+      const second = knots[secondIndex];
+      const span = second.p.x - first.p.x;
+      const secant = (second.p.y - first.p.y) / span;
+      if (Math.abs(secant) <= 1e-12) return;
+      const firstHandle = fromStart ? first.next : first.prev;
+      const secondHandle = fromStart ? second.prev : second.next;
+      let firstSlope = (firstHandle.y - first.p.y) / (firstHandle.x - first.p.x);
+      let secondSlope = (second.p.y - secondHandle.y) / (second.p.x - secondHandle.x);
+      let alpha = firstSlope / secant;
+      let beta = secondSlope / secant;
+      if (alpha < 0) alpha = 0;
+      if (beta < 0) beta = 0;
+      const magnitude = Math.hypot(alpha, beta);
+      if (magnitude > 3) {
+        const scale = 3 / magnitude;
+        alpha *= scale;
+        beta *= scale;
+      }
+      firstSlope = alpha * secant;
+      secondSlope = beta * secant;
+      firstHandle.y = first.p.y + (firstSlope * (firstHandle.x - first.p.x));
+      secondHandle.y = second.p.y - (secondSlope * (second.p.x - secondHandle.x));
+      const otherHandle = fromStart ? second.next : second.prev;
+      otherHandle.y = second.p.y + (secondSlope * (otherHandle.x - second.p.x));
+    };
+    const deckHandlesBefore = board.deck.map(knot => ({ prev: knot.prev.y, next: knot.next.y }));
+    constrainEndSegment(board.deck, true);
+    constrainEndSegment(board.deck, false);
+    if (matchingFoilControls) {
+      board.bottom.forEach((knot, index) => {
+        knot.prev.y += board.deck[index].prev.y - deckHandlesBefore[index].prev;
+        knot.next.y += board.deck[index].next.y - deckHandlesBefore[index].next;
+      });
+    }
   }
   board.rockerPreset = normalized.preset;
   board.rockerConfig = normalized;
