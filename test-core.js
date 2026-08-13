@@ -3258,6 +3258,32 @@ if (sectionEnabled("rocker")) {
   cleanStations.forEach((x, index) => {
     assert(Math.abs(api._test.boardCadThicknessAtPos(cleanRoundPin, x) - cleanThickness[index]) < 0.08, `clean round pin: rocker changed thickness at x=${x}`);
   });
+  let worstThickness = { x: 0, delta: 0 };
+  for (let i = 0; i <= 400; i++) {
+    const x = cleanRoundPin.length * i / 400;
+    const before = api._test.boardCadThicknessAtPos(cleanProjectRoundTrip, x);
+    const after = api._test.boardCadThicknessAtPos(cleanRoundPin, x);
+    const delta = after - before;
+    if (Math.abs(delta) > Math.abs(worstThickness.delta)) worstThickness = { x, delta };
+  }
+  assert(Math.abs(worstThickness.delta) < 0.01, `clean round pin: dense thickness drift ${worstThickness.delta} at x=${worstThickness.x}`);
+  const centerIndex = cleanRoundPin.bottom.findIndex(knot => Math.abs(knot.p.x - cleanRoundPin.length / 2) < 0.001);
+  const left = cleanRoundPin.bottom[centerIndex - 1];
+  const centerKnot = cleanRoundPin.bottom[centerIndex];
+  const right = cleanRoundPin.bottom[centerIndex + 1];
+  const leftChordAngle = Math.atan2(centerKnot.p.y - left.p.y, centerKnot.p.x - left.p.x) * 180 / Math.PI;
+  const rightChordAngle = Math.atan2(right.p.y - centerKnot.p.y, right.p.x - centerKnot.p.x) * 180 / Math.PI;
+  assert(Math.abs(rightChordAngle - leftChordAngle) < 0.1, `clean round pin: center chord angle break is ${rightChordAngle - leftChordAngle} degrees`);
+  if (process.env.BOARDCAD_ROCKER_DIAGNOSTIC === "1") {
+    console.log("[rocker-diagnostic]", JSON.stringify({
+      worstThickness,
+      endpointThicknessBefore: [api._test.boardCadThicknessAtPos(cleanProjectRoundTrip, 0), api._test.boardCadThicknessAtPos(cleanProjectRoundTrip, cleanRoundPin.length)],
+      endpointThicknessAfter: [api._test.boardCadThicknessAtPos(cleanRoundPin, 0), api._test.boardCadThicknessAtPos(cleanRoundPin, cleanRoundPin.length)],
+      centerChordAngles: [leftChordAngle, rightChordAngle],
+      centerChordAngleDelta: rightChordAngle - leftChordAngle,
+      knotXs: cleanRoundPin.bottom.map(knot => knot.p.x)
+    }));
+  }
 
   trace("rocker:done");
 }

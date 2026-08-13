@@ -6130,17 +6130,6 @@ function smoothStep01(value) {
   return t * t * (3 - (2 * t));
 }
 
-function hermiteInterpolate01(y0, y1, m0, m1, u) {
-  const t = clamp01(u);
-  const t2 = t * t;
-  const t3 = t2 * t;
-  const h00 = (2 * t3) - (3 * t2) + 1;
-  const h10 = t3 - (2 * t2) + t;
-  const h01 = (-2 * t3) + (3 * t2);
-  const h11 = t3 - t2;
-  return (h00 * y0) + (h10 * m0) + (h01 * y1) + (h11 * m1);
-}
-
 function bottomFeatureBlendRamp01(value, blend = 1) {
   const shaped = smoothStep01(value);
   const exponent = clampNumber(blend, 0.1, 4, 1);
@@ -8247,9 +8236,7 @@ function rockerTargetCurvePoints(board, config = null, segments = 160) {
   const blend = clampNumber(normalized.blend, 0.1, 4, 1);
   const leftSpan = Math.max(1e-9, apexX);
   const rightSpan = Math.max(1e-9, length - apexX);
-  const slopeScale = clampNumber(0.92 + ((1 - clamp01((flatness + 1) * 0.5)) * 0.8) + ((blend - 1) * 0.2), 0.45, 2.2, 1);
-  const tailSlope = -((tailTarget - apexY) / leftSpan) * slopeScale;
-  const noseSlope = ((noseTarget - apexY) / rightSpan) * slopeScale;
+  const centerPower = clampNumber(2.6 + (flatness * 1.4) - ((blend - 1) * 0.25), 2.1, 4.5, 2.6);
   const tailKickLength = Math.max(1e-9, length * clampNumber(normalized.tailKickLengthRatio, 0.05, 0.5, 0.18));
   const entryLength = Math.max(1e-9, length * clampNumber(normalized.entryLengthRatio, 0.05, 0.5, 0.18));
   const tailKick = Number(normalized.tailKick) || 0;
@@ -8260,11 +8247,11 @@ function rockerTargetCurvePoints(board, config = null, segments = 160) {
     const x = length * (i / count);
     let y;
     if (x <= apexX) {
-      const u = clampNumber(x / leftSpan, 0, 1, 0);
-      y = hermiteInterpolate01(tailTarget, apexY, tailSlope * leftSpan, 0, u);
+      const distance = clampNumber((apexX - x) / leftSpan, 0, 1, 0);
+      y = apexY + ((tailTarget - apexY) * Math.pow(distance, centerPower));
     } else {
-      const u = clampNumber((x - apexX) / rightSpan, 0, 1, 0);
-      y = hermiteInterpolate01(apexY, noseTarget, 0, noseSlope * rightSpan, u);
+      const distance = clampNumber((x - apexX) / rightSpan, 0, 1, 0);
+      y = apexY + ((noseTarget - apexY) * Math.pow(distance, centerPower));
     }
     if (tailKick > 0 && x <= tailKickLength) {
       y += tailKick * Math.pow(1 - smoothStep01(x / tailKickLength), 1.35);
@@ -8318,6 +8305,10 @@ function applyRockerConfigToBoard(board, config = null) {
       sampleXs.push((x + nextX) * 0.5);
     }
   });
+  const preservationSegments = 24;
+  for (let i = 0; i <= preservationSegments; i++) {
+    sampleXs.push(length * (i / preservationSegments));
+  }
   sampleXs.push(apexX);
   const uniqueXs = sortedUnique(sampleXs, 0.001);
   board.bottom = splineFromPoints(uniqueXs.map(x => ({
