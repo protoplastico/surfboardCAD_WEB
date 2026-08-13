@@ -3232,6 +3232,32 @@ if (sectionEnabled("rocker")) {
   const cleanProjectRoundTrip = api.parseBoardProject(api.makeBoardProject(cleanRoundPin), "Clean-Round-Pin.boardcad.json");
   assert(JSON.stringify(cleanProjectRoundTrip.bottom) === JSON.stringify(cleanRoundPin.bottom), "clean round pin: native save should preserve bottom controls exactly");
   assert(JSON.stringify(cleanProjectRoundTrip.deck) === JSON.stringify(cleanRoundPin.deck), "clean round pin: native save should preserve deck controls exactly");
+  const cleanStations = [0, 23.5, 47, 94, 141, 164.5, 188];
+  const cleanThickness = cleanStations.map(x => api._test.boardCadThicknessAtPos(cleanRoundPin, x));
+  const cleanRockerConfig = api._test.normalizeRockerConfig({
+    preset: "continuous-neutral",
+    enabled: true,
+    noseRocker: 8.5,
+    tailRocker: 3,
+    middleFlatness: 0.35,
+    preserveFoil: true,
+    preserveDeck: false,
+    entryLift: 0,
+    tailKick: 0
+  });
+  assert(api._test.applyRockerConfigToBoard(cleanRoundPin, cleanRockerConfig), "clean round pin: rocker apply should succeed");
+  const appliedCenter = cleanRoundPin.bottom.find(knot => Math.abs(knot.p.x - cleanRoundPin.length / 2) < 0.001);
+  assert(appliedCenter, "clean round pin: applied rocker should retain one center apex knot");
+  assert(Math.abs(appliedCenter.prev.y - appliedCenter.p.y) < 1e-6, "clean round pin: applied incoming apex tangent should be horizontal");
+  assert(Math.abs(appliedCenter.next.y - appliedCenter.p.y) < 1e-6, "clean round pin: applied outgoing apex tangent should be horizontal");
+  cleanRoundPin.bottom.slice(1, -1).forEach(knot => {
+    const incoming = Math.atan2(knot.p.y - knot.prev.y, knot.p.x - knot.prev.x);
+    const outgoing = Math.atan2(knot.next.y - knot.p.y, knot.next.x - knot.p.x);
+    assert(Math.abs(incoming - outgoing) < 1e-7, `clean round pin: rocker introduced a tangent break at x=${knot.p.x}`);
+  });
+  cleanStations.forEach((x, index) => {
+    assert(Math.abs(api._test.boardCadThicknessAtPos(cleanRoundPin, x) - cleanThickness[index]) < 0.08, `clean round pin: rocker changed thickness at x=${x}`);
+  });
 
   trace("rocker:done");
 }

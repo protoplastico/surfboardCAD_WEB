@@ -6141,54 +6141,6 @@ function hermiteInterpolate01(y0, y1, m0, m1, u) {
   return (h00 * y0) + (h10 * m0) + (h01 * y1) + (h11 * m1);
 }
 
-function rockerCenterFlatWindow(length, apexX, flatness) {
-  const flatSpanRatio = clampNumber(0.08 + (clampNumber(flatness, -1, 1, 0) * 0.12), 0, 0.28, 0.08);
-  const flatHalfSpan = Math.max(0, length * flatSpanRatio * 0.5);
-  const start = clampNumber(apexX - flatHalfSpan, 0, apexX, apexX);
-  const end = clampNumber(apexX + flatHalfSpan, apexX, length, apexX);
-  return {
-    start,
-    end,
-    halfSpan: flatHalfSpan,
-    active: end > start + 1e-6
-  };
-}
-
-function straightenSplineWindow(knots, startX, endX) {
-  if (!Array.isArray(knots) || knots.length < 2) return knots;
-  const start = Math.min(startX, endX);
-  const end = Math.max(startX, endX);
-  const indices = [];
-  for (let i = 0; i < knots.length; i++) {
-    const x = Number(knots[i]?.p?.x);
-    if (Number.isFinite(x) && x >= start - 1e-6 && x <= end + 1e-6) indices.push(i);
-  }
-  if (indices.length < 2) return knots;
-  const setLinearSegment = (left, right) => {
-    if (!left || !right) return;
-    const dx = right.p.x - left.p.x;
-    const dy = right.p.y - left.p.y;
-    left.next = {
-      x: left.p.x + (dx / 3),
-      y: left.p.y + (dy / 3)
-    };
-    right.prev = {
-      x: right.p.x - (dx / 3),
-      y: right.p.y - (dy / 3)
-    };
-    left.continuous = true;
-    right.continuous = true;
-  };
-  const firstIndex = indices[0];
-  const lastIndex = indices[indices.length - 1];
-  if (firstIndex > 0) setLinearSegment(knots[firstIndex - 1], knots[firstIndex]);
-  for (let i = 0; i < indices.length - 1; i++) {
-    setLinearSegment(knots[indices[i]], knots[indices[i + 1]]);
-  }
-  if (lastIndex < knots.length - 1) setLinearSegment(knots[lastIndex], knots[lastIndex + 1]);
-  return knots;
-}
-
 function bottomFeatureBlendRamp01(value, blend = 1) {
   const shaped = smoothStep01(value);
   const exponent = clampNumber(blend, 0.1, 4, 1);
@@ -8293,11 +8245,8 @@ function rockerTargetCurvePoints(board, config = null, segments = 160) {
   const noseTarget = rockerTargetEndpointValue(normalized.noseRocker, noseMeasured);
   const flatness = clampNumber(normalized.middleFlatness, -1, 1, 0);
   const blend = clampNumber(normalized.blend, 0.1, 4, 1);
-  const flatWindow = rockerCenterFlatWindow(length, apexX, flatness);
-  const flatStart = flatWindow.start;
-  const flatEnd = flatWindow.end;
-  const leftSpan = Math.max(1e-9, flatStart);
-  const rightSpan = Math.max(1e-9, length - flatEnd);
+  const leftSpan = Math.max(1e-9, apexX);
+  const rightSpan = Math.max(1e-9, length - apexX);
   const slopeScale = clampNumber(0.92 + ((1 - clamp01((flatness + 1) * 0.5)) * 0.8) + ((blend - 1) * 0.2), 0.45, 2.2, 1);
   const tailSlope = -((tailTarget - apexY) / leftSpan) * slopeScale;
   const noseSlope = ((noseTarget - apexY) / rightSpan) * slopeScale;
@@ -8310,14 +8259,12 @@ function rockerTargetCurvePoints(board, config = null, segments = 160) {
   for (let i = 0; i <= count; i++) {
     const x = length * (i / count);
     let y;
-    if (x <= flatStart) {
+    if (x <= apexX) {
       const u = clampNumber(x / leftSpan, 0, 1, 0);
       y = hermiteInterpolate01(tailTarget, apexY, tailSlope * leftSpan, 0, u);
-    } else if (x >= flatEnd) {
-      const u = clampNumber((x - flatEnd) / rightSpan, 0, 1, 0);
-      y = hermiteInterpolate01(apexY, noseTarget, 0, noseSlope * rightSpan, u);
     } else {
-      y = apexY;
+      const u = clampNumber((x - apexX) / rightSpan, 0, 1, 0);
+      y = hermiteInterpolate01(apexY, noseTarget, 0, noseSlope * rightSpan, u);
     }
     if (tailKick > 0 && x <= tailKickLength) {
       y += tailKick * Math.pow(1 - smoothStep01(x / tailKickLength), 1.35);
@@ -8372,23 +8319,16 @@ function applyRockerConfigToBoard(board, config = null) {
     }
   });
   sampleXs.push(apexX);
-  const flatWindow = rockerCenterFlatWindow(length, apexX, normalized.middleFlatness);
-  if (flatWindow.active) {
-    sampleXs.push(flatWindow.start, flatWindow.end);
-    sampleXs.push((flatWindow.start + apexX) * 0.5, (apexX + flatWindow.end) * 0.5);
-  }
   const uniqueXs = sortedUnique(sampleXs, 0.001);
   board.bottom = splineFromPoints(uniqueXs.map(x => ({
     x,
     y: targetAt(x)
   })), { lockExtremaTangents: true });
-  if (flatWindow.active) straightenSplineWindow(board.bottom, flatWindow.start, flatWindow.end);
   if (normalized.preserveFoil && !normalized.preserveDeck && originalDeck.length >= 2) {
     board.deck = splineFromPoints(uniqueXs.map(x => ({
       x,
       y: targetAt(x) + originalThicknessAt(x)
     })), { lockExtremaTangents: true });
-    if (flatWindow.active) straightenSplineWindow(board.deck, flatWindow.start, flatWindow.end);
   }
   board.rockerPreset = normalized.preset;
   board.rockerConfig = normalized;
