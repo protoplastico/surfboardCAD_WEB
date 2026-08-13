@@ -3220,6 +3220,19 @@ if (sectionEnabled("rocker")) {
     assert(Math.abs(bottom - directBottom.y) < 0.02, `rocker: spline evaluator disagrees with direct Bezier samples at x=${x}`);
   });
 
+  api._test.ACTION_HANDLERS["new-clean-round-pin"]();
+  const cleanRoundPin = api.state.board;
+  const cleanCenter = cleanRoundPin.bottom.find(knot => Math.abs(knot.p.x - cleanRoundPin.length / 2) < 1e-9);
+  assert(cleanCenter, "clean round pin: center rocker knot is missing");
+  assert(Math.abs(cleanCenter.prev.y - cleanCenter.p.y) < 1e-9, "clean round pin: incoming center tangent should be horizontal");
+  assert(Math.abs(cleanCenter.next.y - cleanCenter.p.y) < 1e-9, "clean round pin: outgoing center tangent should be horizontal");
+  assert(Math.abs(api._test.boardCadRockerApexPos(cleanRoundPin) - cleanRoundPin.length / 2) < 0.1, "clean round pin: rocker apex should be centered");
+  assert(api._test.boardCadThicknessAtPos(cleanRoundPin, 0) > 0.5, "clean round pin: tail thickness should remain positive");
+  assert(api._test.boardCadThicknessAtPos(cleanRoundPin, cleanRoundPin.length) > 0.5, "clean round pin: nose thickness should remain positive");
+  const cleanProjectRoundTrip = api.parseBoardProject(api.makeBoardProject(cleanRoundPin), "Clean-Round-Pin.boardcad.json");
+  assert(JSON.stringify(cleanProjectRoundTrip.bottom) === JSON.stringify(cleanRoundPin.bottom), "clean round pin: native save should preserve bottom controls exactly");
+  assert(JSON.stringify(cleanProjectRoundTrip.deck) === JSON.stringify(cleanRoundPin.deck), "clean round pin: native save should preserve deck controls exactly");
+
   trace("rocker:done");
 }
 

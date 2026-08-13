@@ -285,6 +285,7 @@ const I18N = {
     gcode_laser_outline: "レーザーカッター用Gコード",
     gcode_cnc: "CNC用Gコード",
     save_project: "非破壊プロジェクトを保存",
+    sample_clean_round_pin: "新規ラウンドピン（非破壊）",
     save_brd: "BRD互換形式を書き出す",
     save_brd_as: "BRDに名前を付けて保存",
     export_outline_otl: "アウトラインを書き出し (.otl)",
@@ -1062,6 +1063,7 @@ I18N.en = {
   gcode_laser_outline: "G-Code Laser Outline",
   gcode_cnc: "G-Code CNC",
   save_project: "Save lossless project",
+  sample_clean_round_pin: "New clean round pin (lossless)",
   save_brd: "Export BRD compatibility file",
   save_brd_as: "Save BRD as",
   export_outline_otl: "Export Outline (.otl)",
@@ -2218,6 +2220,7 @@ const ACTION_HANDLERS = Object.freeze({
   "sample": () => loadSelectedSample(),
   "sample-current": () => loadSelectedSample(),
   "sample-direct": target => loadSampleByUrl(target.dataset.sampleUrl),
+  "new-clean-round-pin": () => createCleanRoundPinSample(),
   "scan-new-board": () => startScanNewBoard(),
   "pdf": () => window.downloadPdf(),
   "template-pdf": () => window.downloadTemplatePdf(),
@@ -2911,6 +2914,100 @@ function createNewBoard() {
       sectionAt(length, 0.01, 0.01)
     ]
   }, t("status_new_board_created"));
+}
+
+function createCleanRoundPinSample() {
+  const length = 188;
+  const outline = splineFromPoints([
+    { x: 0, y: 0 },
+    { x: 18, y: 10 },
+    { x: 47, y: 20 },
+    { x: 94, y: 25.5 },
+    { x: 141, y: 20 },
+    { x: 170, y: 11 },
+    { x: length, y: 0 }
+  ], { lockExtremaTangents: true });
+  const bottom = splineFromPoints([
+    { x: 0, y: 4.2 },
+    { x: 47, y: 0.8 },
+    { x: 94, y: 0 },
+    { x: 141, y: 1.2 },
+    { x: length, y: 5.6 }
+  ], { lockExtremaTangents: true });
+  const deck = splineFromPoints([
+    { x: 0, y: 4.8 },
+    { x: 47, y: 4.8 },
+    { x: 94, y: 6 },
+    { x: 141, y: 5.2 },
+    { x: length, y: 6.2 }
+  ], { lockExtremaTangents: true });
+  const sectionAt = (position, halfWidth, thickness) => ({
+    position,
+    spline: makeScannedCrossSection(Math.max(0.01, halfWidth), Math.max(0.01, thickness)),
+    guidePoints: []
+  });
+  activateBoard({
+    filename: "Clean-Round-Pin.boardcad.json",
+    name: "Clean Round Pin",
+    version: "BoardCAD Web native 1",
+    fields: {},
+    length,
+    width: 51,
+    thickness: 6,
+    interpolationType: state.crossSectionInterpolation,
+    finType: "",
+    fins: Array(9).fill(0),
+    finSetup: "",
+    finToeIn: 0,
+    finCant: 0,
+    finExtra: [],
+    tailMode: "",
+    tailLength: 0,
+    tailDepth: 0,
+    tailShoulderPos: 0,
+    tailShoulderScale: 0,
+    tailRailBlend: 0,
+    tailLinearization: 0,
+    tailWidthAdjust: 0,
+    noseMode: "",
+    noseLength: 0,
+    noseShoulderPos: 0,
+    noseShoulderScale: 0,
+    noseRailBlend: 0,
+    noseLinearization: 0,
+    noseWidthAdjust: 0,
+    wingPreset: "",
+    wingPosition: 0,
+    wingWidth: 0,
+    wingShape: "",
+    wingShoulder: 0,
+    wingTransition: 0,
+    railMode: "",
+    railStrength: 1,
+    edgeType: "",
+    edgeStrength: 0,
+    edgeLength: 0,
+    edgeFade: 0,
+    bottomPreset: "custom",
+    bottomFeatures: [],
+    rockerPreset: "custom",
+    rockerConfig: defaultRockerConfig("custom"),
+    outlineGuidePoints: [],
+    bottomGuidePoints: [],
+    deckGuidePoints: [],
+    outline,
+    bottom,
+    deck,
+    sections: [
+      sectionAt(0, 0.01, 0.6),
+      sectionAt(18, 10, 2.4),
+      sectionAt(47, 20, 4),
+      sectionAt(94, 25.5, 6),
+      sectionAt(141, 20, 4),
+      sectionAt(170, 11, 2.2),
+      sectionAt(length, 0.01, 0.6)
+    ]
+  }, "新しい非破壊ラウンドピンサンプルを作成しました。");
 }
 
 function loadGhostBoard(text, filename) {
