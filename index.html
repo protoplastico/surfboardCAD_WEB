@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>BoardCAD Web</title>
-  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./styles.css?v=20260813-rail-panel-order">
 </head>
 <body>
   <header class="app-chrome">
@@ -22,7 +22,7 @@
           <button type="button" data-action="new" data-i18n="new">New</button>
           <button type="button" data-action="open" data-i18n="open">Open</button>
           <button type="button" data-action="open-ghost" data-i18n="open_ghost">Open Ghost</button>
-          <input id="fileInput" type="file" accept=".boardcad.json,.json,.brd,.otl,.pfl,.crs,.csv,application/json,text/plain" hidden>
+          <input id="fileInput" type="file" accept=".brd,.otl,.pfl,.crs,.csv,text/plain" hidden>
           <input id="ghostFileInput" type="file" accept=".brd,text/plain" hidden>
           <details class="menu-submenu">
             <summary data-i18n="menu_sample">Sample</summary>
@@ -31,7 +31,15 @@
               <button type="button" data-action="sample-direct" data-sample-url="./Shortboard.brd" data-i18n="sample_shortboard">Shortboard</button>
               <button type="button" data-action="sample-direct" data-sample-url="./Funboard.brd" data-i18n="sample_funboard">Funboard</button>
               <button type="button" data-action="sample-direct" data-sample-url="./Longboard.brd" data-i18n="sample_longboard">Longboard</button>
-              <button type="button" data-action="new-clean-round-pin" data-i18n="sample_clean_round_pin">Clean Round Pin (native)</button>
+              <button type="button" data-action="sample-direct" data-sample-url="./USBlanks-5-9P.brd">US Blanks 5'9P</button>
+            </div>
+          </details>
+          <details class="menu-submenu">
+            <summary data-i18n="open_blanks">Open blanks</summary>
+            <div class="menu-subitems">
+              <label><span data-i18n="blank_manufacturer">Manufacturer</span><select id="blankManufacturerSelect"></select></label>
+              <label><span data-i18n="blank_product">Product</span><select id="blankProductSelect"></select></label>
+              <button type="button" data-action="open-selected-blank" data-i18n="open_selected_blank">Open selected blank</button>
             </div>
           </details>
           <button type="button" data-action="scan-new-board" data-i18n="scan_new_board">Scan New Board</button>
@@ -47,8 +55,8 @@
           <button id="gcodeButton" type="button" data-action="laser" disabled data-i18n="gcode_laser_outline">G-Code Laser Outline</button>
           <button id="cncButton" type="button" data-action="cnc" disabled data-i18n="gcode_cnc">G-Code CNC</button>
           <hr>
-          <button id="saveProjectButton" type="button" data-action="save-project" disabled data-i18n="save_project">Save lossless project</button>
           <button id="saveBrdButton" type="button" data-action="save-brd" disabled data-i18n="save_brd">Save BRD</button>
+          <button id="overwriteBrdButton" type="button" data-action="overwrite-brd" disabled data-i18n="overwrite_brd">Overwrite BRD</button>
           <button id="saveBrdAsButton" type="button" data-action="save-brd-as" disabled data-i18n="save_brd_as">Save BRD as</button>
           <button id="exportOtlButton" type="button" data-action="export-otl" disabled data-i18n="export_outline_otl">Export Outline (.otl)</button>
           <button id="exportPflButton" type="button" data-action="export-pfl" disabled data-i18n="export_profile_pfl">Export Profile (.pfl)</button>
@@ -62,6 +70,7 @@
           <hr>
           <button id="addControlPointButton" type="button" data-action="add-controlpoint" disabled data-i18n="add_control_point">Add ControlPoint</button>
           <button id="deleteControlPointButton" type="button" data-action="delete-controlpoint" disabled data-i18n="delete_control_points">Delete ControlPoints</button>
+          <button id="simplifyOutlineButton" type="button" data-action="simplify-outline" disabled data-i18n="simplify_outline">Simplify outline</button>
         </div>
       </details>
       <details class="menu">
@@ -71,6 +80,7 @@
           <button type="button" data-view="profile" data-i18n="profile">Profile</button>
           <button type="button" data-view="sections" data-i18n="menu_cross_sections">Cross sections</button>
           <button type="button" data-view="quad" data-i18n="quad">Quad</button>
+          <button type="button" data-view="simulation" data-i18n="hydrodynamic_simulation">Hydrodynamic simulation</button>
           <button type="button" data-view="toolpath" data-i18n="toolpath">Toolpath</button>
           <hr>
           <button type="button" data-action="fit" data-i18n="fit">Fit</button>
@@ -283,6 +293,7 @@
         <button class="tab" data-view="profile" type="button" data-i18n="profile">Profile</button>
         <button class="tab" data-view="sections" type="button" data-i18n="menu_cross_sections">Cross sections</button>
         <button class="tab" data-view="quad" type="button" data-i18n="quad">Quad</button>
+        <button class="tab" data-view="simulation" type="button" data-i18n="hydrodynamic_simulation">Hydrodynamic simulation</button>
         <button class="tab" data-view="toolpath" type="button" data-i18n="toolpath">Toolpath</button>
         <button class="tab" data-view="model3d" type="button" data-i18n="menu_3d_model">3D Model</button>
         <button class="tab" data-view="scan" type="button" data-i18n="menu_scan">Scan</button>
@@ -310,8 +321,15 @@
           <strong id="boardName" data-i18n="board_unloaded">未読み込み</strong>
           <span id="boardMeta"></span>
         </div>
+        <div id="simulationCompareControls" class="simulation-compare-controls" hidden>
+          <label><span data-i18n="compare_fin_a">Fin A</span><select id="simulationFinA"><option value="thruster">Thruster</option><option value="5fin">5 fin</option><option value="quad">Quad</option><option value="2plus1">2+1</option><option value="single">Single</option></select></label>
+          <label><span data-i18n="compare_fin_b">Fin B</span><select id="simulationFinB"><option value="5fin">5 fin</option><option value="thruster">Thruster</option><option value="quad">Quad</option><option value="2plus1">2+1</option><option value="single">Single</option></select></label>
+          <label><span data-i18n="compare_rail_a">Rail A</span><select id="simulationRailA"><option value="5050">50/50</option><option value="6040">60/40</option><option value="7030">70/30</option><option value="8020">80/20</option></select></label>
+          <label><span data-i18n="compare_rail_b">Rail B</span><select id="simulationRailB"><option value="7030">70/30</option><option value="5050">50/50</option><option value="6040">60/40</option><option value="8020">80/20</option></select></label>
+        </div>
       </div>
       <canvas id="canvas" width="1400" height="760"></canvas>
+      <section id="stationEditor" class="station-editor" aria-label="Board dimensions" hidden></section>
       <div id="canvasContextMenu" class="context-menu" hidden>
         <button type="button" data-context-action="fit" data-i18n="fit">Fit</button>
         <hr>
@@ -362,6 +380,9 @@
             <option value="bat" data-i18n="tail_mode_bat">Bat</option>
           </select>
         </label>
+        <div class="button-row">
+          <button id="setTailButton" type="button" data-action="set-tail" disabled data-i18n="set_tail">Set tail</button>
+        </div>
         <label>
           <span data-i18n="tail_length">Tail length</span>
           <input id="tailLength" type="number" step="0.001" disabled>
@@ -371,7 +392,7 @@
           <input id="tailDepth" type="number" step="0.001" disabled>
         </label>
         <label>
-          <span data-i18n="shoulder_pos">Shoulder pos</span>
+          <span id="tailShoulderPosLabel" data-i18n="shoulder_pos">Shoulder pos</span>
           <input id="tailShoulderPos" type="number" step="0.01" disabled>
         </label>
         <label>
@@ -387,9 +408,6 @@
           <input id="tailWidthAdjust" type="range" min="-1" max="1" step="0.01" value="0" disabled>
         </label>
         <div id="tailWidthAdjustReadout" class="section-readout">100%</div>
-        <div class="button-row">
-          <button id="setTailButton" type="button" data-action="set-tail" disabled data-i18n="set_tail">Set tail</button>
-        </div>
       </details>
       <details id="nosePanel" class="panel-group panel-stack-item nose-panel" aria-label="Nose" data-i18n-aria-label="nose">
         <summary data-i18n="nose">Nose</summary>
@@ -407,9 +425,24 @@
             <option value="square" data-i18n="nose_mode_square">Square nose</option>
           </select>
         </label>
+        <div class="button-row">
+          <button id="setNoseButton" type="button" data-action="set-nose" disabled data-i18n="set_nose">Set nose</button>
+        </div>
+        <label>
+          <span data-i18n="nose_tip_shape">Nose tip shape</span>
+          <select id="noseTipShape" disabled>
+            <option value="" data-i18n="nose_tip_standard">Standard</option>
+            <option value="eagle" data-i18n="nose_tip_eagle">Eagle nose</option>
+            <option value="beak" data-i18n="nose_tip_beak">Beak nose</option>
+          </select>
+        </label>
         <label>
           <span data-i18n="nose_length">Nose length</span>
           <input id="noseLength" type="number" step="0.001" disabled>
+        </label>
+        <label>
+          <span data-i18n="nose_extension">Nose extension</span>
+          <input id="noseExtension" type="number" min="0" max="70" step="0.1" disabled>
         </label>
         <label>
           <span data-i18n="shoulder_pos">Shoulder pos</span>
@@ -428,9 +461,6 @@
           <input id="noseWidthAdjust" type="range" min="-1" max="1" step="0.01" value="0" disabled>
         </label>
         <div id="noseWidthAdjustReadout" class="section-readout">100%</div>
-        <div class="button-row">
-          <button id="setNoseButton" type="button" data-action="set-nose" disabled data-i18n="set_nose">Set nose</button>
-        </div>
       </details>
       <details id="wingPanel" class="panel-group panel-stack-item wing-panel" aria-label="Wing" data-i18n-aria-label="wing">
         <summary data-i18n="wing">Wing</summary>
@@ -444,6 +474,9 @@
             <option value="wing-pin" data-i18n="wing_preset_wing_pin">Wing pin tail</option>
           </select>
         </label>
+        <div class="button-row">
+          <button id="setWingButton" type="button" data-action="set-wing" disabled data-i18n="set_wing">Set wing</button>
+        </div>
         <label>
           <span data-i18n="distance_from_tail">Distance from tail</span>
           <input id="wingPosition" type="number" step="0.01" disabled>
@@ -467,9 +500,6 @@
           <span data-i18n="transition_coeff">Transition coeff</span>
           <input id="wingTransition" type="number" step="0.1" disabled>
         </label>
-        <div class="button-row">
-          <button id="setWingButton" type="button" data-action="set-wing" disabled data-i18n="set_wing">Set wing</button>
-        </div>
       </details>
       <details id="rockerPanel" class="panel-group panel-stack-item rocker-panel" aria-label="Rocker" data-i18n-aria-label="rocker">
         <summary data-i18n="rocker">Rocker</summary>
@@ -556,6 +586,10 @@
             <option value="shortboard-single-to-double" data-i18n="bottom_preset_shortboard_single_to_double">Shortboard single to double</option>
             <option value="shortboard-single-to-vee" data-i18n="bottom_preset_shortboard_single_to_vee">Shortboard single to vee</option>
             <option value="performance-channel-quad" data-i18n="bottom_preset_performance_channel_quad">Performance channel quad</option>
+            <option value="rider-paddle-glide" data-i18n="bottom_preset_rider_paddle_glide">Paddle / glide</option>
+            <option value="rider-balanced-control" data-i18n="bottom_preset_rider_balanced_control">Balanced control</option>
+            <option value="rider-speed-drive" data-i18n="bottom_preset_rider_speed_drive">Speed / drive</option>
+            <option value="rider-loose-turn" data-i18n="bottom_preset_rider_loose_turn">Loose / quick turn</option>
           </select>
         </label>
         <div class="button-row">
@@ -680,16 +714,19 @@
             <option value="" data-i18n="custom">Custom</option>
             <option value="single" data-i18n="single_fin">Single fin</option>
             <option value="2plus1">2+1</option>
-            <option value="twin-fish" data-i18n="twin_fish">Twin fish</option>
-            <option value="twin-performance" data-i18n="twin_performance">Twin performance</option>
+            <option value="twin-fish" data-i18n="twin_fish_provisional">Twin fish (starting point)</option>
+            <option value="twin-performance" data-i18n="twin_performance_provisional">Twin performance (starting point)</option>
             <option value="thruster" data-i18n="thruster">Thruster</option>
             <option value="quad" data-i18n="quad_fin">Quad</option>
             <option value="5fin" data-i18n="five_fin">5 fin</option>
-            <option value="bonzer" data-i18n="bonzer">Bonzer</option>
+            <option value="bonzer" data-i18n="bonzer_provisional">Bonzer (starting point)</option>
           </select>
         </label>
+        <div class="button-row">
+          <button id="setFinsButton" type="button" data-action="set-fins" disabled data-i18n="set_fins">Set fins</button>
+        </div>
         <div class="fin-grid">
-          <span></span><span>X</span><span>Y / Depth</span>
+          <span></span><span data-i18n="x_from_tail">X from tail</span><span data-i18n="y_from_center_depth">Y from center / Depth</span>
           <span data-i18n="side_rear">Side rear</span>
           <input id="finSideRearX" type="number" step="0.001" disabled>
           <input id="finSideRearY" type="number" step="0.001" disabled>
@@ -708,9 +745,6 @@
           <span data-i18n="toe_in_cant">Toe-in / Cant</span>
           <input id="finToeIn" type="number" step="0.1" disabled>
           <input id="finCant" type="number" step="0.1" disabled>
-        </div>
-        <div class="button-row">
-          <button id="setFinsButton" type="button" data-action="set-fins" disabled data-i18n="set_fins">Set fins</button>
         </div>
       </details>
       <details id="weightPanel" class="panel-group panel-stack-item weight-panel" aria-label="Weight" data-i18n-aria-label="weight_calculator">
@@ -993,8 +1027,8 @@
           <input id="segments" type="number" min="4" max="80" value="24">
         </label>
       </details>
-      <details id="crossSectionPanel" class="section-panel panel-group panel-stack-item" aria-label="Cross section" data-i18n-aria-label="cross_section">
-        <summary data-i18n="cross_section">Cross section</summary>
+      <details id="crossSectionPanel" class="section-panel panel-group panel-stack-item" aria-label="Rail shape" data-i18n-aria-label="rail_shape">
+        <summary data-i18n="rail_shape">Rail shape</summary>
         <div class="section-readout" id="sectionSummary" data-i18n="section_unselected">未選択</div>
         <label>
           <span data-i18n="rail_shape">Rail shape</span>
@@ -1005,16 +1039,15 @@
             <option value="7030" data-i18n="rail_mode_7030">70/30</option>
             <option value="8020" data-i18n="rail_mode_8020">80/20</option>
             <option value="egg" data-i18n="rail_mode_egg">Egg rail</option>
-            <option value="full-soft" data-i18n="rail_mode_full_soft">Full soft rail</option>
+            <option value="full-soft" data-i18n="rail_mode_full_soft">Semi boxy rail (full soft)</option>
             <option value="boxy" data-i18n="rail_mode_boxy">Boxy rail</option>
             <option value="down" data-i18n="rail_mode_down">Down rail</option>
-            <option value="pinched" data-i18n="rail_mode_pinched">Pinched rail</option>
+            <option value="pinched" data-i18n="rail_mode_pinched">Tapered rail (pinched)</option>
             <option value="knifey" data-i18n="rail_mode_knifey">Knifey rail</option>
-            <option value="chine" data-i18n="rail_mode_chine">Chined / beveled rail</option>
           </select>
         </label>
         <label>
-          <span data-i18n="rail_strength">Rail strength</span>
+          <span data-i18n="rail_shape_blend">Rail shape blend</span>
           <input id="railStrength" type="number" min="0" max="1" step="0.05" disabled>
         </label>
         <div class="button-row">
@@ -1102,7 +1135,7 @@
   </div>
 
   <script src="./sample-data.js?v=20260628-samples1"></script>
-  <script src="./app-downloads.js?v=20260626-ui13"></script>
-  <script src="./app.js?v=20260813-rocker-end-handles"></script>
+  <script src="./app-downloads.js?v=20260814-overwrite-brd"></script>
+  <script src="./app.js?v=20260814-simplify-outline"></script>
 </body>
 </html>

@@ -249,7 +249,9 @@ const state = {
     outline: null,
     profile: null
   },
-  controlPointPanelUpdating: false
+  controlPointPanelUpdating: false,
+  stationMeasurementUnit: "cm",
+  lengthMeasurementUnit: "cm"
 };
 
 const I18N = {
@@ -259,6 +261,10 @@ const I18N = {
     menu_file: "ファイル",
     menu_edit: "編集",
     menu_view: "表示",
+    open_blanks: "ブランクスを開く",
+    blank_manufacturer: "メーカー名",
+    blank_product: "商品名",
+    open_selected_blank: "選択したブランクスを開く",
     menu_cross_sections: "断面",
     menu_board: "ボード",
     menu_misc: "その他",
@@ -284,9 +290,8 @@ const I18N = {
     dxf_cross_section_polyline: "DXF断面 ポリライン",
     gcode_laser_outline: "レーザーカッター用Gコード",
     gcode_cnc: "CNC用Gコード",
-    save_project: "非破壊プロジェクトを保存",
-    sample_clean_round_pin: "新規ラウンドピン（非破壊）",
-    save_brd: "BRD互換形式を書き出す",
+    save_brd: "BRDを保存",
+    overwrite_brd: "上書き保存",
     save_brd_as: "BRDに名前を付けて保存",
     export_outline_otl: "アウトラインを書き出し (.otl)",
     export_profile_pfl: "プロファイルを書き出し (.pfl)",
@@ -294,8 +299,14 @@ const I18N = {
     redo: "やり直す",
     add_control_point: "コントロールポイントを追加",
     delete_control_points: "コントロールポイントを削除",
+    simplify_outline: "アウトラインを自動整理",
     outline: "アウトライン",
     profile: "プロファイル",
+    hydrodynamic_simulation: "流体シミュレーション",
+    compare_fin_a: "フィンA",
+    compare_fin_b: "フィンB",
+    compare_rail_a: "レールA",
+    compare_rail_b: "レールB",
     quad: "4分割表示",
     toolpath: "ツールパス",
     fit: "全体表示",
@@ -452,6 +463,15 @@ const I18N = {
   bottom_preset_shortboard_single_to_double: "ショートボード シングル→ダブル",
   bottom_preset_shortboard_single_to_vee: "ショートボード シングル→Vee",
   bottom_preset_performance_channel_quad: "パフォーマンス チャネルクアッド",
+  bottom_preset_rider_paddle_glide: "パドル / グライド",
+  bottom_preset_rider_balanced_control: "バランス / コントロール",
+  bottom_preset_rider_speed_drive: "スピード / ドライブ",
+  bottom_preset_rider_loose_turn: "ルーズ / クイックターン",
+  twin_fish_provisional: "ツインフィッシュ（参考開始値）",
+  twin_performance_provisional: "パフォーマンスツイン（参考開始値）",
+  bonzer_provisional: "ボンザー（参考開始値）",
+  x_from_tail: "テール基準X",
+  y_from_center_depth: "中心基準Y / 深さ",
     bottom_feature_index: "フィーチャー",
     enabled: "有効",
     bottom_feature_type: "形状タイプ",
@@ -509,11 +529,16 @@ const I18N = {
     tail_length: "テール長",
     tail_depth: "テール深さ",
     shoulder_pos: "ショルダー位置",
+    star_corner_pos: "角の位置",
     shoulder_width: "ショルダー幅",
     join_blend: "接続ブレンド",
     tail_width: "テール幅",
     set_tail: "テールを設定",
     nose_shape: "ノーズ形状",
+    nose_tip_shape: "ノーズの先端形状",
+    nose_tip_standard: "標準",
+    nose_tip_eagle: "イーグルノーズ",
+    nose_tip_beak: "ビークノーズ",
     nose_length: "ノーズ長",
     nose_width: "ノーズ幅",
     set_nose: "ノーズを設定",
@@ -521,7 +546,7 @@ const I18N = {
     none: "なし",
     custom: "カスタム",
     distance_from_tail: "テールからの距離",
-    wing_width: "ウィング幅",
+    wing_width: "ウィング後退量",
     wing_shape: "ウィング形状",
     shoulder_coeff: "ショルダー係数",
     transition_coeff: "遷移係数",
@@ -880,6 +905,8 @@ const I18N = {
     status_number_required: "数値を入力してください。",
     status_control_point_added: "コントロールポイントを追加しました。",
     status_control_point_removed: "コントロールポイントを削除しました。",
+    status_outline_simplified: "アウトラインのCPを {before} 個から {after} 個に整理しました（最大誤差 {error} mm、体積変化 {volume}%）。",
+    status_outline_already_simple: "許容誤差内で削除できるアウトラインCPはありません。",
     status_control_point_all_coords_required: "コントロールポイントの全座標に数値を入力してください。",
     status_control_point_coords_set: "コントロールポイントの座標を設定しました。",
     status_continuous_set: "連続を {value} にしました。",
@@ -934,10 +961,10 @@ const I18N = {
     bezier_native: "元のBezier",
     wing_preset_stinger: "スティンガー",
     wing_preset_wing: "ウィング",
-    wing_preset_wing_pin: "ウィングピンテール",
+    wing_preset_wing_pin: "ナローウィング（ピンテール対応）",
     wing_preset_custom: "カスタム",
-    wing_shape_bump: "バンプ",
-    wing_shape_step: "ステップ",
+    wing_shape_bump: "スムーズバンプ",
+    wing_shape_step: "シャープステップ",
     rail_shape: "レール形状",
     rail_strength: "レール強度",
     rail_mode_5050: "50/50",
@@ -945,13 +972,14 @@ const I18N = {
     rail_mode_7030: "70/30",
     rail_mode_8020: "80/20",
     rail_mode_egg: "エッグレール",
-    rail_mode_full_soft: "フルソフトレール",
+    rail_mode_full_soft: "セミボキシーレール（フルソフト）",
     rail_mode_boxy: "ボキシーレール",
     rail_mode_down: "ダウンレール",
-    rail_mode_pinched: "ピンチレール",
+    rail_mode_pinched: "テーパードレール（ピンチ）",
     rail_mode_knifey: "ナイフィーレール",
     rail_mode_chine: "チャイン / ベベルレール",
     rail_mode_tucked_edge: "タックドエッジ",
+    rail_shape_blend: "レール形状ブレンド",
     rail_mode_hard_edge: "ハードエッジ",
     set_rail: "レールを設定",
     edge_type: "エッジ種別",
@@ -1016,9 +1044,11 @@ const I18N = {
     nose_mode_diamond: "ダイヤモンドノーズ",
     nose_mode_snub: "スナブノーズ",
     nose_mode_square: "スクエアノーズ",
+    nose_extension: "ノーズ延長量",
     pane_outline: "アウトライン",
     pane_profile: "プロファイル",
     pane_cross_section: "断面",
+    rail_shape: "レール形状",
     pane_wire: "3Dワイヤー",
     scan_ghost: "スキャンゴースト",
     no_section_data: "断面データがありません",
@@ -1037,6 +1067,10 @@ I18N.en = {
   menu_file: "File",
   menu_edit: "Edit",
   menu_view: "View",
+  open_blanks: "Open blanks",
+  blank_manufacturer: "Manufacturer",
+  blank_product: "Product",
+  open_selected_blank: "Open selected blank",
   menu_cross_sections: "Cross sections",
   menu_board: "Board",
   menu_misc: "Misc",
@@ -1062,9 +1096,8 @@ I18N.en = {
   dxf_cross_section_polyline: "DXF Cross section Polyline",
   gcode_laser_outline: "G-Code Laser Outline",
   gcode_cnc: "G-Code CNC",
-  save_project: "Save lossless project",
-  sample_clean_round_pin: "New clean round pin (lossless)",
-  save_brd: "Export BRD compatibility file",
+  save_brd: "Save BRD",
+  overwrite_brd: "Overwrite BRD",
   save_brd_as: "Save BRD as",
   export_outline_otl: "Export Outline (.otl)",
   export_profile_pfl: "Export Profile (.pfl)",
@@ -1072,8 +1105,14 @@ I18N.en = {
   redo: "Redo",
   add_control_point: "Add ControlPoint",
   delete_control_points: "Delete ControlPoints",
+  simplify_outline: "Simplify outline",
   outline: "Outline",
   profile: "Profile",
+  hydrodynamic_simulation: "Hydrodynamic simulation",
+  compare_fin_a: "Fin A",
+  compare_fin_b: "Fin B",
+  compare_rail_a: "Rail A",
+  compare_rail_b: "Rail B",
   quad: "Quad",
   toolpath: "Toolpath",
   fit: "Fit",
@@ -1275,6 +1314,15 @@ I18N.en = {
   bottom_preset_shortboard_single_to_double: "Shortboard single to double",
   bottom_preset_shortboard_single_to_vee: "Shortboard single to vee",
   bottom_preset_performance_channel_quad: "Performance channel quad",
+  bottom_preset_rider_paddle_glide: "Paddle / glide",
+  bottom_preset_rider_balanced_control: "Balanced control",
+  bottom_preset_rider_speed_drive: "Speed / drive",
+  bottom_preset_rider_loose_turn: "Loose / quick turn",
+  twin_fish_provisional: "Twin fish (starting point)",
+  twin_performance_provisional: "Twin performance (starting point)",
+  bonzer_provisional: "Bonzer (starting point)",
+  x_from_tail: "X from tail",
+  y_from_center_depth: "Y from center / Depth",
   bottom_feature_index: "Feature",
   enabled: "Enabled",
   bottom_feature_type: "Feature type",
@@ -1332,18 +1380,23 @@ I18N.en = {
   tail_length: "Tail length",
   tail_depth: "Tail depth",
   shoulder_pos: "Shoulder pos",
+  star_corner_pos: "Corner position",
   shoulder_width: "Shoulder width",
   join_blend: "Join blend",
   tail_width: "Tail width",
   set_tail: "Set tail",
   nose_shape: "Nose shape",
+  nose_tip_shape: "Nose tip shape",
+  nose_tip_standard: "Standard",
+  nose_tip_eagle: "Eagle nose",
+  nose_tip_beak: "Beak nose",
   nose_length: "Nose length",
   nose_width: "Nose width",
   set_nose: "Set nose",
   wing_preset: "Wing preset",
   custom: "Custom",
   distance_from_tail: "Distance from tail",
-  wing_width: "Wing width",
+  wing_width: "Wing inset",
   wing_shape: "Wing shape",
   shoulder_coeff: "Shoulder coeff",
   transition_coeff: "Transition coeff",
@@ -1355,13 +1408,14 @@ I18N.en = {
   rail_mode_7030: "70/30",
   rail_mode_8020: "80/20",
   rail_mode_egg: "Egg rail",
-  rail_mode_full_soft: "Full soft rail",
+  rail_mode_full_soft: "Semi boxy rail (full soft)",
   rail_mode_boxy: "Boxy rail",
   rail_mode_down: "Down rail",
-  rail_mode_pinched: "Pinched rail",
+  rail_mode_pinched: "Tapered rail (pinched)",
   rail_mode_knifey: "Knifey rail",
   rail_mode_chine: "Chined / beveled rail",
   rail_mode_tucked_edge: "Tucked edge",
+  rail_shape_blend: "Rail shape blend",
   rail_mode_hard_edge: "Hard edge",
   set_rail: "Set rail",
   edge_type: "Edge type",
@@ -1659,6 +1713,8 @@ I18N.en = {
   status_number_required: "Enter a numeric value.",
   status_control_point_added: "ControlPoint added.",
   status_control_point_removed: "ControlPoint removed.",
+  status_outline_simplified: "Outline CPs reduced from {before} to {after} (max error {error} mm, volume change {volume}%).",
+  status_outline_already_simple: "No outline CP can be removed within tolerance.",
   status_control_point_all_coords_required: "Enter numeric values for all ControlPoint coordinates.",
   status_control_point_coords_set: "ControlPoint coordinates updated.",
   status_continuous_set: "Continuous set to {value}.",
@@ -1710,10 +1766,10 @@ I18N.en = {
   bezier_native: "Bezier native",
   wing_preset_stinger: "Stinger",
   wing_preset_wing: "Wing",
-  wing_preset_wing_pin: "Wing pin tail",
+  wing_preset_wing_pin: "Narrow wing (pin-tail compatible)",
   wing_preset_custom: "Custom",
-  wing_shape_bump: "Bump",
-  wing_shape_step: "Step",
+  wing_shape_bump: "Smooth bump",
+  wing_shape_step: "Sharp step",
   tail_mode_square: "Square",
   tail_mode_squash: "Squash",
   tail_mode_round: "Round",
@@ -1737,7 +1793,9 @@ I18N.en = {
   nose_mode_round: "Round nose",
   nose_mode_diamond: "Diamond nose",
   nose_mode_snub: "Snub nose",
-  nose_mode_square: "Square nose"
+  nose_mode_square: "Square nose",
+  nose_extension: "Nose extension",
+  rail_shape: "Rail shape"
 };
 
 const I18N_REVERSE = new Map();
@@ -1815,8 +1873,10 @@ const els = {
   crossSectionInput: document.getElementById("crossSectionInput"),
   sampleSelect: document.getElementById("sampleSelect"),
   sampleButton: document.getElementById("sampleButton"),
-  saveProjectButton: document.getElementById("saveProjectButton"),
+  blankManufacturerSelect: document.getElementById("blankManufacturerSelect"),
+  blankProductSelect: document.getElementById("blankProductSelect"),
   saveBrdButton: document.getElementById("saveBrdButton"),
+  overwriteBrdButton: document.getElementById("overwriteBrdButton"),
   saveBrdAsButton: document.getElementById("saveBrdAsButton"),
   exportOtlButton: document.getElementById("exportOtlButton"),
   exportPflButton: document.getElementById("exportPflButton"),
@@ -1831,6 +1891,7 @@ const els = {
   gcodeButton: document.getElementById("gcodeButton"),
   cncButton: document.getElementById("cncButton"),
   canvas: document.getElementById("canvas"),
+  stationEditor: document.getElementById("stationEditor"),
   status: document.getElementById("status"),
   appBuildVersion: document.getElementById("appBuildVersion"),
   boardName: document.getElementById("boardName"),
@@ -1889,6 +1950,7 @@ const els = {
   redoButton: document.getElementById("redoButton"),
   addControlPointButton: document.getElementById("addControlPointButton"),
   deleteControlPointButton: document.getElementById("deleteControlPointButton"),
+  simplifyOutlineButton: document.getElementById("simplifyOutlineButton"),
   nextSectionButton: document.getElementById("nextSectionButton"),
   previousSectionButton: document.getElementById("previousSectionButton"),
   addSectionButton: document.getElementById("addSectionButton"),
@@ -1929,13 +1991,21 @@ const els = {
   tailLength: document.getElementById("tailLength"),
   tailDepth: document.getElementById("tailDepth"),
   tailShoulderPos: document.getElementById("tailShoulderPos"),
+  tailShoulderPosLabel: document.getElementById("tailShoulderPosLabel"),
   tailShoulderScale: document.getElementById("tailShoulderScale"),
   tailRailBlend: document.getElementById("tailRailBlend"),
   tailWidthAdjust: document.getElementById("tailWidthAdjust"),
   tailWidthAdjustReadout: document.getElementById("tailWidthAdjustReadout"),
   setTailButton: document.getElementById("setTailButton"),
   noseMode: document.getElementById("noseMode"),
+  noseTipShape: document.getElementById("noseTipShape"),
+  simulationCompareControls: document.getElementById("simulationCompareControls"),
+  simulationFinA: document.getElementById("simulationFinA"),
+  simulationFinB: document.getElementById("simulationFinB"),
+  simulationRailA: document.getElementById("simulationRailA"),
+  simulationRailB: document.getElementById("simulationRailB"),
   noseLength: document.getElementById("noseLength"),
+  noseExtension: document.getElementById("noseExtension"),
   noseShoulderPos: document.getElementById("noseShoulderPos"),
   noseShoulderScale: document.getElementById("noseShoulderScale"),
   noseRailBlend: document.getElementById("noseRailBlend"),
@@ -2127,7 +2197,7 @@ const els = {
 };
 
 const ctx = els.canvas.getContext("2d");
-const VALID_VIEWS = Object.freeze(["outline", "profile", "sections", "quad", "toolpath", "model3d", "scan"]);
+const VALID_VIEWS = Object.freeze(["outline", "profile", "sections", "quad", "simulation", "toolpath", "model3d", "scan"]);
 const VIEW_OPTION_KEYS = Object.freeze(Object.keys(state.viewOptions));
 const BOTTOM_FEATURE_FIELD_ID = 83;
 const BOTTOM_PRESET_FIELD_ID = 84;
@@ -2137,9 +2207,19 @@ const EDGE_LENGTH_FIELD_ID = 87;
 const EDGE_FADE_FIELD_ID = 88;
 const ROCKER_PRESET_FIELD_ID = 89;
 const ROCKER_CONFIG_FIELD_ID = 90;
+const TAIL_GUN_CURVE_FIELD_ID = 91;
+const NOSE_EXTENSION_FIELD_ID = 92;
+const NOSE_GUN_CURVE_FIELD_ID = 93;
+const RAIL_MODE_FIELD_ID = 94;
+const RAIL_STRENGTH_FIELD_ID = 95;
+const NOSE_TIP_SHAPE_FIELD_ID = 96;
+const SHAPER_COMMENT_FIELD_ID = 97;
 const ROCKER_PRESET_KEYS = Object.freeze(["custom", "continuous-neutral", "relaxed-drive", "performance-curve", "staged-speed", "fish-retro-flat", "gun-continuous", "longboard-glide"]);
 const ROCKER_STATION_12_INCH_CM = 30.48;
 const ROCKER_STATION_24_INCH_CM = 60.96;
+const ROCKER_STATION_3_INCH_CM = 7.62;
+const ROCKER_STATION_6_INCH_CM = 15.24;
+const ROCKER_STATION_18_INCH_CM = 45.72;
 const ROCKER_CONFIG_DEFAULTS = Object.freeze({
   preset: "custom",
   enabled: false,
@@ -2156,7 +2236,7 @@ const ROCKER_CONFIG_DEFAULTS = Object.freeze({
   preserveDeck: false
 });
 const ROCKER_PRESET_PARAMETER_DEFAULTS = Object.freeze({
-  "continuous-neutral": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0.18, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "continuous-neutral": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
   "relaxed-drive": { entryLengthRatio: 0.27, entryLift: 0.12, middleFlatness: 0.16, tailKickLengthRatio: 0.24, tailKick: 0.08, apexShift: -0.04, blend: 0.92, preserveFoil: true, preserveDeck: false },
   "performance-curve": { entryLengthRatio: 0.2, entryLift: 0.18, middleFlatness: -0.22, tailKickLengthRatio: 0.2, tailKick: 0.18, apexShift: 0.03, blend: 1.28, preserveFoil: true, preserveDeck: false },
   "staged-speed": { entryLengthRatio: 0.18, entryLift: 0.1, middleFlatness: 0.12, tailKickLengthRatio: 0.16, tailKick: 0.16, apexShift: -0.02, blend: 0.84, preserveFoil: true, preserveDeck: false },
@@ -2164,8 +2244,20 @@ const ROCKER_PRESET_PARAMETER_DEFAULTS = Object.freeze({
   "gun-continuous": { entryLengthRatio: 0.18, entryLift: 0.2, middleFlatness: -0.38, tailKickLengthRatio: 0.18, tailKick: 0.22, apexShift: 0.05, blend: 1.4, preserveFoil: true, preserveDeck: false },
   "longboard-glide": { entryLengthRatio: 0.28, entryLift: 0.04, middleFlatness: 0.28, tailKickLengthRatio: 0.24, tailKick: 0.06, apexShift: -0.05, blend: 0.88, preserveFoil: true, preserveDeck: false }
 });
+// Greenlight Surfboard Design Guide: Typical Surfboard Rocker Numbers.
+// Published feet/inches are converted to centimeters. These are preset
+// constraints; the resolved datum-based station curve remains geometry truth.
+const ROCKER_NUMERIC_REFERENCES = Object.freeze({
+  "continuous-neutral": { boardType: "Shortboard", lengthCm: 74 * 2.54, noseCm: 5 * 2.54, tailCm: 2.5 * 2.54 },
+  "relaxed-drive": { boardType: "Modern fish", lengthCm: 72 * 2.54, noseCm: 4 * 2.54, tailCm: 2 * 2.54 },
+  "performance-curve": { boardType: "Shortboard", lengthCm: 74 * 2.54, noseCm: 5 * 2.54, tailCm: 2.5 * 2.54 },
+  "staged-speed": { boardType: "Shortboard", lengthCm: 74 * 2.54, noseCm: 5 * 2.54, tailCm: 2.5 * 2.54 },
+  "fish-retro-flat": { boardType: "Retro fish", lengthCm: 68 * 2.54, noseCm: 3.5 * 2.54, tailCm: 1.5 * 2.54 },
+  "gun-continuous": { boardType: "Gun", lengthCm: 90 * 2.54, noseCm: 6.75 * 2.54, tailCm: 2.75 * 2.54 },
+  "longboard-glide": { boardType: "HP longboard", lengthCm: 108 * 2.54, noseCm: 5.25 * 2.54, tailCm: 3.25 * 2.54 }
+});
 const BOTTOM_FEATURE_TYPES = Object.freeze(["single-concave", "double-concave", "vee", "spiral-vee", "hull", "displacement-hull", "channel"]);
-const BOTTOM_PRESET_KEYS = Object.freeze(["custom", "displacement-hull", "longboard-rolled-vee", "shortboard-single-to-double", "shortboard-single-to-vee", "performance-channel-quad"]);
+const BOTTOM_PRESET_KEYS = Object.freeze(["custom", "displacement-hull", "longboard-rolled-vee", "shortboard-single-to-double", "shortboard-single-to-vee", "performance-channel-quad", "rider-paddle-glide", "rider-balanced-control", "rider-speed-drive", "rider-loose-turn"]);
 const DOUBLE_CONCAVE_TROUGH_GAIN = 1.3;
 const BOTTOM_FEATURE_DEPTH_MAX = 0.5;
 const BOTTOM_FEATURE_RAIL_LOCK_CM = 5;
@@ -2220,12 +2312,16 @@ const ACTION_HANDLERS = Object.freeze({
   "sample": () => loadSelectedSample(),
   "sample-current": () => loadSelectedSample(),
   "sample-direct": target => loadSampleByUrl(target.dataset.sampleUrl),
-  "new-clean-round-pin": () => createCleanRoundPinSample(),
+  "open-selected-blank": async () => {
+    const url = els.blankProductSelect?.value;
+    await loadSampleByUrl(url);
+    if (state.board?.filename === sampleFilenameFromUrl(url)) keepCurrentBoardAsGhost();
+  },
   "scan-new-board": () => startScanNewBoard(),
   "pdf": () => window.downloadPdf(),
   "template-pdf": () => window.downloadTemplatePdf(),
-  "save-project": () => window.downloadBoardProject(),
   "save-brd": () => window.downloadBrd(),
+  "overwrite-brd": () => window.overwriteBrd(),
   "save-brd-as": () => window.downloadBrdAs(),
   "export-otl": () => window.downloadOtl(),
   "export-pfl": () => window.downloadPfl(),
@@ -2268,6 +2364,7 @@ const ACTION_HANDLERS = Object.freeze({
   "redo": () => redoEdit(),
   "add-controlpoint": () => addControlPoint(),
   "delete-controlpoint": () => deleteSelectedControlPoint(),
+  "simplify-outline": () => simplifyOutline(),
   "next-section": () => nextCrossSection(),
   "previous-section": () => previousCrossSection(),
   "add-section": () => promptAddCrossSection(),
@@ -2342,8 +2439,6 @@ els.fileInput.addEventListener("change", async event => {
     importProfileText(text, file.name);
   } else if (/\.csv$/i.test(file.name)) {
     importProbeMeasurementsText(text, file.name);
-  } else if (/\.boardcad\.json$/i.test(file.name) || /\.json$/i.test(file.name)) {
-    loadBoardProject(text, file.name);
   } else {
     loadBoard(text, file.name);
   }
@@ -2397,13 +2492,43 @@ document.querySelectorAll(".menu-items [data-view]").forEach(button => {
   });
 });
 
+[els.simulationFinA, els.simulationFinB, els.simulationRailA, els.simulationRailB].forEach(input => {
+  input?.addEventListener("change", () => draw());
+});
+
+els.blankManufacturerSelect?.addEventListener("change", syncBlankProductSelect);
+
+els.stationEditor?.addEventListener("change", event => {
+  const lengthUnit = event.target.closest?.("select[data-length-unit]");
+  if (lengthUnit) {
+    state.lengthMeasurementUnit = lengthUnit.value === "ft-in" ? "ft-in" : "cm";
+    syncStationEditor();
+    return;
+  }
+  const lengthInput = event.target.closest?.("input[data-length-value]");
+  if (lengthInput) {
+    const feet = Number(els.stationEditor.querySelector('[data-length-value="feet"]')?.value) || 0;
+    const inches = Number(els.stationEditor.querySelector('[data-length-value="inches"]')?.value) || 0;
+    const cm = state.lengthMeasurementUnit === "ft-in" ? ((feet * 12) + inches) * 2.54 : Number(lengthInput.value);
+    applyBoardLength(cm);
+    return;
+  }
+  const unit = event.target.closest?.("select[data-station-unit]");
+  if (unit) {
+    state.stationMeasurementUnit = unit.value === "inch" ? "inch" : "cm";
+    syncStationEditor();
+    return;
+  }
+  const input = event.target.closest?.("input[data-station-key]");
+  if (input) applyStationMeasurement(input.dataset.stationKey, input.dataset.metric, Number(input.value), state.stationMeasurementUnit);
+});
+
 document.querySelectorAll("[data-view-option]").forEach(input => {
   input.addEventListener("change", event => {
     const option = event.currentTarget.dataset.viewOption;
     state.viewOptions[option] = event.currentTarget.checked;
     draw();
     updateCanvasContextMenuState();
-    closeMenus();
   });
 });
 
@@ -2554,6 +2679,7 @@ if (els.noseMode) els.noseMode.addEventListener("change", () => {
   const preset = nosePresetForBoard(mode, state.board);
   if (!preset) {
     if (els.noseLength) els.noseLength.value = fmt(0);
+    if (els.noseExtension) els.noseExtension.value = fmt(0);
     if (els.noseShoulderPos) els.noseShoulderPos.value = fmt(0);
     if (els.noseShoulderScale) els.noseShoulderScale.value = fmt(0);
     if (els.noseRailBlend) els.noseRailBlend.value = fmt(0);
@@ -2562,6 +2688,7 @@ if (els.noseMode) els.noseMode.addEventListener("change", () => {
     return;
   }
   if (els.noseLength) els.noseLength.value = fmt(preset.length);
+  if (els.noseExtension) els.noseExtension.value = fmt(mode === "gun" ? (preset.extension ?? 50) : 0);
   if (els.noseShoulderPos) els.noseShoulderPos.value = fmt(preset.shoulderPos);
   if (els.noseShoulderScale) els.noseShoulderScale.value = fmt(preset.shoulderScale);
   if (els.noseRailBlend) els.noseRailBlend.value = fmt(preset.railBlend);
@@ -2801,16 +2928,8 @@ function loadBoard(text, filename) {
   }
 }
 
-function loadBoardProject(text, filename) {
-  try {
-    activateBoard(parseBoardProject(text, filename), t("status_board_loaded", { filename }));
-  } catch (error) {
-    console.error(error);
-    setStatus("status_load_failed", { message: error.message });
-  }
-}
-
 function activateBoard(board, status) {
+  window.resetBrdOverwriteHandle?.();
   state.board = board;
   clearRockerRuntimeBase(state.board);
   state.selection = null;
@@ -2879,8 +2998,11 @@ function createNewBoard() {
     tailRailBlend: 0,
     tailLinearization: 0,
     tailWidthAdjust: 0,
+    tailGunCurve: null,
     noseMode: "",
+    noseTipShape: "",
     noseLength: 0,
+    noseExtension: null,
     noseShoulderPos: 0,
     noseShoulderScale: 0,
     noseRailBlend: 0,
@@ -2916,100 +3038,6 @@ function createNewBoard() {
   }, t("status_new_board_created"));
 }
 
-function createCleanRoundPinSample() {
-  const length = 188;
-  const outline = splineFromPoints([
-    { x: 0, y: 0 },
-    { x: 18, y: 10 },
-    { x: 47, y: 20 },
-    { x: 94, y: 25.5 },
-    { x: 141, y: 20 },
-    { x: 170, y: 11 },
-    { x: length, y: 0 }
-  ], { lockExtremaTangents: true });
-  const bottom = splineFromPoints([
-    { x: 0, y: 4.2 },
-    { x: 47, y: 0.8 },
-    { x: 94, y: 0 },
-    { x: 141, y: 1.2 },
-    { x: length, y: 5.6 }
-  ], { lockExtremaTangents: true });
-  const deck = splineFromPoints([
-    { x: 0, y: 4.8 },
-    { x: 47, y: 4.8 },
-    { x: 94, y: 6 },
-    { x: 141, y: 5.2 },
-    { x: length, y: 6.2 }
-  ], { lockExtremaTangents: true });
-  const sectionAt = (position, halfWidth, thickness) => ({
-    position,
-    spline: makeScannedCrossSection(Math.max(0.01, halfWidth), Math.max(0.01, thickness)),
-    guidePoints: []
-  });
-  activateBoard({
-    filename: "Clean-Round-Pin.boardcad.json",
-    name: "Clean Round Pin",
-    version: "BoardCAD Web native 1",
-    fields: {},
-    length,
-    width: 51,
-    thickness: 6,
-    interpolationType: state.crossSectionInterpolation,
-    finType: "",
-    fins: Array(9).fill(0),
-    finSetup: "",
-    finToeIn: 0,
-    finCant: 0,
-    finExtra: [],
-    tailMode: "",
-    tailLength: 0,
-    tailDepth: 0,
-    tailShoulderPos: 0,
-    tailShoulderScale: 0,
-    tailRailBlend: 0,
-    tailLinearization: 0,
-    tailWidthAdjust: 0,
-    noseMode: "",
-    noseLength: 0,
-    noseShoulderPos: 0,
-    noseShoulderScale: 0,
-    noseRailBlend: 0,
-    noseLinearization: 0,
-    noseWidthAdjust: 0,
-    wingPreset: "",
-    wingPosition: 0,
-    wingWidth: 0,
-    wingShape: "",
-    wingShoulder: 0,
-    wingTransition: 0,
-    railMode: "",
-    railStrength: 1,
-    edgeType: "",
-    edgeStrength: 0,
-    edgeLength: 0,
-    edgeFade: 0,
-    bottomPreset: "custom",
-    bottomFeatures: [],
-    rockerPreset: "custom",
-    rockerConfig: defaultRockerConfig("custom"),
-    outlineGuidePoints: [],
-    bottomGuidePoints: [],
-    deckGuidePoints: [],
-    outline,
-    bottom,
-    deck,
-    sections: [
-      sectionAt(0, 0.01, 0.6),
-      sectionAt(18, 10, 2.4),
-      sectionAt(47, 20, 4),
-      sectionAt(94, 25.5, 6),
-      sectionAt(141, 20, 4),
-      sectionAt(170, 11, 2.2),
-      sectionAt(length, 0.01, 0.6)
-    ]
-  }, "新しい非破壊ラウンドピンサンプルを作成しました。");
-}
-
 function loadGhostBoard(text, filename) {
   try {
     const ghostBoard = parseBrd(text, filename);
@@ -3040,9 +3068,60 @@ function openGhostBoardFilePicker() {
   els.ghostFileInput.click();
 }
 
+function keepCurrentBoardAsGhost() {
+  if (!state.board) return;
+  state.ghost.board = cloneBoard(state.board);
+  state.ghost.offsetX = 0;
+  state.ghost.offsetY = 0;
+  state.ghost.rotation = 0;
+  state.ghost.active = false;
+  state.viewOptions.showGhostBoard = true;
+  syncViewOptionInputs();
+  updateInfo();
+  draw();
+}
+
 async function loadSelectedSample() {
   const sampleUrl = els.sampleSelect.value || "./Shortboard.brd";
   await loadSampleByUrl(sampleUrl);
+}
+
+let blankCatalog = [];
+
+function syncBlankProductSelect() {
+  if (!els.blankProductSelect) return;
+  const manufacturer = els.blankManufacturerSelect?.value || "";
+  const products = blankCatalog.filter(item => item.manufacturer === manufacturer);
+  const options = products.map(item => {
+    const option = document.createElement("option");
+    option.value = `./${item.filename}`;
+    option.textContent = item.name;
+    return option;
+  });
+  if (els.blankProductSelect.replaceChildren) els.blankProductSelect.replaceChildren(...options);
+  else els.blankProductSelect.children.splice(0, els.blankProductSelect.children.length, ...options);
+}
+
+async function loadBlankCatalog() {
+  if (!els.blankManufacturerSelect || !els.blankProductSelect) return;
+  try {
+    const response = await fetch("./blanks/us-blanks/catalog.json");
+    if (!response.ok) return;
+    blankCatalog = JSON.parse(await response.text());
+    const manufacturers = [...new Set(blankCatalog.map(item => item.manufacturer))];
+    const options = manufacturers.map(name => {
+      const option = document.createElement("option");
+      option.value = name;
+      option.textContent = name;
+      return option;
+    });
+    if (els.blankManufacturerSelect.replaceChildren) els.blankManufacturerSelect.replaceChildren(...options);
+    else els.blankManufacturerSelect.children.splice(0, els.blankManufacturerSelect.children.length, ...options);
+    els.blankManufacturerSelect.value = manufacturers[0] || "";
+    syncBlankProductSelect();
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 function bundledSampleText(sampleUrl) {
@@ -3389,7 +3468,9 @@ function makeScanReferenceBoard() {
   tailLinearization: 0,
   tailWidthAdjust: 0,
   noseMode: "",
+  noseTipShape: "",
   noseLength: 0,
+  noseExtension: null,
   noseShoulderPos: 0,
   noseShoulderScale: 0,
   noseRailBlend: 0,
@@ -4460,7 +4541,9 @@ function boardFromProbeMeasurements(measurements) {
     tailLinearization: 0,
     tailWidthAdjust: 0,
     noseMode: "",
+    noseTipShape: "",
     noseLength: 0,
+    noseExtension: null,
     noseShoulderPos: 0,
     noseShoulderScale: 0,
     noseRailBlend: 0,
@@ -4666,32 +4749,6 @@ function splineFromPoints(points, options = {}) {
   });
 }
 
-function splineFromFunctionAtXs(xs, valueAt, domainLength, options = {}) {
-  const sorted = sortedUnique(xs, 0.001);
-  const zeroSlopeXs = Array.isArray(options.zeroSlopeXs) ? options.zeroSlopeXs : [];
-  const values = sorted.map(valueAt);
-  const slopes = sorted.map((x, index) => {
-    if (zeroSlopeXs.some(value => Math.abs(value - x) <= 0.001)) return 0;
-    const h = Math.max(0.01, domainLength * 0.005);
-    const left = Math.max(0, x - h);
-    const right = Math.min(domainLength, x + h);
-    return right > left ? (valueAt(right) - valueAt(left)) / (right - left) : 0;
-  });
-  return sorted.map((x, index) => {
-    const y = values[index];
-    const slope = slopes[index];
-    const prevDx = index > 0 ? (x - sorted[index - 1]) / 3 : 0;
-    const nextDx = index < sorted.length - 1 ? (sorted[index + 1] - x) / 3 : 0;
-    return {
-      p: { x, y },
-      prev: { x: x - prevDx, y: y - (slope * prevDx) },
-      next: { x: x + nextDx, y: y + (slope * nextDx) },
-      continuous: true,
-      other: false
-    };
-  });
-}
-
 function splineFromOrderedPoints(points) {
   const ordered = dedupeConsecutivePoints(points.map(point => ({ x: point.x, y: point.y })));
   return ordered.map((point, index) => {
@@ -4699,10 +4756,73 @@ function splineFromOrderedPoints(points) {
     const next = ordered[Math.min(ordered.length - 1, index + 1)];
     const dx = (next.x - prev.x) / 6;
     const dy = (next.y - prev.y) / 6;
-    return {
+    const knot = {
       p: { x: point.x, y: point.y },
       prev: index === 0 ? { x: point.x, y: point.y } : { x: point.x - dx, y: point.y - dy },
       next: index === ordered.length - 1 ? { x: point.x, y: point.y } : { x: point.x + dx, y: point.y + dy },
+      continuous: true,
+      other: false
+    };
+    const verticalStepBefore = index > 0
+      && Math.abs(prev.x - point.x) <= 1e-7
+      && Math.abs(prev.y - point.y) > 1e-7;
+    const verticalStepAfter = index < ordered.length - 1
+      && Math.abs(next.x - point.x) <= 1e-7
+      && Math.abs(next.y - point.y) > 1e-7;
+    if (verticalStepBefore || verticalStepAfter) {
+      // A wing/flyer step is an intentional topology break. Keep each handle
+      // inside its own adjacent segment instead of averaging through the two
+      // coincident-x anchors, which can round the corner or create a loop.
+      if (index > 0) {
+        knot.prev = {
+          x: point.x - ((point.x - prev.x) / 3),
+          y: point.y - ((point.y - prev.y) / 3)
+        };
+      }
+      if (index < ordered.length - 1) {
+        knot.next = {
+          x: point.x + ((next.x - point.x) / 3),
+          y: point.y + ((next.y - point.y) / 3)
+        };
+      }
+      knot.continuous = false;
+    }
+    return knot;
+  });
+}
+
+function monotoneGraphSplineFromPoints(points) {
+  const ordered = points.slice().sort((a, b) => a.x - b.x);
+  if (ordered.length < 2) return splineFromPoints(ordered);
+  const secants = ordered.slice(0, -1).map((point, index) => {
+    const next = ordered[index + 1];
+    return (next.y - point.y) / Math.max(1e-9, next.x - point.x);
+  });
+  const slopes = ordered.map((point, index) => {
+    if (index === 0) return secants[0];
+    if (index === ordered.length - 1) return secants.at(-1);
+    const left = secants[index - 1];
+    const right = secants[index];
+    if (left * right <= 0) return 0;
+    const leftSpan = ordered[index].x - ordered[index - 1].x;
+    const rightSpan = ordered[index + 1].x - ordered[index].x;
+    const w1 = (2 * rightSpan) + leftSpan;
+    const w2 = rightSpan + (2 * leftSpan);
+    return (w1 + w2) / ((w1 / left) + (w2 / right));
+  });
+  secants.forEach((secant, index) => {
+    const limited = clampMonotoneHermiteSegmentSlopes(Math.abs(secant), Math.abs(slopes[index]), Math.abs(slopes[index + 1]));
+    const sign = Math.sign(secant);
+    slopes[index] = limited[0] * sign;
+    slopes[index + 1] = limited[1] * sign;
+  });
+  return ordered.map((point, index) => {
+    const previousSpan = index > 0 ? point.x - ordered[index - 1].x : 0;
+    const nextSpan = index < ordered.length - 1 ? ordered[index + 1].x - point.x : 0;
+    return {
+      p: { ...point },
+      prev: index === 0 ? { ...point } : { x: point.x - (previousSpan / 3), y: point.y - (slopes[index] * previousSpan / 3) },
+      next: index === ordered.length - 1 ? { ...point } : { x: point.x + (nextSpan / 3), y: point.y + (slopes[index] * nextSpan / 3) },
       continuous: true,
       other: false
     };
@@ -4746,6 +4866,7 @@ function setView(view) {
   document.querySelectorAll(".tab").forEach(tab => {
     tab.classList.toggle("active", tab.dataset.view === view);
   });
+  if (els.simulationCompareControls) els.simulationCompareControls.hidden = view !== "simulation";
   if ((view === "outline" || view === "profile") && els.traceTarget) {
     els.traceTarget.value = view;
     syncTracePanel();
@@ -4755,6 +4876,7 @@ function setView(view) {
   updateEditInfo();
   updateHistoryButtons();
   sync3DMouseBridgeActivity();
+  syncStationEditor();
   draw();
 }
 
@@ -5634,7 +5756,9 @@ function parseBrd(text, filename) {
     tailLinearization: 0,
     tailWidthAdjust: 0,
     noseMode: "",
+    noseTipShape: "",
     noseLength: 0,
+    noseExtension: null,
     noseShoulderPos: 0,
     noseShoulderScale: 0,
     noseRailBlend: 0,
@@ -5695,6 +5819,7 @@ function parseBrd(text, filename) {
     if (id.id === 72) board.wingShoulder = numberAfterColon(line);
     if (id.id === 73) board.wingTransition = numberAfterColon(line);
     if (id.id === 75) board.noseMode = normalizeNoseModeKey(valueAfterColon(line));
+    if (id.id === NOSE_TIP_SHAPE_FIELD_ID) board.noseTipShape = normalizeNoseTipShape(valueAfterColon(line));
     if (id.id === 76) board.noseLength = numberAfterColon(line);
     if (id.id === 77) board.noseShoulderPos = numberAfterColon(line);
     if (id.id === 78) board.noseShoulderScale = numberAfterColon(line);
@@ -5702,6 +5827,11 @@ function parseBrd(text, filename) {
     if (id.id === 80) board.noseLinearization = numberAfterColon(line);
     if (id.id === 81) board.tailWidthAdjust = numberAfterColon(line);
     if (id.id === 82) board.noseWidthAdjust = numberAfterColon(line);
+    if (id.id === NOSE_EXTENSION_FIELD_ID) board.noseExtension = numberAfterColon(line);
+    if (id.id === NOSE_GUN_CURVE_FIELD_ID) board.noseGunCurve = parseTailGunCurve(valueAfterColon(line));
+    if (id.id === RAIL_MODE_FIELD_ID) board.railMode = normalizeRailModeKey(valueAfterColon(line));
+    if (id.id === RAIL_STRENGTH_FIELD_ID) board.railStrength = numberAfterColon(line);
+    if (id.id === TAIL_GUN_CURVE_FIELD_ID) board.tailGunCurve = parseTailGunCurve(valueAfterColon(line));
     if (id.id === EDGE_TYPE_FIELD_ID) board.edgeType = normalizeEdgeTypeKey(valueAfterColon(line));
     if (id.id === EDGE_STRENGTH_FIELD_ID) board.edgeStrength = numberAfterColon(line);
     if (id.id === EDGE_LENGTH_FIELD_ID) board.edgeLength = numberAfterColon(line);
@@ -5771,23 +5901,46 @@ function boardCadLength(board) {
 }
 
 const TAIL_MODE_PRESETS = {
-  square: { length: 5.0, depth: 0, tipRatio: 0, tipScale: 1.0, cornerScale: 0.98, shoulderPos: 0.32, shoulderScale: 0.99, railBlend: 0.7, linearization: 0, tipSlopeFactor: 1, shoulderSlopeFactor: 1, joinSlopeMix: 1, joinSlopeFactor: 1, tipBow: 0, railBow: 0 },
+  square: { length: 5.0, depth: 0, tipRatio: 0, tipScale: 1.0, cornerScale: 1.0, shoulderPos: 0.32, shoulderScale: 1.0, railBlend: 0.7, linearization: 0, tipSlopeFactor: 1, shoulderSlopeFactor: 1, joinSlopeMix: 1, joinSlopeFactor: 1, tipBow: 0, railBow: 0 },
   squash: { length: 8.8, depth: 0, tipRatio: 1.0, tipScale: 0.78, shoulderPos: 0.42, shoulderScale: 0.86, railBlend: 0.88, linearization: 0, tipSlopeFactor: 1.12, shoulderSlopeFactor: 0.92, joinSlopeMix: 0.22, joinSlopeFactor: 0.88, tipBow: 0.05, railBow: 0.1 },
   round: { length: 26.0, depth: 0, tipRatio: 0.88, tipScale: 0.34, shoulderPos: 0.62, shoulderScale: 0.74, railBlend: 0.86, linearization: 0, tipSlopeFactor: 0.96, shoulderSlopeFactor: 1.0, joinSlopeMix: 0.26, joinSlopeFactor: 0.9, tipBow: 0.08, railBow: 0.12 },
   "rounded-square": { length: 6.9, depth: 0, tipRatio: 0.28, tipScale: 0.86, shoulderPos: 0.46, shoulderScale: 0.94, railBlend: 0.78, linearization: 0, tipSlopeFactor: 0.78, shoulderSlopeFactor: 1.0, joinSlopeMix: 0.24, joinSlopeFactor: 0.9, tipBow: 0.07, railBow: 0.1 },
   gun: { length: 22.0, depth: 0, tipRatio: 1.0, tipScale: 0, shoulderPos: 0.82, shoulderScale: 0.66, railBlend: 1.0, linearization: 0, tipSlopeFactor: 0.72, shoulderSlopeFactor: 0.96, joinSlopeMix: 0.85, joinSlopeFactor: 1.0, tipBow: 0, railBow: 0.02 },
   pin: { length: 35.25, depth: 0, tipRatio: 1.0, tipScale: 0, shoulderPos: 0.74, shoulderScale: 0.34, railBlend: 1.0, linearization: 0, tipSlopeFactor: 0.44, shoulderSlopeFactor: 0.76, joinSlopeMix: 0.12, joinSlopeFactor: 0.96, tipBow: 0, railBow: 0 },
   "round-pin": { length: 32.0, depth: 0, tipRatio: 0.82, tipScale: 0, shoulderPos: 0.6, shoulderScale: 0.52, railBlend: 0.92, linearization: 0, tipSlopeFactor: 0.68, shoulderSlopeFactor: 0.72, joinSlopeMix: 0.08, joinSlopeFactor: 0.86, tipBow: 0.14, railBow: 0.12, outerMode: "round-pin" },
-  diamond: { length: 7.0, depth: 0, tipRatio: 0.38, tipScale: 0.12, shoulderPos: 0.5, shoulderScale: 0.48, railBlend: 0.8, linearization: 0, tipSlopeFactor: 0.72, shoulderSlopeFactor: 0.44, joinSlopeMix: 0.04, joinSlopeFactor: 0.64, tipBow: 0.01, railBow: 0.02, outerMode: "diamond" },
-  "rounded-diamond": { length: 7.2, depth: 0, tipRatio: 0.48, tipScale: 0.3, shoulderPos: 0.56, shoulderScale: 0.62, railBlend: 0.84, linearization: 0, tipSlopeFactor: 0.76, shoulderSlopeFactor: 0.66, joinSlopeMix: 0.1, joinSlopeFactor: 0.78, tipBow: 0.04, railBow: 0.1, outerMode: "rounded-diamond" },
+  diamond: { length: 7.0, depth: 0, tipRatio: 0.38, tipScale: 0, shoulderPos: 0.5, shoulderScale: 0.48, railBlend: 0.8, linearization: 0, tipSlopeFactor: 0.72, shoulderSlopeFactor: 0.44, joinSlopeMix: 0.04, joinSlopeFactor: 0.64, tipBow: 0.01, railBow: 0.02, outerMode: "diamond" },
+  "rounded-diamond": { length: 7.2, depth: 0, tipRatio: 0.48, tipScale: 0, shoulderPos: 0.56, shoulderScale: 0.62, railBlend: 0.84, linearization: 0, tipSlopeFactor: 0.76, shoulderSlopeFactor: 0.66, joinSlopeMix: 0.1, joinSlopeFactor: 0.78, tipBow: 0.04, railBow: 0.1, outerMode: "rounded-diamond" },
   rocket: { length: 8.0, depth: 0, tipRatio: 0.92, tipScale: 0, shoulderPos: 0.66, shoulderScale: 0.48, railBlend: 0.98, linearization: 0, tipSlopeFactor: 0.72, shoulderSlopeFactor: 0.9, joinSlopeMix: 0.18, joinSlopeFactor: 0.96 },
   "half-moon": { length: 6.8, depth: 1.9, tipRatio: 0.24, tipScale: 0.82, shoulderPos: 0.42, shoulderScale: 0.88, railBlend: 0.8, linearization: 0, tipSlopeFactor: 0.82, shoulderSlopeFactor: 0.92, joinSlopeMix: 0.24, joinSlopeFactor: 0.9, innerPower: 1.6, tipBow: 0.04, railBow: 0.08 },
   swallow: { length: 38.0, cutLength: 16.0, depth: 7.0, tipRatio: 0, tipScale: 1.0, cornerScale: 0.512, shoulderPos: 0.36, shoulderScale: 0.9, railBlend: 0.86, linearization: 0, tipSlopeFactor: 0.68, shoulderSlopeFactor: 0.78, joinSlopeMix: 0.34, joinSlopeFactor: 0.78, innerPower: 1.3, tipBow: 0.03, railBow: 0.18 },
   fish: { length: 42.0, cutLength: 18.0, depth: 12.0, tipRatio: 0, tipScale: 1.0, cornerScale: 0.72, shoulderPos: 0.28, shoulderScale: 0.94, railBlend: 0.82, linearization: 0, tipSlopeFactor: 0.62, shoulderSlopeFactor: 0.78, joinSlopeMix: 0.28, joinSlopeFactor: 0.72, innerPower: 1.08, tipBow: 0.05, railBow: 0.24 },
   split: { length: 8.8, depth: 4.6, tipRatio: 0.34, tipScale: 0.16, shoulderPos: 0.44, shoulderScale: 0.62, railBlend: 0.82, linearization: 0, tipSlopeFactor: 0.92, shoulderSlopeFactor: 0.92, joinSlopeMix: 0.3, joinSlopeFactor: 0.88, innerPower: 1.45, tipBow: 0.06, railBow: 0.12 },
-  star: { length: 8.8, depth: 4.6, tipRatio: 0.34, tipScale: 0.16, shoulderPos: 0.44, shoulderScale: 0.62, railBlend: 0.82, linearization: 0, tipSlopeFactor: 0.92, shoulderSlopeFactor: 0.92, joinSlopeMix: 0.3, joinSlopeFactor: 0.88, innerPower: 1.45, tipBow: 0.06, railBow: 0.12 },
-  bat: { length: 9.2, depth: 4.2, tipRatio: 0.62, tipScale: 0.42, shoulderPos: 0.56, shoulderScale: 0.68, railBlend: 0.9, linearization: 0, tipSlopeFactor: 0.86, shoulderSlopeFactor: 0.96, joinSlopeMix: 0.34, joinSlopeFactor: 0.92, innerPower: 1.25, tipBow: 0.04, railBow: 0.1 }
+  star: { length: 8.8, depth: 4.6, tipRatio: 0.34, tipScale: 0.16, shoulderPos: 0.86, shoulderScale: 0.62, railBlend: 0.82, linearization: 0, tipSlopeFactor: 0.92, shoulderSlopeFactor: 0.92, joinSlopeMix: 0.3, joinSlopeFactor: 0.88, innerPower: 1.45, tipBow: 0.06, railBow: 0.12 },
+  bat: { length: 9.2, depth: 2.4, tipRatio: 0.45652173913043476, tipScale: 0.42, shoulderPos: 0.56, shoulderScale: 0.68, railBlend: 0.9, linearization: 0, tipSlopeFactor: 0.86, shoulderSlopeFactor: 0.96, joinSlopeMix: 0.34, joinSlopeFactor: 0.92, innerPower: 1.25, tipBow: 0.04, railBow: 0.1 }
 };
+
+const CANONICAL_TAIL_TOPOLOGY_BY_MODE = Object.freeze({
+  square: "tail.solid_block",
+  "rounded-square": "tail.solid_block",
+  squash: "tail.solid_rounded",
+  round: "tail.solid_rounded",
+  gun: "tail.solid_pointed",
+  pin: "tail.solid_pointed",
+  "round-pin": "tail.solid_pointed",
+  rocket: "tail.solid_pointed",
+  diamond: "tail.solid_pointed",
+  "rounded-diamond": "tail.solid_pointed",
+  swallow: "tail.center_notched",
+  fish: "tail.center_notched",
+  split: "tail.center_notched",
+  "half-moon": "tail.center_notched",
+  bat: "tail.multi_lobed",
+  star: "tail.multi_lobed"
+});
+
+function canonicalTailTopology(mode) {
+  return CANONICAL_TAIL_TOPOLOGY_BY_MODE[normalizeTailModeKey(mode)] || null;
+}
 
 const EMPIRICAL_TAIL_WIDTH_TARGETS = {
   diamond: { x70Ratio: 0.111, sampleCount: 1 },
@@ -5798,7 +5951,7 @@ const EMPIRICAL_TAIL_WIDTH_TARGETS = {
 };
 
 const NOSE_MODE_PRESETS = {
-  gun: { length: 24.0, shoulderPos: 0.82, shoulderScale: 0.62, railBlend: 1.0, linearization: 0 },
+  gun: { length: 45.0, extension: 50.0, shoulderPos: 0.62, shoulderScale: 0.62, railBlend: 1.0, linearization: 0 },
   pin: { length: 18.0, shoulderPos: 0.72, shoulderScale: 0.55, railBlend: 0.96, linearization: 0 },
   "round-point": { length: 13.0, shoulderPos: 0.64, shoulderScale: 0.62, railBlend: 0.9, linearization: 0 },
   wide: { length: 10.0, shoulderPos: 0.58, shoulderScale: 0.78, railBlend: 0.86, linearization: 0 },
@@ -5830,6 +5983,50 @@ function normalizeNoseModeKey(value) {
   if (key === "snub-nose" || key === "round-square" || key === "rounded-square") return "snub";
   if (key === "square-nose") return "square";
   return NOSE_MODE_PRESETS[key] ? key : "";
+}
+
+function normalizeNoseTipShape(value) {
+  const key = String(value || "").trim().toLowerCase();
+  if (key === "eagle" || key === "eagle-nose") return "eagle";
+  if (key === "beak" || key === "beak-nose" || key === "beaked") return "beak";
+  return "";
+}
+
+function noseTipDeckLift(board, pos) {
+  const shape = normalizeNoseTipShape(board?.noseTipShape);
+  const length = Math.max(0, Number(board?.length) || 0);
+  if (!shape || !(length > 0)) return 0;
+  if (Number(pos) >= length - 1e-9) return 0;
+  const range = Math.min(ROCKER_STATION_12_INCH_CM, length * 0.2);
+  const u = clampNumber((Number(pos) - (length - range)) / Math.max(0.01, range), 0, 1, 0);
+  if (u <= 0 || u >= 1) return 0;
+  const thickness = Math.max(0.1, Number(board?.thickness) || 1);
+  if (shape === "eagle") {
+    const rise = smootherstep01(u / 0.584);
+    const tipHold = u <= 0.584 ? 1 : lerp(1, 0.82, smootherstep01((u - 0.584) / 0.382));
+    const close = smootherstep01((1 - u) / 0.034);
+    return thickness * 0.10 * rise * tipHold * close;
+  }
+  return thickness * 0.14 * smootherstep01(u / 0.55) * smootherstep01((1 - u) / 0.22);
+}
+
+function buildNoseTipDeckSpline(board, baseDeck, shape = board?.noseTipShape) {
+  const key = normalizeNoseTipShape(shape);
+  let deck = boardCadCloneKnots(baseDeck || []);
+  if (!key || deck.length < 2) return deck;
+  const length = Math.max(0, Number(board?.length) || 0);
+  const range = Math.min(ROCKER_STATION_12_INCH_CM, length * 0.2);
+  // Reference eaglenose.brd: characteristic deck CPs sit 20.9, 12.7 and
+  // 1.0 cm behind a 228.6 cm nose tip (normalized to the final 12 inches).
+  const stations = key === "eagle" ? [0.314, 0.584, 0.966] : [0.35, 0.62, 0.82];
+  stations.forEach(u => { deck = insertHalfSplineKnotAtX(deck, length - range + (range * u)); });
+  deck.forEach(knot => {
+    ["p", "prev", "next"].forEach(pointKey => {
+      knot[pointKey].y += noseTipDeckLift({ ...board, noseTipShape: key }, knot[pointKey].x);
+    });
+    knot.continuous = true;
+  });
+  return deck;
 }
 
 function nosePresetForBoard(mode, board) {
@@ -6154,6 +6351,111 @@ function serializeRockerConfig(config, preset = "") {
 function smoothStep01(value) {
   const t = clamp01(value);
   return t * t * (3 - (2 * t));
+}
+
+function rockerSmootherStep01(value) {
+  const t = clamp01(value);
+  return t * t * t * ((t * ((t * 6) - 15)) + 10);
+}
+
+function rockerBlendProgress(value, blend = 1) {
+  const base = rockerSmootherStep01(value);
+  const normalizedBlend = clampNumber(blend, 0.1, 4, 1);
+  if (Math.abs(normalizedBlend - 1) <= 1e-9) return base;
+  const amount = clamp01(Math.abs(Math.log(normalizedBlend)) / Math.log(4));
+  const shaped = normalizedBlend > 1
+    ? rockerSmootherStep01(base)
+    : 1 - rockerSmootherStep01(1 - base);
+  return lerp(base, shaped, amount);
+}
+
+function hermiteInterpolate01(y0, y1, m0, m1, u) {
+  const t = clamp01(u);
+  const t2 = t * t;
+  const t3 = t2 * t;
+  const h00 = (2 * t3) - (3 * t2) + 1;
+  const h10 = t3 - (2 * t2) + t;
+  const h01 = (-2 * t3) + (3 * t2);
+  const h11 = t3 - t2;
+  return (h00 * y0) + (h10 * m0) + (h01 * y1) + (h11 * m1);
+}
+
+function rockerCenterFlatWindow(length, apexX, flatness) {
+  // `Flatness` is a curvature target, never a literal straight plateau. A
+  // hard flat window necessarily creates curvature breaks at its boundaries.
+  const flatHalfSpan = 0;
+  const start = apexX;
+  const end = apexX;
+  return {
+    start,
+    end,
+    halfSpan: flatHalfSpan,
+    active: end > start + 1e-6
+  };
+}
+
+function straightenSplineWindow(knots, startX, endX) {
+  if (!Array.isArray(knots) || knots.length < 2) return knots;
+  const start = Math.min(startX, endX);
+  const end = Math.max(startX, endX);
+  const indices = [];
+  for (let i = 0; i < knots.length; i++) {
+    const x = Number(knots[i]?.p?.x);
+    if (Number.isFinite(x) && x >= start - 1e-6 && x <= end + 1e-6) indices.push(i);
+  }
+  if (indices.length < 2) return knots;
+  const setLinearSegment = (left, right) => {
+    if (!left || !right) return;
+    const dx = right.p.x - left.p.x;
+    const dy = right.p.y - left.p.y;
+    left.next = {
+      x: left.p.x + (dx / 3),
+      y: left.p.y + (dy / 3)
+    };
+    right.prev = {
+      x: right.p.x - (dx / 3),
+      y: right.p.y - (dy / 3)
+    };
+    left.continuous = true;
+    right.continuous = true;
+  };
+  const firstIndex = indices[0];
+  const lastIndex = indices[indices.length - 1];
+  if (firstIndex > 0) setLinearSegment(knots[firstIndex - 1], knots[firstIndex]);
+  for (let i = 0; i < indices.length - 1; i++) {
+    setLinearSegment(knots[indices[i]], knots[indices[i + 1]]);
+  }
+  if (lastIndex < knots.length - 1) setLinearSegment(knots[lastIndex], knots[lastIndex + 1]);
+  return knots;
+}
+
+function fairRockerApexJoin(knots, apexX) {
+  if (!Array.isArray(knots) || knots.length < 3) return knots;
+  const index = knots.reduce((best, knot, knotIndex) => (
+    Math.abs(knot.p.x - apexX) < Math.abs(knots[best].p.x - apexX) ? knotIndex : best
+  ), 0);
+  if (index <= 0 || index >= knots.length - 1) return knots;
+  const previous = knots[index - 1];
+  const apex = knots[index];
+  const next = knots[index + 1];
+  const leftBend = Math.abs((previous.next?.y ?? apex.p.y) - apex.p.y);
+  const rightBend = Math.abs((next.prev?.y ?? apex.p.y) - apex.p.y);
+  const leftSpan = Math.max(1e-6, apex.p.x - previous.p.x);
+  const rightSpan = Math.max(1e-6, next.p.x - apex.p.x);
+  let leftHandle = Math.min(leftSpan * 0.46, Math.max(0.01, apex.p.x - apex.prev.x));
+  let rightHandle = Math.min(rightSpan * 0.46, Math.max(0.01, apex.next.x - apex.p.x));
+  if (leftBend > 1e-9 && rightBend > 1e-9) {
+    // For horizontal endpoint tangents, signed curvature is proportional to
+    // adjacent control-point rise divided by squared handle length.
+    const ratio = Math.sqrt(leftBend / rightBend); // leftHandle / rightHandle
+    const total = leftHandle + rightHandle;
+    leftHandle = Math.min(leftSpan * 0.46, total * ratio / (1 + ratio));
+    rightHandle = Math.min(rightSpan * 0.46, leftHandle / ratio);
+  }
+  apex.prev = { x: apex.p.x - leftHandle, y: apex.p.y };
+  apex.next = { x: apex.p.x + rightHandle, y: apex.p.y };
+  apex.continuous = true;
+  return knots;
 }
 
 function bottomFeatureBlendRamp01(value, blend = 1) {
@@ -7528,9 +7830,11 @@ function updateBottomFeatureDragUI(selectedIndex = bottomFeatureSelectionIndex()
 }
 
 const WING_PRESETS = {
-  stinger: { distanceRatioFromTail: 1 / 3, width: 2.5, shape: "bump", blendLength: 5.2, shoulder: 0.16, transition: 0.8 },
+  // The 1974 Aipa Sting is defined by an abrupt wing that pulls in the rear
+  // third. The later high-bump evolution remains available through `wing`.
+  stinger: { distanceRatioFromTail: 1 / 3, width: 2.5, shape: "step", blendLength: 0, shoulder: 0, transition: 0 },
   wing: { distance: 30, width: 1.45, shape: "bump", blendLength: 6.4, shoulder: 0.26, transition: 1.0 },
-  "wing-pin": { distance: 23, width: 1.15, shape: "bump", blendLength: 5.0, shoulder: 0.18, transition: 0.88 }
+  "wing-pin": { distanceRatioFromTail: 0.125, width: 1.15, shape: "bump", blendLength: 5.0, shoulder: 0.18, transition: 0.88 }
 };
 
 function tailModeUsesDepth(mode) {
@@ -7541,7 +7845,7 @@ function tailModeUsesDepth(mode) {
 function normalizeWingPresetKey(value) {
   const key = String(value || "").trim().toLowerCase();
   if (!key || key === "none") return "";
-  if (key === "wingpin" || key === "wing-pin-tail" || key === "wingpintail" || key === "wing pin tail") return "wing-pin";
+  if (key === "narrow-wing" || key === "narrow wing" || key === "wingpin" || key === "wing-pin-tail" || key === "wingpintail" || key === "wing pin tail") return "wing-pin";
   return key === "custom" || WING_PRESETS[key] ? key : "";
 }
 
@@ -7662,6 +7966,11 @@ function smoothstep01(value) {
   return t * t * (3 - (2 * t));
 }
 
+function smootherstep01(value) {
+  const t = clamp01(value);
+  return t * t * t * ((t * ((t * 6) - 15)) + 10);
+}
+
 function normalizedWingConfig(board, baseHalfPoints = null) {
   const presetKey = normalizeWingPresetKey(board?.wingPreset);
   const rawDistance = Number(board?.wingPosition);
@@ -7763,7 +8072,9 @@ function wingOffsetAtX(wing, x) {
   if (x <= wing.distance) return wing.width;
   if (wing.shape !== "bump" || x >= wing.endX) return 0;
   if (x <= wing.shoulderX) return wing.width;
-  return wing.width * (1 - smoothstep01((x - wing.shoulderX) / Math.max(1e-9, wing.endX - wing.shoulderX)));
+  // Bump wings are curvature features rather than corners. Quintic blending
+  // rejoins the native rail line with zero slope and curvature at both ends.
+  return wing.width * (1 - smootherstep01((x - wing.shoulderX) / Math.max(1e-9, wing.endX - wing.shoulderX)));
 }
 
 function wingAdjustedOutlineHalfPoints(board, segments = getSegments()) {
@@ -7845,6 +8156,53 @@ function widthAdjustPercent(value) {
   return Math.round(widthAdjustScale(value) * 100);
 }
 
+function greenlightFishTailDimensions(tailWidthCm) {
+  const tailWidthIn = Math.max(0, Number(tailWidthCm) || 0) / 2.54;
+  if (!(tailWidthIn > 0)) return { tipSeparation: 0, notchDepth: 0 };
+  const tipSeparationIn = (Math.sqrt((tailWidthIn * 3.23) + 2.82) + 1.68) / 0.749;
+  return {
+    tipSeparation: tipSeparationIn * 2.54,
+    // The worked example on the cited guide uses 0.47 (the preceding prose
+    // says 0.49). Preserve the demonstrated construction ratio explicitly.
+    notchDepth: tipSeparationIn * 0.47 * 2.54
+  };
+}
+
+const LIS_FISH_REFERENCE = Object.freeze({ lengthCm: 65 * 2.54, widthCm: 21 * 2.54, stationIntervalCm: 12 * 2.54 });
+
+function swaylocksFishTemplateScale(targetLengthCm, targetWidthCm, options = {}) {
+  const referenceLength = Math.max(1e-9, Number(options.referenceLengthCm) || LIS_FISH_REFERENCE.lengthCm);
+  const referenceWidth = Math.max(1e-9, Number(options.referenceWidthCm) || LIS_FISH_REFERENCE.widthCm);
+  const referenceStationInterval = Math.max(1e-9, Number(options.referenceStationIntervalCm) || LIS_FISH_REFERENCE.stationIntervalCm);
+  const lengthScale = Math.max(0.01, (Number(targetLengthCm) || referenceLength) / referenceLength);
+  const widthScale = Math.max(0.01, (Number(targetWidthCm) || referenceWidth) / referenceWidth);
+  return {
+    lengthScale,
+    widthScale,
+    stationIntervalCm: referenceStationInterval * lengthScale,
+    scaleStation(station) {
+      return {
+        x: Number(station?.x || 0) * lengthScale,
+        halfWidth: Number(station?.halfWidth || 0) * widthScale
+      };
+    }
+  };
+}
+
+function resolvedFishDesignDimensions(board, halfPoints) {
+  const length = Math.max(1, Number(board?.length) || LIS_FISH_REFERENCE.lengthCm);
+  const maxWidth = Math.max(1, 2 * Math.max(0, ...(halfPoints || []).map(point => point.y)));
+  const templateScale = swaylocksFishTemplateScale(length, maxWidth);
+  const tailWidth12 = 2 * Math.max(0, interpolatePolyline(halfPoints || [], Math.min(30.48, length)));
+  return {
+    ...greenlightFishTailDimensions(tailWidth12),
+    tailWidth12,
+    templateLengthScale: templateScale.lengthScale,
+    templateWidthScale: templateScale.widthScale,
+    stationInterval: templateScale.stationIntervalCm
+  };
+}
+
 function normalizedTailConfig(board, baseHalfPoints = null) {
   const mode = normalizeTailModeKey(board?.tailMode);
   if (!TAIL_MODE_PRESETS[mode]) {
@@ -7852,6 +8210,7 @@ function normalizedTailConfig(board, baseHalfPoints = null) {
       active: false,
       mode: "",
       length: 0,
+      extension: 0,
       depth: 0,
       joinY: 0,
       innerPower: 1.55,
@@ -7889,9 +8248,15 @@ function normalizedTailConfig(board, baseHalfPoints = null) {
   const halfPoints = baseHalfPoints || wingAdjustedOutlineHalfPoints(board);
   const maxDepth = Math.max(0.2, length * 0.95);
   const rawDepth = Number(board?.tailDepth);
-  const depth = tailModeUsesDepth(mode)
+  let depth = tailModeUsesDepth(mode)
     ? (Number.isFinite(rawDepth) && rawDepth >= 0.2 ? clampNumber(rawDepth, 0.2, maxDepth, preset.depth) : preset.depth)
     : 0;
+  const fishDimensions = mode === "fish"
+    ? resolvedFishDesignDimensions(board, halfPoints)
+    : null;
+  if (mode === "fish" && !(Number.isFinite(rawDepth) && rawDepth >= 0.2) && fishDimensions?.notchDepth > 0) {
+    depth = clampNumber(fishDimensions.notchDepth, 0.2, maxDepth, preset.depth);
+  }
   const rawShoulderPos = Number(board?.tailShoulderPos);
   const shoulderPos = Number.isFinite(rawShoulderPos) && rawShoulderPos >= 0.12
     ? clampNumber(rawShoulderPos, 0.12, 0.88, preset.shoulderPos)
@@ -7971,10 +8336,16 @@ function normalizedTailConfig(board, baseHalfPoints = null) {
     ? Math.max(0.001, length - gunRoot.x)
     : clampNumber(length * rawTipRatio, 0, length * 2, length * rawTipRatio);
   const tipScale = capMode ? clampNumber((preset.tipScale ?? 0) * widthScale, 0, Math.max(0, shoulderScale - 0.002), preset.tipScale ?? 0) : 1;
-  const cornerScale = !capMode
+  let cornerScale = !capMode
     ? clampNumber((preset.cornerScale ?? 1) * widthScale, 0.01, Math.max(0.01, shoulderScale), preset.cornerScale ?? 1)
     : tipScale;
+  if (mode === "fish" && fishDimensions?.tipSeparation > 0 && joinY > 1e-9) {
+    cornerScale = clampNumber((fishDimensions.tipSeparation * 0.5) / joinY, 0.01, Math.max(0.01, shoulderScale), cornerScale);
+  }
   const shift = gunRoot ? gunRoot.x : (openNotched ? cutLength : (length - tipLength));
+  const sourceTipY = Math.max(0, interpolatePolyline(halfPoints, Math.max(0, shift)));
+  const squareReferenceY = Math.max(0, interpolatePolyline(halfPoints, TAIL_MODE_PRESETS.square.length)) * widthScale;
+  const sourceTipSlope = Math.max(0, boardCadSplineSlopeAt(board?.outline || [], Math.max(0, shift)));
   const joinSlope = Math.max(0, boardCadSplineSlopeAt(board?.outline || [], rawJoinX));
   return {
     active: true,
@@ -7988,6 +8359,9 @@ function normalizedTailConfig(board, baseHalfPoints = null) {
     tipLength,
     tipScale,
     shift,
+    sourceTipY,
+    squareReferenceY,
+    sourceTipSlope,
     shoulderPos,
     shoulderScale,
     railBlend,
@@ -8135,7 +8509,7 @@ function boardCadRockerApex(board) {
     return { x: 0, rocker: 0 };
   }
   const length = Number(board.length) || 0;
-  let minimumRocker = Infinity;
+  let best = { x: 0, rocker: Infinity };
   const candidateXs = [];
   const pushCandidate = value => {
     const x = clampNumber(value, 0, length, 0);
@@ -8149,18 +8523,11 @@ function boardCadRockerApex(board) {
     pushCandidate(length * (i / steps));
   }
   const uniqueXs = sortedUnique(candidateXs, 1e-6);
-  const samples = uniqueXs.map(x => {
+  uniqueXs.forEach(x => {
     const rocker = boardCadRockerAtPos(board, x);
-    minimumRocker = Math.min(minimumRocker, rocker);
-    return { x, rocker };
+    if (rocker < best.rocker) best = { x, rocker };
   });
-  const plateauTolerance = 1e-7;
-  const minima = samples.filter(sample => Math.abs(sample.rocker - minimumRocker) <= plateauTolerance);
-  if (!minima.length) return { x: 0, rocker: 0 };
-  return {
-    x: (minima[0].x + minima[minima.length - 1].x) * 0.5,
-    rocker: minimumRocker
-  };
+  return best;
 }
 
 function boardCadRockerApexPos(board) {
@@ -8211,13 +8578,19 @@ function rockerMeasurementStations(board) {
     });
   };
   push("tail", "Tail", 0, "tail");
+  push("tail-3", "Tail 3in", ROCKER_STATION_3_INCH_CM, "tail");
+  push("tail-6", "Tail 6in", ROCKER_STATION_6_INCH_CM, "tail");
   push("tail-12", "Tail 12in", ROCKER_STATION_12_INCH_CM, "tail");
+  push("tail-18", "Tail 18in", ROCKER_STATION_18_INCH_CM, "tail");
   push("tail-24", "Tail 24in", ROCKER_STATION_24_INCH_CM, "tail");
   push("wide-point", "Wide point", boardCadMaxRawWidthPos(board), "shape");
   push("rocker-apex", "Rocker apex", boardCadRockerApexPos(board), "profile");
   push("center", "Center", length / 2, "center");
   push("nose-24", "Nose 24in", length - ROCKER_STATION_24_INCH_CM, "nose");
+  push("nose-18", "Nose 18in", length - ROCKER_STATION_18_INCH_CM, "nose");
   push("nose-12", "Nose 12in", length - ROCKER_STATION_12_INCH_CM, "nose");
+  push("nose-6", "Nose 6in", length - ROCKER_STATION_6_INCH_CM, "nose");
+  push("nose-3", "Nose 3in", length - ROCKER_STATION_3_INCH_CM, "nose");
   push("nose", "Nose", length, "nose");
   return stations.sort((a, b) => a.position - b.position || a.key.localeCompare(b.key));
 }
@@ -8228,6 +8601,9 @@ function rockerStationMeasurements(board) {
     const deck = boardCadDeckAtPos(board, station.position);
     return {
       ...station,
+      datumMethod: "machine-board-coordinate",
+      surface: "bottom-stringer",
+      geometryState: "design",
       rocker,
       deck,
       thickness: deck - rocker,
@@ -8236,10 +8612,205 @@ function rockerStationMeasurements(board) {
   });
 }
 
+function dimensionStations(board) {
+  const length = Number(board?.length) || 0;
+  return [
+    ["tail", "T", 0],
+    ["tail-12", "1'T", Math.min(30.48, length)],
+    ["tail-24", "2'T", Math.min(60.96, length)],
+    ["center", "C", length / 2],
+    ["nose-24", "2'N", Math.max(0, length - 60.96)],
+    ["nose-12", "1'N", Math.max(0, length - 30.48)],
+    ["nose", "N", length]
+  ].map(([key, label, position]) => ({ key, label, position }));
+}
+
+function setSplineValueAt(knots, x, y) {
+  let knot = knots.find(item => Math.abs(item.p.x - x) < 0.001);
+  if (!knot) {
+    const curves = boardCadCurves(knots);
+    const index = boardCadFindMatchingBezierSegment(curves, x);
+    if (index < 0) return false;
+    const split = boardCadSplitCurveKnot(curves[index], boardCadCurveTForX(curves[index], x));
+    knots[index].next = split.startNext;
+    knots[index + 1].prev = split.endPrev;
+    knots.splice(index + 1, 0, split.knot);
+    knot = split.knot;
+  }
+  const delta = y - knot.p.y;
+  knot.p.y += delta;
+  knot.prev.y += delta;
+  knot.next.y += delta;
+  return true;
+}
+
+function applyStationMeasurement(key, metric, value, unit = "cm") {
+  if (!state.board || !Number.isFinite(value) || value < 0) return false;
+  if (unit === "inch") value *= 2.54;
+  const before = cloneBoard(state.board);
+  if (metric === "width") bakeProceduralOutlineForExport(state.board);
+  const station = dimensionStations(state.board).find(item => item.key === key);
+  if (!station) return false;
+  if (metric === "width") setSplineValueAt(state.board.outline, station.position, value / 2);
+  else {
+    const rocker = metric === "rocker" ? value : boardCadRockerAtPos(state.board, station.position);
+    const thickness = metric === "thickness" ? value : boardCadThicknessAtPos(state.board, station.position);
+    setSplineValueAt(state.board.bottom, station.position, rocker);
+    setSplineValueAt(state.board.deck, station.position, rocker + thickness);
+  }
+  commitBoardMutation(before);
+  return true;
+}
+
+function applyBoardLength(lengthCm) {
+  if (!state.board || !Number.isFinite(lengthCm) || lengthCm <= 0) return false;
+  scaleBoardTo(lengthCm, boardCadMaxWidth(state.board), boardCadMaxThickness(state.board), { scaleFins: true });
+  return true;
+}
+
+function syncStationEditor() {
+  if (!els.stationEditor) return;
+  const visible = !!state.board && (state.view === "outline" || state.view === "profile");
+  els.stationEditor.hidden = !visible;
+  els.stationEditor.closest?.(".viewer")?.classList.toggle("station-editor-visible", visible);
+  if (!visible) return;
+  const stations = dimensionStations(state.board);
+  const unit = state.stationMeasurementUnit === "inch" ? "inch" : "cm";
+  const lengthUnit = state.lengthMeasurementUnit === "ft-in" ? "ft-in" : "cm";
+  const totalInches = state.board.length / 2.54;
+  const feet = Math.floor(totalInches / 12);
+  const inches = totalInches - (feet * 12);
+  const volumeLiters = boardCadVolume(state.board) / 1000;
+  const lengthFields = lengthUnit === "ft-in"
+    ? `<input type="number" min="0" step="1" value="${feet}" data-length-value="feet" aria-label="Feet"><span>ft</span><input type="number" min="0" max="11.99" step="0.01" value="${fmt(inches)}" data-length-value="inches" aria-label="Inches"><span>in</span>`
+    : `<input type="number" min="0.01" step="0.01" value="${fmt(state.board.length)}" data-length-value="cm" aria-label="Length centimeters"><span>cm</span>`;
+  const fromCm = value => unit === "inch" ? value / 2.54 : value;
+  const metrics = state.view === "outline"
+    ? [["width", state.language === "ja" ? "幅" : "Width", station => boardCadWidthAtPos(state.board, station.position)]]
+    : [
+      ["rocker", state.language === "ja" ? "ロッカー" : "Rocker", station => boardCadRockerAtPos(state.board, station.position)],
+      ["thickness", state.language === "ja" ? "厚み" : "Thickness", station => boardCadThicknessAtPos(state.board, station.position)]
+    ];
+  els.stationEditor.innerHTML = `<div class="station-editor-controls"><label>${state.language === "ja" ? "長さ" : "Length"} <select data-length-unit><option value="cm"${lengthUnit === "cm" ? " selected" : ""}>cm</option><option value="ft-in"${lengthUnit === "ft-in" ? " selected" : ""}>ft / in</option></select></label><div class="station-length-fields">${lengthFields}</div><span class="station-volume">${state.language === "ja" ? "体積" : "Volume"} <strong>${fmt(volumeLiters)} L</strong></span><label>${state.language === "ja" ? "寸法単位" : "Dimension unit"} <select data-station-unit><option value="cm"${unit === "cm" ? " selected" : ""}>cm</option><option value="inch"${unit === "inch" ? " selected" : ""}>inch</option></select></label></div><div class="station-editor-grid"><span></span>${stations.map(station => `<strong>${station.label}</strong>`).join("")}${metrics.map(([metric, labelText, valueAt]) => `<span class="station-metric">${labelText} (${unit})</span>${stations.map(station => `<input type="number" min="0" step="0.01" value="${fmt(fromCm(valueAt(station)))}" data-station-key="${station.key}" data-metric="${metric}" aria-label="${labelText} ${station.label}">`).join("")}`).join("")}</div>`;
+}
+
 function rockerTargetEndpointValue(value, fallback) {
   const numeric = Number(value);
   if (Number.isFinite(numeric) && Math.abs(numeric) > 1e-9) return numeric;
   return Number.isFinite(fallback) ? fallback : 0;
+}
+
+function rockerQuadraticModel(length, tailY, apexX, apexY, noseY) {
+  const span = Math.max(1e-6, length);
+  const xA = clampNumber(apexX, span * 0.12, span * 0.88, span * 0.5);
+  const denominator = xA * (xA - span);
+  const a = Math.abs(denominator) > 1e-9
+    ? ((apexY - tailY) - (((noseY - tailY) * xA) / span)) / denominator
+    : 0;
+  const b = (noseY - tailY - (a * span * span)) / span;
+  return {
+    value(x) {
+      const px = clampNumber(x, 0, span, 0);
+      return (a * px * px) + (b * px) + tailY;
+    },
+    slope(x) {
+      const px = clampNumber(x, 0, span, 0);
+      return (2 * a * px) + b;
+    }
+  };
+}
+
+function rockerQuadraticSpline(length, model, splitX) {
+  const xs = sortedUnique([0, clampNumber(splitX, 0, length, length * 0.5), length], 1e-6);
+  const segments = [];
+  for (let i = 0; i < xs.length - 1; i += 1) {
+    const x0 = xs[i];
+    const x1 = xs[i + 1];
+    const dx = x1 - x0;
+    segments.push({
+      start: { x: x0, y: model.value(x0) },
+      c1: { x: x0 + (dx / 3), y: model.value(x0) + (model.slope(x0) * dx / 3) },
+      c2: { x: x1 - (dx / 3), y: model.value(x1) - (model.slope(x1) * dx / 3) },
+      end: { x: x1, y: model.value(x1) }
+    });
+  }
+  return splineFromBezierSegments(segments);
+}
+
+function rockerFoilLandmark(bottomKnots, deckKnots, length) {
+  let best = { x: length * 0.5, thickness: 0 };
+  const samples = 320;
+  for (let i = 0; i <= samples; i += 1) {
+    const x = length * (i / samples);
+    const thickness = Math.max(0, boardCadSplineValueAt(deckKnots, x) - boardCadSplineValueAt(bottomKnots, x));
+    if (thickness > best.thickness) best = { x, thickness };
+  }
+  best.x = clampNumber(best.x, length * 0.25, length * 0.75, length * 0.5);
+  const thicknessAt = x => Math.max(0, boardCadSplineValueAt(deckKnots, x) - boardCadSplineValueAt(bottomKnots, x));
+  best.tailTipX = Math.min(ROCKER_STATION_3_INCH_CM, best.x * 0.5);
+  best.noseTipX = Math.max(length - ROCKER_STATION_3_INCH_CM, best.x + ((length - best.x) * 0.5));
+  best.tailTipThickness = thicknessAt(best.tailTipX);
+  best.noseTipThickness = thicknessAt(best.noseTipX);
+  best.tailMidThickness = thicknessAt(best.x * 0.5);
+  best.noseMidThickness = thicknessAt(best.x + ((length - best.x) * 0.5));
+  return best;
+}
+
+function rockerFoilThicknessModel(length, landmark) {
+  const peakX = clampNumber(landmark?.x, length * 0.25, length * 0.75, length * 0.5);
+  const peak = Math.max(0.01, Number(landmark?.thickness) || 0.01);
+  const knots = monotoneGraphSplineFromPoints([
+    { x: 0, y: 0 },
+    { x: landmark.tailTipX, y: landmark.tailTipThickness },
+    { x: peakX, y: peak },
+    { x: landmark.noseTipX, y: landmark.noseTipThickness },
+    { x: length, y: 0 }
+  ]);
+  const value = x => Math.max(0, boardCadSplineValueAt(knots, clampNumber(x, 0, length, 0)));
+  return {
+    peakX,
+    knots,
+    value,
+    slope(x) {
+      const epsilon = Math.max(0.001, length * 0.00001);
+      const x0 = Math.max(0, x - epsilon);
+      const x1 = Math.min(length, x + epsilon);
+      return (value(x1) - value(x0)) / Math.max(1e-9, x1 - x0);
+    }
+  };
+}
+
+function rockerDeckFromBottomAndFoil(bottomKnots, foil, length) {
+  const xs = sortedUnique([0, ...(foil.knots || []).map(knot => knot.p.x), length], 0.001);
+  const bottomValue = x => boardCadSplineValueAt(bottomKnots, x);
+  const bottomSlope = x => {
+    const epsilon = Math.max(0.001, length * 0.00001);
+    const x0 = Math.max(0, x - epsilon);
+    const x1 = Math.min(length, x + epsilon);
+    return (bottomValue(x1) - bottomValue(x0)) / Math.max(1e-9, x1 - x0);
+  };
+  const segments = [];
+  for (let i = 0; i < xs.length - 1; i += 1) {
+    const x0 = xs[i];
+    const x1 = xs[i + 1];
+    const dx = x1 - x0;
+    const y0 = bottomValue(x0) + foil.value(x0);
+    const y1 = bottomValue(x1) + foil.value(x1);
+    const m0 = bottomSlope(x0) + foil.slope(x0);
+    const m1 = bottomSlope(x1) + foil.slope(x1);
+    segments.push({
+      start: { x: x0, y: y0 },
+      c1: { x: x0 + dx / 3, y: y0 + m0 * dx / 3 },
+      c2: { x: x1 - dx / 3, y: y1 - m1 * dx / 3 },
+      end: { x: x1, y: y1 }
+    });
+  }
+  return splineFromBezierSegments(segments);
+}
+
+function rockerVolume(board) {
+  markGeometryDirty();
+  return boardCadVolume(board);
 }
 
 function rockerTargetCurvePoints(board, config = null, segments = 160) {
@@ -8260,30 +8831,39 @@ function rockerTargetCurvePoints(board, config = null, segments = 160) {
   const noseTarget = rockerTargetEndpointValue(normalized.noseRocker, noseMeasured);
   const flatness = clampNumber(normalized.middleFlatness, -1, 1, 0);
   const blend = clampNumber(normalized.blend, 0.1, 4, 1);
-  const leftSpan = Math.max(1e-9, apexX);
-  const rightSpan = Math.max(1e-9, length - apexX);
-  const centerPower = clampNumber(2.6 + (flatness * 1.4) - ((blend - 1) * 0.25), 2.1, 4.5, 2.6);
+  const flatWindow = rockerCenterFlatWindow(length, apexX, flatness);
+  const flatStart = flatWindow.start;
+  const flatEnd = flatWindow.end;
+  const leftSpan = Math.max(1e-9, flatStart);
+  const rightSpan = Math.max(1e-9, length - flatEnd);
   const tailKickLength = Math.max(1e-9, length * clampNumber(normalized.tailKickLengthRatio, 0.05, 0.5, 0.18));
   const entryLength = Math.max(1e-9, length * clampNumber(normalized.entryLengthRatio, 0.05, 0.5, 0.18));
   const tailKick = Number(normalized.tailKick) || 0;
   const entryLift = Number(normalized.entryLift) || 0;
+  const coreTailTarget = tailTarget - Math.max(0, tailKick);
+  const coreNoseTarget = noseTarget - Math.max(0, entryLift);
+  const quadratic = rockerQuadraticModel(length, coreTailTarget, apexX, apexY, coreNoseTarget);
   const points = [];
   const count = Math.max(12, Math.floor(segments));
   for (let i = 0; i <= count; i++) {
     const x = length * (i / count);
     let y;
-    if (x <= apexX) {
-      const distance = clampNumber((apexX - x) / leftSpan, 0, 1, 0);
-      y = apexY + ((tailTarget - apexY) * Math.pow(distance, centerPower));
+    if (!flatWindow.active) {
+      y = quadratic.value(x);
+    } else if (x <= flatStart) {
+      const u = clampNumber(x / leftSpan, 0, 1, 0);
+      y = lerp(coreTailTarget, apexY, rockerBlendProgress(u, blend));
+    } else if (x >= flatEnd) {
+      const u = clampNumber((x - flatEnd) / rightSpan, 0, 1, 0);
+      y = lerp(apexY, coreNoseTarget, rockerBlendProgress(u, blend));
     } else {
-      const distance = clampNumber((x - apexX) / rightSpan, 0, 1, 0);
-      y = apexY + ((noseTarget - apexY) * Math.pow(distance, centerPower));
+      y = apexY;
     }
     if (tailKick > 0 && x <= tailKickLength) {
-      y += tailKick * Math.pow(1 - smoothStep01(x / tailKickLength), 1.35);
+      y += tailKick * (1 - rockerSmootherStep01(x / tailKickLength));
     }
     if (entryLift > 0 && x >= length - entryLength) {
-      y += entryLift * Math.pow(smoothStep01((x - (length - entryLength)) / entryLength), 1.35);
+      y += entryLift * rockerSmootherStep01((x - (length - entryLength)) / entryLength);
     }
     points.push({ x, y });
   }
@@ -8308,6 +8888,10 @@ function applyRockerConfigToBoard(board, config = null) {
   };
   const originalBottom = sourceBottom;
   const originalDeck = sourceDeck;
+  const originalVolume = normalized.preserveFoil && !normalized.preserveDeck && originalDeck.length >= 2
+    ? rockerVolume(sourceBoard)
+    : 0;
+  const foilLandmark = rockerFoilLandmark(originalBottom, originalDeck, length);
   const baseApex = boardCadRockerApex(sourceBoard);
   const apexX = clampNumber(
     baseApex.x + (normalized.apexShift * length * 0.18),
@@ -8317,94 +8901,69 @@ function applyRockerConfigToBoard(board, config = null) {
   );
   const targetPoints = rockerTargetCurvePoints(sourceBoard, normalized, 240);
   if (targetPoints.length < 2) return false;
+  const targetApexIndex = targetPoints.reduce((best, point, index) => point.y < targetPoints[best].y ? index : best, 0);
+  const targetApex = targetPoints[targetApexIndex];
+  let resolvedApexX = targetApex.x;
+  if (targetApexIndex > 0 && targetApexIndex < targetPoints.length - 1) {
+    const y0 = targetPoints[targetApexIndex - 1].y;
+    const y1 = targetApex.y;
+    const y2 = targetPoints[targetApexIndex + 1].y;
+    const denominator = y0 - (2 * y1) + y2;
+    if (Math.abs(denominator) > 1e-12) {
+      const stepX = targetPoints[targetApexIndex + 1].x - targetApex.x;
+      resolvedApexX += 0.5 * (y0 - y2) / denominator * stepX;
+    }
+  }
   const targetAt = x => {
     const clampedX = clampNumber(Number(x), 0, length, 0);
     return interpolatePolyline(targetPoints, clampedX);
   };
-  const originalThicknessAt = x => boardCadSplineValueAt(originalDeck, x) - boardCadSplineValueAt(originalBottom, x);
-  const originalDeckXs = originalDeck.map(knot => clampNumber(Number(knot?.p?.x), 0, length, 0));
-  let sampleXs;
-  if (originalDeckXs.length >= 3 && originalDeckXs.length <= 5) {
-    const aligned = originalDeckXs.slice();
-    let nearestApexIndex = 1;
-    for (let index = 2; index < aligned.length - 1; index++) {
-      if (Math.abs(aligned[index] - apexX) < Math.abs(aligned[nearestApexIndex] - apexX)) nearestApexIndex = index;
-    }
-    aligned[0] = 0;
-    aligned[nearestApexIndex] = apexX;
-    aligned[aligned.length - 1] = length;
-    sampleXs = sortedUnique(aligned, 0.001);
+  const flatWindow = rockerCenterFlatWindow(length, resolvedApexX, normalized.middleFlatness);
+  const hasLocalEndModifier = Math.abs(Number(normalized.tailKick) || 0) > 1e-9
+    || Math.abs(Number(normalized.entryLift) || 0) > 1e-9;
+  // With no local end modifier the target is one exact quadratic.  Preserve it
+  // as two Bezier spans split only at the true low point.  Measurement stations
+  // must never become shape knots: doing so introduces a curvature ripple at
+  // every 3/6/12/18/24-inch station.
+  if (!flatWindow.active && !hasLocalEndModifier) {
+    const tailY = targetAt(0);
+    const apexY = targetAt(apexX);
+    const noseY = targetAt(length);
+    const exactModel = rockerQuadraticModel(length, tailY, apexX, apexY, noseY);
+    board.bottom = rockerQuadraticSpline(length, exactModel, resolvedApexX);
   } else {
-    sampleXs = sortedUnique([0, apexX * 0.5, apexX, apexX + ((length - apexX) * 0.5), length], 0.001);
-  }
+  // Local kick/lift profiles need only their transition boundaries in addition
+  // to the three base-rocker landmarks.  The inch stations remain measurements,
+  // never editable curve points.
+  const tailTransitionX = length * clampNumber(normalized.tailKickLengthRatio, 0.05, 0.5, 0.18);
+  const noseTransitionX = length * (1 - clampNumber(normalized.entryLengthRatio, 0.05, 0.5, 0.18));
+  const sampleXs = [0, resolvedApexX, length];
+  if (Math.abs(Number(normalized.tailKick) || 0) > 1e-9) sampleXs.push(tailTransitionX);
+  if (Math.abs(Number(normalized.entryLift) || 0) > 1e-9) sampleXs.push(noseTransitionX);
+  if (flatWindow.active) sampleXs.push(flatWindow.start, flatWindow.end);
   const uniqueXs = sortedUnique(sampleXs, 0.001);
-  board.bottom = splineFromFunctionAtXs(uniqueXs, targetAt, length, { zeroSlopeXs: [apexX] });
+  board.bottom = monotoneGraphSplineFromPoints(uniqueXs.map(x => ({
+    x,
+    y: targetAt(x)
+  })), { lockExtremaTangents: true });
+  if (flatWindow.active) straightenSplineWindow(board.bottom, flatWindow.start, flatWindow.end);
+  else fairRockerApexJoin(board.bottom, resolvedApexX);
+  }
   if (normalized.preserveFoil && !normalized.preserveDeck && originalDeck.length >= 2) {
-    const matchingFoilControls = originalBottom.length === originalDeck.length
-      && originalBottom.length === board.bottom.length
-      && originalBottom.every((knot, index) => ["p", "prev", "next"].every(key => (
-        Math.abs(knot[key].x - originalDeck[index][key].x) < 0.001
-      )))
-      && originalBottom.every((knot, index) => Math.abs(knot.p.x - board.bottom[index].p.x) < 0.001);
-    if (matchingFoilControls) {
-      board.bottom.forEach((knot, index) => {
-        ["prev", "next"].forEach(key => {
-          knot[key].x = originalBottom[index][key].x;
-          const dx = knot[key].x - knot.p.x;
-          const slope = key === "prev"
-            ? (knot.p.y - knot.prev.y) / Math.max(1e-9, knot.p.x - knot.prev.x)
-            : (knot.next.y - knot.p.y) / Math.max(1e-9, knot.next.x - knot.p.x);
-          knot[key].y = knot.p.y + (slope * dx);
-        });
-      });
-      board.deck = board.bottom.map((knot, index) => ({
-        p: { x: knot.p.x, y: knot.p.y + originalDeck[index].p.y - originalBottom[index].p.y },
-        prev: { x: knot.prev.x, y: knot.prev.y + originalDeck[index].prev.y - originalBottom[index].prev.y },
-        next: { x: knot.next.x, y: knot.next.y + originalDeck[index].next.y - originalBottom[index].next.y },
-        continuous: originalDeck[index].continuous,
-        other: originalDeck[index].other
-      }));
-    } else {
-      board.deck = splineFromFunctionAtXs(uniqueXs, x => targetAt(x) + originalThicknessAt(x), length);
+    const foil = rockerFoilThicknessModel(length, foilLandmark);
+    board.deck = rockerDeckFromBottomAndFoil(board.bottom, foil, length);
+    let volumeScale = 1;
+    for (let i = 0; i < 2; i += 1) {
+      const approximatedVolume = rockerVolume(board);
+      if (approximatedVolume <= 1e-9) break;
+      volumeScale *= originalVolume / approximatedVolume;
+      board.deck = rockerDeckFromBottomAndFoil(board.bottom, {
+        ...foil,
+        value: x => foil.value(x) * volumeScale,
+        slope: x => foil.slope(x) * volumeScale
+      }, length);
     }
-    const constrainEndSegment = (knots, fromStart) => {
-      const firstIndex = fromStart ? 0 : knots.length - 1;
-      const secondIndex = fromStart ? 1 : knots.length - 2;
-      const first = knots[firstIndex];
-      const second = knots[secondIndex];
-      const span = second.p.x - first.p.x;
-      const secant = (second.p.y - first.p.y) / span;
-      if (Math.abs(secant) <= 1e-12) return;
-      const firstHandle = fromStart ? first.next : first.prev;
-      const secondHandle = fromStart ? second.prev : second.next;
-      let firstSlope = (firstHandle.y - first.p.y) / (firstHandle.x - first.p.x);
-      let secondSlope = (second.p.y - secondHandle.y) / (second.p.x - secondHandle.x);
-      let alpha = firstSlope / secant;
-      let beta = secondSlope / secant;
-      if (alpha < 0) alpha = 0;
-      if (beta < 0) beta = 0;
-      const magnitude = Math.hypot(alpha, beta);
-      if (magnitude > 3) {
-        const scale = 3 / magnitude;
-        alpha *= scale;
-        beta *= scale;
-      }
-      firstSlope = alpha * secant;
-      secondSlope = beta * secant;
-      firstHandle.y = first.p.y + (firstSlope * (firstHandle.x - first.p.x));
-      secondHandle.y = second.p.y - (secondSlope * (second.p.x - secondHandle.x));
-      const otherHandle = fromStart ? second.next : second.prev;
-      otherHandle.y = second.p.y + (secondSlope * (otherHandle.x - second.p.x));
-    };
-    const deckHandlesBefore = board.deck.map(knot => ({ prev: knot.prev.y, next: knot.next.y }));
-    constrainEndSegment(board.deck, true);
-    constrainEndSegment(board.deck, false);
-    if (matchingFoilControls) {
-      board.bottom.forEach((knot, index) => {
-        knot.prev.y += board.deck[index].prev.y - deckHandlesBefore[index].prev;
-        knot.next.y += board.deck[index].next.y - deckHandlesBefore[index].next;
-      });
-    }
+    markGeometryDirty();
   }
   board.rockerPreset = normalized.preset;
   board.rockerConfig = normalized;
@@ -9085,6 +9644,7 @@ function draw() {
     if (state.view === "profile") drawProfile(displayBoard, canvasRect);
     if (state.view === "sections") drawSections(displayBoard, canvasRect);
     if (state.view === "quad") drawQuad(displayBoard, canvasRect);
+    if (state.view === "simulation") drawHydrodynamicSimulation(displayBoard, canvasRect);
     if (state.view === "toolpath") drawToolpath(displayBoard, canvasRect);
     if (state.view === "model3d") drawModel3D(displayBoard, canvasRect);
   } finally {
@@ -9511,43 +10071,57 @@ function exponentialTailBezierSegments(start, end, endSlope, options = {}) {
 }
 
 function pointedTailBezierSegments(start, end, endSlope, tail) {
-  return exponentialTailBezierSegments(start, end, endSlope, {
-    tipHandleRatio: 0.12,
-    endHandleRatio: 0.26,
+  // Pin-family variants share one topology. Their distinction is resolved by
+  // pull-in length and terminal curvature, not by adding intermediate knots.
+  const tipHandleRatio = tail.mode === "pin"
+    ? 0.08
+    : tail.mode === "round-pin"
+      ? 0.17
+      : 0.12;
+  const endHandleRatio = tail.mode === "round-pin" ? 0.3 : 0.26;
+  const segments = exponentialTailBezierSegments(start, end, endSlope, {
+    tipHandleRatio,
+    endHandleRatio,
     linearization: tail.linearization
   });
+  if (tail.mode === "pin" && segments[0]) {
+    const dx = end.x - start.x;
+    const dy = end.y - start.y;
+    segments[0].c1 = {
+      x: start.x + (dx * 0.06),
+      y: start.y + (dy * 0.14)
+    };
+  }
+  return segments;
 }
 
 function squashTailBezierSegments(start, end, endSlope, tail) {
   const capLength = Math.max(1e-9, end.x - start.x);
   const joinY = Math.max(1e-9, end.y);
-  const anchor = {
+  const transition = {
     x: start.x + capLength * 0.1588,
     y: joinY * 0.542
   };
-  const first = {
+  const terminalSegment = {
     start,
     c1: { x: start.x, y: joinY * 0.287 },
     c2: {
       x: start.x + capLength * 0.0105,
       y: joinY * 0.426
     },
-    end: anchor
+    end: transition
   };
-  const second = tangentBezierSegment(anchor, end, (joinY * 0.79) / Math.max(1e-9, capLength), endSlope, {
+  const railSegment = tangentBezierSegment(transition, end, (joinY * 0.79) / capLength, endSlope, {
     c1Ratio: 0.35,
     c2Ratio: 0.92,
     linearization: tail.linearization
   });
   if ((tail.linearization ?? 0) > 0) {
     const line = lineBezierSegment(start, end);
-    first.c1 = lerpPoint(first.c1, line.c1, tail.linearization);
-    first.c2 = lerpPoint(first.c2, line.c2, tail.linearization);
+    terminalSegment.c1 = lerpPoint(terminalSegment.c1, line.c1, tail.linearization);
+    terminalSegment.c2 = lerpPoint(terminalSegment.c2, line.c2, tail.linearization);
   }
-  return [
-    clampBezierSegmentVertical(first),
-    clampBezierSegmentVertical(second)
-  ];
+  return [clampBezierSegmentVertical(terminalSegment), clampBezierSegmentVertical(railSegment)];
 }
 
 function applyBezierWidthAdjust(segments, amount) {
@@ -9635,48 +10209,112 @@ function spliceTailSplineIntoBase(tailSpline, baseSpline) {
   return merged.concat(base);
 }
 
+function preserveSourceOutlineContinuation(board, tail, generatedSpline, forwardBase) {
+  if (!generatedSpline?.length || !forwardBase?.length || tail.notched || normalizedWingConfig(board).active) return generatedSpline;
+  const joinX = tail.mode === "gun" && generatedSpline[1] ? generatedSpline[1].p.x : forwardBase[0].x;
+  const shapedTail = generatedSpline.filter(knot => knot.p.x <= joinX + 1e-2);
+  const source = boardCadCloneKnots(board.outline || []).map(knot => {
+    [knot.p, knot.prev, knot.next].forEach(point => { point.x -= tail.shift; });
+    return knot;
+  });
+  const continuation = trimHalfSplineFromX(source, joinX);
+  if (continuation[0]) {
+    const dx = joinX - continuation[0].p.x;
+    const dy = shapedTail[shapedTail.length - 1].p.y - continuation[0].p.y;
+    [continuation[0].p, continuation[0].prev, continuation[0].next].forEach(point => {
+      point.x += dx;
+      point.y += dy;
+    });
+  }
+  return spliceTailSplineIntoBase(shapedTail, continuation);
+}
+
 function buildGunTailSpline(board, tail, forwardBase) {
   if (tail.mode !== "gun" || !tail.gunRoot || !forwardBase.length) return null;
   const tipPoint = { x: 0, y: 0 };
-  const joinPoint = { ...forwardBase[0] };
-  const joinSlope = Number.isFinite(tail.joinSlope) ? tail.joinSlope : joinPoint.y / Math.max(1e-9, joinPoint.x);
-  const c2Ratio = 0.62;
+  // A gun planform uses the maximum-width landmark as the common endpoint
+  // for its tail and nose arcs, avoiding short constrained join segments.
+  let mergeIndex = 0;
+  for (let index = 1; index < forwardBase.length; index++) {
+    if (forwardBase[index].y > forwardBase[mergeIndex].y + 1e-6) mergeIndex = index;
+  }
+  const continuation = forwardBase.slice(mergeIndex);
+  const joinPoint = { ...(continuation[0] || forwardBase[0]) };
+  const joinRawX = joinPoint.x + tail.shift;
+  const joinSlope = Math.max(0, boardCadSplineSlopeAt(board?.outline || [], joinRawX));
+  const c2Ratio = 0.58;
+  const customCurve = normalizeTailGunCurve(board?.tailGunCurve);
+  const customControls = customCurve ? {
+    c1: { x: joinPoint.x * customCurve.c1.x, y: joinPoint.y * customCurve.c1.y },
+    c2: { x: joinPoint.x * customCurve.c2.x, y: joinPoint.y * customCurve.c2.y }
+  } : null;
   if (tail.gunRoot.synthetic) {
     const line = lineBezierSegment(tipPoint, joinPoint);
     const segment = {
       start: tipPoint,
-      c1: { x: 0, y: joinPoint.y * 0.2 },
-      c2: {
+      c1: customControls?.c1 || { x: joinPoint.x * 0.06, y: joinPoint.y * 0.14 },
+      c2: customControls?.c2 || {
         x: joinPoint.x * c2Ratio,
         y: joinPoint.y - (joinSlope * joinPoint.x * (1 - c2Ratio))
       },
       end: joinPoint
     };
-    segment.c1 = lerpPoint(segment.c1, line.c1, tail.linearization);
-    segment.c2 = lerpPoint(segment.c2, line.c2, tail.linearization);
-    return spliceTailSplineIntoBase(splineFromBezierSegments(applyBezierWidthAdjust([segment], tail.widthAdjust)), splineFromOrderedPoints(forwardBase));
+    if (!customControls) {
+      segment.c1 = lerpPoint(segment.c1, line.c1, tail.linearization);
+      segment.c2 = lerpPoint(segment.c2, line.c2, tail.linearization);
+    }
+    const result = spliceTailSplineIntoBase(splineFromBezierSegments(customControls ? [segment] : applyBezierWidthAdjust([segment], tail.widthAdjust)), splineFromOrderedPoints(continuation));
+    alignGunJoinTangent(result);
+    return result;
   }
   const line = lineBezierSegment(tipPoint, joinPoint);
   const singleArc = {
     start: tipPoint,
-    c1: { x: 0, y: joinPoint.y * 0.2 },
-    c2: {
+    c1: customControls?.c1 || { x: joinPoint.x * 0.06, y: joinPoint.y * 0.14 },
+    c2: customControls?.c2 || {
       x: joinPoint.x * c2Ratio,
       y: joinPoint.y - (joinSlope * joinPoint.x * (1 - c2Ratio))
     },
     end: joinPoint
   };
-  singleArc.c1 = lerpPoint(singleArc.c1, line.c1, tail.linearization);
-  singleArc.c2 = lerpPoint(singleArc.c2, line.c2, tail.linearization);
-  return spliceTailSplineIntoBase(splineFromBezierSegments(applyBezierWidthAdjust([singleArc], tail.widthAdjust)), splineFromOrderedPoints(forwardBase));
+  if (!customControls) {
+    singleArc.c1 = lerpPoint(singleArc.c1, line.c1, tail.linearization);
+    singleArc.c2 = lerpPoint(singleArc.c2, line.c2, tail.linearization);
+  }
+  const result = spliceTailSplineIntoBase(splineFromBezierSegments(customControls ? [singleArc] : applyBezierWidthAdjust([singleArc], tail.widthAdjust)), splineFromOrderedPoints(continuation));
+  alignGunJoinTangent(result);
+  return result;
+}
+
+function alignGunJoinTangent(knots) {
+  if (!Array.isArray(knots) || knots.length < 2) return knots;
+  const join = knots[1];
+  const incoming = { x: join.p.x - join.prev.x, y: join.p.y - join.prev.y };
+  const incomingLength = Math.hypot(incoming.x, incoming.y);
+  if (!(incomingLength > 1e-9)) return knots;
+  const nextAnchor = knots[2]?.p;
+  const nextChordLength = nextAnchor
+    ? Math.hypot(nextAnchor.x - join.p.x, nextAnchor.y - join.p.y)
+    : incomingLength;
+  // A long incoming gun handle must not be mirrored at full length into the
+  // much shorter source-outline span. That creates an overshoot/loop which is
+  // especially visible as a doubled center-to-nose line on longboards.
+  const outgoingLength = Math.max(1e-6, Math.min(incomingLength * 0.7, nextChordLength * 0.45));
+  join.next = {
+    x: join.p.x + (incoming.x * outgoingLength / incomingLength),
+    y: join.p.y + (incoming.y * outgoingLength / incomingLength)
+  };
+  join.continuous = true;
+  return knots;
 }
 
 function buildCapTailSpline(tail, forwardBase) {
-  if (!tail.capMode || tail.notched || !forwardBase.length) return null;
+  if (tail.notched || !forwardBase.length) return null;
   const capLength = Math.max(0, tail.tipLength || tail.length);
   if (!(capLength > 1e-6)) return null;
   const outer = x => tailOuterHalfWidthAt(tail, x, capLength);
   const joinPoint = { ...forwardBase[0] };
+  if (!tail.capMode) return [makeSplineKnot(joinPoint)];
   const tipPoint = { x: 0, y: outer(0) };
   let segments;
   const averageSlope = (joinPoint.y - tipPoint.y) / Math.max(1e-9, joinPoint.x - tipPoint.x);
@@ -9746,11 +10384,24 @@ function buildCapTailSpline(tail, forwardBase) {
       const shoulderSlope = (joinPoint.y - tipPoint.y) / Math.max(1e-9, joinPoint.x - tipPoint.x);
       const railC2X = lerp(shoulderPoint.x, joinPoint.x, 0.88);
       segments = [
-        tangentBezierSegment(tipPoint, shoulderPoint, shoulderSlope * 0.55, shoulderSlope * 1.05, {
-          c1Ratio: 0.3,
-          c2Ratio: 0.7,
-          linearization: tail.linearization
-        }),
+        (() => {
+          const line = lineBezierSegment(tipPoint, shoulderPoint);
+          const roundedTip = {
+            start: tipPoint,
+            c1: {
+              x: lerp(tipPoint.x, shoulderPoint.x, 0.3),
+              y: lerp(tipPoint.y, shoulderPoint.y, 0.12)
+            },
+            c2: {
+              x: lerp(tipPoint.x, shoulderPoint.x, 0.7),
+              y: lerp(tipPoint.y, shoulderPoint.y, 0.62)
+            },
+            end: shoulderPoint
+          };
+          roundedTip.c1 = lerpPoint(roundedTip.c1, line.c1, tail.linearization);
+          roundedTip.c2 = lerpPoint(roundedTip.c2, line.c2, tail.linearization);
+          return clampBezierSegmentVertical(roundedTip);
+        })(),
         {
           start: shoulderPoint,
           c1: {
@@ -9850,37 +10501,42 @@ function buildOpenNotchedTailSpline(tail, forwardBase, board = null) {
     ? [[0.16, 0.26], [0.18, 0.28], [0.22, 0.3], [0.24, 0.34], [0.28, 0.38]]
     : [[0.08, 0.16], [0.1, 0.18], [0.12, 0.22], [0.16, 0.28], [0.2, 0.34]];
   let segments;
-  if (tail.mode === "swallow") {
+  if (tail.mode === "swallow" || tail.mode === "fish") {
     const innerDx = cornerPoint.x - notchPoint.x;
     const outerDx = joinPoint.x - cornerPoint.x;
     const innerSlope = (cornerPoint.y - notchPoint.y) / (Math.abs(innerDx) > 1e-9 ? innerDx : -1e-9);
     const outerSlope = (joinPoint.y - cornerPoint.y) / (Math.abs(outerDx) > 1e-9 ? outerDx : 1e-9);
+    const innerSegment = tail.mode === "fish"
+      ? {
+          start: notchPoint,
+          // Keep the deepest part comparatively open, then accelerate the
+          // curve into the tip. The handles are intentionally off the chord;
+          // this is one cubic and does not add another anchor CP.
+          c1: {
+            x: lerp(notchPoint.x, cornerPoint.x, 0.2),
+            y: lerp(notchPoint.y, cornerPoint.y, 0.08)
+          },
+          c2: {
+            x: lerp(notchPoint.x, cornerPoint.x, 0.65),
+            y: lerp(notchPoint.y, cornerPoint.y, 0.48)
+          },
+          end: cornerPoint
+        }
+      : tangentBezierSegment(notchPoint, cornerPoint, innerSlope * 0.86, innerSlope * 1.06, {
+          c1Ratio: 0.28,
+          c2Ratio: 0.72,
+          linearization: tail.linearization
+        });
+    if (tail.mode === "fish" && (tail.linearization ?? 0) > 1e-9) {
+      const innerLine = lineBezierSegment(notchPoint, cornerPoint);
+      innerSegment.c1 = lerpPoint(innerSegment.c1, innerLine.c1, tail.linearization);
+      innerSegment.c2 = lerpPoint(innerSegment.c2, innerLine.c2, tail.linearization);
+    }
     segments = [
-      tangentBezierSegment(notchPoint, cornerPoint, innerSlope * 0.86, innerSlope * 1.06, {
-        c1Ratio: 0.28,
-        c2Ratio: 0.72,
-        linearization: tail.linearization
-      }),
+      clampBezierSegmentVertical(innerSegment),
       fitBezierSegmentToSamples(cornerPoint, joinPoint, outer, {
         samples: 8,
         xCandidates: [[0.12, 0.5], [0.16, 0.58], [0.2, 0.66], [0.24, 0.74], [0.28, 0.82]]
-      })
-    ];
-    enforceBezierSegmentEndSlope(segments[1], tail.joinSlope);
-  } else if (tail.mode === "fish") {
-    const outerAverageSlope = (joinPoint.y - cornerPoint.y) / Math.max(1e-9, joinPoint.x - cornerPoint.x);
-    const fishInnerCurve = buildFishNoseTemplateInnerSegment(board, tail, notchPoint, cornerPoint)
-      || tangentBezierSegment(notchPoint, cornerPoint, -cornerPoint.y / Math.max(1e-9, tail.depth), 0, {
-        c1Ratio: 0.24,
-        c2Ratio: 0.72,
-        linearization: tail.linearization
-      });
-    segments = [
-      fishInnerCurve,
-      buildFishNoseTemplateOuterSegment(board, tail, cornerPoint, joinPoint) || tangentBezierSegment(cornerPoint, joinPoint, outerAverageSlope * 0.34, tail.joinSlope, {
-        c1Ratio: 0.22,
-        c2Ratio: 0.68,
-        linearization: tail.linearization
       })
     ];
     enforceBezierSegmentEndSlope(segments[1], tail.joinSlope);
@@ -9900,12 +10556,47 @@ function buildBatTailSpline(tail, forwardBase) {
   const tipWidth = tailOuterHalfWidthAt(tail, 0, tail.tipLength || tail.length);
   if (!(tail.depth > 1e-6) || !(tipWidth > 1e-6)) return null;
   const joinPoint = { ...forwardBase[0] };
-  const lobeWidth = Math.max(tipWidth, joinPoint.y * 0.94);
+  // Keep the bat terminal at the same practical pod width as this board's
+  // square-tail cut, then blend inward-to-outward without an artificial flare.
+  const squareReference = tail.squareReferenceY > 1e-6 ? tail.squareReferenceY : tipWidth;
+  const lobeWidth = Math.min(squareReference, joinPoint.y);
   const centerTip = { x: 0, y: 0 };
-  const scoopPoint = { x: tail.depth, y: lobeWidth * 0.5 };
+  const scoopWidthRatio = 0.5;
+  const scoopPoint = { x: tail.depth, y: lobeWidth * scoopWidthRatio };
   const lobePoint = { x: 0, y: lobeWidth };
   const centerToScoop = verticalWaveBezierSegment(centerTip, scoopPoint, tail.depth);
   const scoopToLobe = verticalWaveBezierSegment(scoopPoint, lobePoint, tail.depth);
+  let cutSegments = [
+    clampBezierSegmentVertical(centerToScoop),
+    clampBezierSegmentVertical(scoopToLobe)
+  ];
+  if (tail.mode === "bat") {
+    // A bat tail is a shallow circular cut across a square-tail pod: one arc
+    // joins the stringer point directly to each original transom corner.
+    const sagitta = Math.min(tail.depth, lobeWidth * 0.49);
+    const radius = ((lobeWidth * lobeWidth) / Math.max(1e-9, 8 * sagitta)) + (sagitta * 0.5);
+    const centerX = sagitta - radius;
+    const halfAngle = Math.atan2(lobeWidth * 0.5, radius - sagitta);
+    const arcAngle = halfAngle * 2;
+    const handle = (4 / 3) * Math.tan(arcAngle / 4) * radius;
+    const startTangent = { x: Math.sin(halfAngle), y: Math.cos(halfAngle) };
+    const endTangent = { x: -Math.sin(halfAngle), y: Math.cos(halfAngle) };
+    const arcSegment = {
+      start: centerTip,
+      c1: {
+        x: centerTip.x + (handle * startTangent.x),
+        y: centerTip.y + (handle * startTangent.y)
+      },
+      c2: {
+        x: lobePoint.x - (handle * endTangent.x),
+        y: lobePoint.y - (handle * endTangent.y)
+      },
+      end: lobePoint
+    };
+    // Keep the computed center explicit for future exact-arc export support.
+    arcSegment.circle = { x: centerX, y: lobeWidth * 0.5, radius };
+    cutSegments = [arcSegment];
+  }
   const outerSegment = {
     start: lobePoint,
     c1: { x: tail.depth * 0.2, y: lerp(lobePoint.y, joinPoint.y, 0.28) },
@@ -9915,6 +10606,15 @@ function buildBatTailSpline(tail, forwardBase) {
     },
     end: joinPoint
   };
+  if (tail.mode === "bat") {
+    // Follow the source outline tangent at the square corner. Shortening this
+    // handle retains local control without creating an outward bulge.
+    const handleDx = (outerSegment.c1.x - lobePoint.x) * 0.36;
+    outerSegment.c1 = {
+      x: lobePoint.x + handleDx,
+      y: lobePoint.y + (handleDx * tail.sourceTipSlope)
+    };
+  }
   if ((tail.linearization ?? 0) > 1e-9) {
     const centerLine = lineBezierSegment(centerTip, scoopPoint);
     const lobeLine = lineBezierSegment(scoopPoint, lobePoint);
@@ -9924,8 +10624,7 @@ function buildBatTailSpline(tail, forwardBase) {
     scoopToLobe.c2 = lerpPoint(scoopToLobe.c2, lobeLine.c2, tail.linearization);
   }
   return spliceTailSplineIntoBase(splineFromBezierSegments([
-    clampBezierSegmentVertical(centerToScoop),
-    clampBezierSegmentVertical(scoopToLobe),
+    ...cutSegments,
     outerSegment
   ]), splineFromOrderedPoints(forwardBase));
 }
@@ -10014,26 +10713,35 @@ function buildStarTailSpline(tail, forwardBase) {
   if (tail.mode !== "star" || !tail.notched || !tail.capMode || !forwardBase.length) return null;
   const joinPoint = { ...forwardBase[0] };
   if (!(tail.depth > 1e-6) || !(joinPoint.y > 1e-6)) return null;
-  const lobeWidth = joinPoint.y * 0.94;
-  const points = [
-    { x: tail.depth, y: 0 },
-    { x: 0, y: lobeWidth * 0.34 },
-    { x: tail.depth * 0.9, y: lobeWidth * 0.66 },
-    { x: 0, y: lobeWidth }
-  ];
-  const segments = [];
-  for (let i = 1; i < points.length; i++) segments.push(verticalWaveBezierSegment(points[i - 1], points[i], tail.depth));
-  const outerLobe = points[points.length - 1];
-  segments.push({
-    start: outerLobe,
-    c1: { x: tail.depth * 0.2, y: lerp(outerLobe.y, joinPoint.y, 0.28) },
+  const centerTip = { x: 0, y: 0 };
+  const cornerRatio = clampNumber(tail.shoulderPos, 0.12, 0.88, 0.86);
+  const cornerX = Math.min(tail.depth, tail.tipLength * cornerRatio, joinPoint.x * cornerRatio);
+  const corner = {
+    x: cornerX,
+    y: tailOuterHalfWidthAt(tail, cornerX, tail.tipLength || tail.length)
+  };
+  // Reverse the straight side of a deep diamond: both controls stay inside
+  // its chord, producing one clean concave sweep into the accentuated point.
+  const reverseCurve = {
+    start: centerTip,
+    c1: { x: corner.x * 0.34, y: corner.y * 0.07 },
+    c2: { x: corner.x * 0.72, y: corner.y * 0.5 },
+    end: corner
+  };
+  const railSegment = {
+    start: corner,
+    c1: { x: lerp(corner.x, joinPoint.x, 0.22), y: lerp(corner.y, joinPoint.y, 0.2) },
     c2: {
-      x: lerp(outerLobe.x, joinPoint.x, 0.7),
-      y: joinPoint.y - (tail.joinSlope * joinPoint.x * 0.3)
+      x: lerp(corner.x, joinPoint.x, 0.72),
+      y: joinPoint.y - (tail.joinSlope * (joinPoint.x - corner.x) * 0.28)
     },
     end: joinPoint
-  });
-  return spliceTailSplineIntoBase(splineFromBezierSegments(segments), splineFromOrderedPoints(forwardBase));
+  };
+  enforceBezierSegmentEndSlope(railSegment, tail.joinSlope);
+  return spliceTailSplineIntoBase(splineFromBezierSegments([
+    clampBezierSegmentVertical(reverseCurve),
+    clampBezierSegmentVertical(railSegment)
+  ]), splineFromOrderedPoints(forwardBase));
 }
 
 function shiftOutlinePoints(points, shift) {
@@ -10065,6 +10773,8 @@ function boardCadTailOnlyPlanform(board, segments = getSegments()) {
     Number(board?.wingPosition || 0).toFixed(4),
     Number(board?.wingWidth || 0).toFixed(4),
     String(board?.wingShape || ""),
+    Number(board?.wingShoulder || 0).toFixed(4),
+    Number(board?.wingTransition || 0).toFixed(4),
     String(normalizeTailModeKey(board?.tailMode || "")),
     Number(board?.tailLength || 0).toFixed(4),
     Number(board?.tailDepth || 0).toFixed(4),
@@ -10072,7 +10782,8 @@ function boardCadTailOnlyPlanform(board, segments = getSegments()) {
     Number(board?.tailShoulderScale || 0).toFixed(4),
     Number(board?.tailRailBlend || 0).toFixed(4),
     Number(board?.tailLinearization || 0).toFixed(4),
-    Number(board?.tailWidthAdjust || 0).toFixed(4)
+    Number(board?.tailWidthAdjust || 0).toFixed(4),
+    serializeTailGunCurve(board?.tailGunCurve)
   ].join(":");
   const cached = board && state.tailOnlyPlanformCache.get(board);
   if (cached && cached.key === cacheKey) return cached.value;
@@ -10080,7 +10791,9 @@ function boardCadTailOnlyPlanform(board, segments = getSegments()) {
   const tail = normalizedTailConfig(board, baseHalf);
   let result;
   if (!tail.active) {
-    const positiveSpline = splineFromOrderedPoints(baseHalf);
+    const positiveSpline = normalizedWingConfig(board).active
+      ? splineFromOrderedPoints(baseHalf)
+      : boardCadCloneKnots(board.outline);
     const mirroredSpline = mirrorSplineYReverse(positiveSpline);
     result = {
       active: false,
@@ -10105,7 +10818,9 @@ function boardCadTailOnlyPlanform(board, segments = getSegments()) {
   const lowKnotSplitSpline = buildSplitTailSpline(tail, forwardBase);
   const lowKnotBatSpline = buildBatTailSpline(tail, forwardBase);
   const lowKnotStarSpline = buildStarTailSpline(tail, forwardBase);
-  const lowKnotPlanformSpline = lowKnotSpline || lowKnotOpenNotchedSpline || lowKnotHalfMoonSpline || lowKnotSplitSpline || lowKnotBatSpline || lowKnotStarSpline;
+  const generatedLowKnotSpline = lowKnotSpline || lowKnotOpenNotchedSpline || lowKnotHalfMoonSpline || lowKnotSplitSpline || lowKnotBatSpline || lowKnotStarSpline;
+  const lowKnotPlanformSpline = preserveSourceOutlineContinuation(board, tail, generatedLowKnotSpline, forwardBase);
+  if (tail.mode === "gun") alignGunJoinTangent(lowKnotPlanformSpline);
   if (lowKnotPlanformSpline) {
     const mirroredSpline = mirrorSplineYReverse(lowKnotPlanformSpline);
     const full = flattenOutlineSplines(lowKnotPlanformSpline, mirroredSpline, segments);
@@ -10247,6 +10962,7 @@ function normalizedNoseConfig(board) {
       mode: "",
       tailMode: "",
       length: 0,
+      extension: 0,
       shoulderPos: 0,
       shoulderScale: 0,
       railBlend: 0,
@@ -10257,6 +10973,8 @@ function normalizedNoseConfig(board) {
   }
   const maxLength = Math.max(1, (Number(board?.length) || 0) * 0.25);
   const rawLength = Number(board?.noseLength);
+  const hasExplicitExtension = board?.noseExtension !== null && board?.noseExtension !== undefined && board?.noseExtension !== "";
+  const rawExtension = Number(board?.noseExtension);
   const rawShoulderPos = Number(board?.noseShoulderPos);
   const rawShoulderScale = Number(board?.noseShoulderScale);
   const rawRailBlend = Number(board?.noseRailBlend);
@@ -10267,20 +10985,64 @@ function normalizedNoseConfig(board) {
     mode,
     tailMode,
     length: Number.isFinite(rawLength) && rawLength >= 0.5 ? clampNumber(rawLength, 0.5, maxLength, preset.length) : preset.length,
+    extension: mode === "gun"
+      ? (hasExplicitExtension && Number.isFinite(rawExtension) ? clampNumber(rawExtension, 0, 70, preset.extension ?? 50) : (preset.extension ?? 50))
+      : 0,
     shoulderPos: Number.isFinite(rawShoulderPos) && rawShoulderPos >= 0.12 ? clampNumber(rawShoulderPos, 0.12, 0.88, preset.shoulderPos) : preset.shoulderPos,
     shoulderScale: Number.isFinite(rawShoulderScale) && rawShoulderScale >= 0.05 ? clampNumber(rawShoulderScale, 0.05, 1.35, preset.shoulderScale) : preset.shoulderScale,
     railBlend: Number.isFinite(rawRailBlend) && rawRailBlend > 0 ? clampNumber(rawRailBlend, 0, 2.5, preset.railBlend) : preset.railBlend,
     linearization: Number.isFinite(rawLinearization) ? clampNumber(rawLinearization, 0, 1, preset.linearization ?? 0) : preset.linearization ?? 0,
-    widthAdjust,
-    widthScale: widthAdjustScale(widthAdjust)
+    widthAdjust: mode === "gun" ? 0 : widthAdjust,
+    widthScale: mode === "gun" ? 1 : widthAdjustScale(widthAdjust),
+    gunCurve: (mode === "gun" || mode === "pin") ? normalizeTailGunCurve(board?.noseGunCurve) : null
   };
+}
+
+function buildGunNoseLocalSpline(nose, baseHalf, boardLength, noseJoinX, joinY, joinSlope) {
+  const tipBoardX = boardLength + nose.extension;
+  const span = tipBoardX - noseJoinX;
+  const tip = { x: 0, y: 0 };
+  const join = { x: span, y: joinY };
+  // A fair pointed arc: retain the vertical tip and horizontal wide-point
+  // tangents, but delay width growth near the tip like a shortboard nose.
+  const tipHandleRatio = 0.3;
+  const widePointControlRatio = 0.58;
+  const customCurve = normalizeTailGunCurve(nose.gunCurve);
+  const noseCurve = {
+    start: tip,
+    c1: customCurve ? { x: span * customCurve.c1.x, y: joinY * customCurve.c1.y } : { x: span * 0.06, y: joinY * 0.14 },
+    c2: {
+      x: span * (customCurve?.c2.x ?? widePointControlRatio),
+      y: joinY * (customCurve?.c2.y ?? 1)
+    },
+    end: join
+  };
+  return splineFromBezierSegments([clampBezierSegmentVertical(noseCurve)]);
+}
+
+function buildPinNoseLocalSpline(nose, joinY, joinSlope) {
+  const span = nose.length;
+  const tip = { x: 0, y: 0 };
+  const join = { x: span, y: joinY };
+  const customCurve = normalizeTailGunCurve(nose.gunCurve);
+  const curve = {
+    start: tip,
+    c1: customCurve
+      ? { x: span * customCurve.c1.x, y: joinY * customCurve.c1.y }
+      : { x: span * 0.06, y: joinY * 0.14 },
+    c2: customCurve
+      ? { x: span * customCurve.c2.x, y: joinY * customCurve.c2.y }
+      : { x: span * 0.7, y: joinY - (joinSlope * span * 0.3) },
+    end: join
+  };
+  enforceBezierSegmentEndSlope(curve, joinSlope);
+  return splineFromBezierSegments([clampBezierSegmentVertical(curve)]);
 }
 
 /**
  * Merge a tail spline, a mid-outline section and a nose spline into one
- * continuous planform spline.  The two join points (tailJoinX, noseJoinX)
- * are marked as C0 corners (no tangent averaging) so neither the tail nor
- * the nose shape overshoot the outline at the join.
+ * continuous planform spline. The nose join inherits the generated nose
+ * tangent on both sides so a full source nose cannot leave a visible step.
  *
  * @param {Array}  tailSpline  - positiveSpline from boardCadTailOnlyPlanform
  * @param {Array}  baseHalf    - sampled outline half-points (board coords)
@@ -10293,20 +11055,30 @@ function mergeOutlineWithCorners(tailSpline, baseHalf, noseSpline, tailJoinX, no
   const noseKnots  = noseSpline.filter(k => k.p.x >= noseJoinX - 0.5);
   if (noseKnots.length === 0) return tailSpline;
 
-  // At the join, preserve each spline's own control-point handles:
-  // - beforeNose's last knot keeps its original "next" handle (from the
-  //   tail+base spline — its tangent points along the outline rail).
-  // - noseKnots' first knot keeps its original "prev" handle (from the
-  //   nose builder — its tangent follows the nose shape's entry curve).
-  // Only break C1 continuity (set continuous = false) so the Bézier
-  // evaluator doesn't try to mirror the handles across the join.
   if (beforeNose.length > 0) {
     beforeNose[beforeNose.length - 1].continuous = false;
-    // .next handle already set by splineFromOrderedPoints — keep as-is.
   }
   if (noseKnots.length > 0) {
-    noseKnots[0].continuous = false;
-    // .prev handle already set by boardCadNoseOnlyPlanform — keep as-is.
+    const join = noseKnots[0];
+    const previous = beforeNose[beforeNose.length - 1];
+    const outgoing = {
+      x: join.next.x - join.p.x,
+      y: join.next.y - join.p.y
+    };
+    const outgoingLength = Math.hypot(outgoing.x, outgoing.y);
+    const previousDistance = previous
+      ? Math.hypot(join.p.x - previous.p.x, join.p.y - previous.p.y)
+      : outgoingLength;
+    if (outgoingLength > 1e-9 && previousDistance > 1e-9) {
+      const incomingLength = Math.min(outgoingLength, previousDistance * 0.34);
+      join.prev = {
+        x: join.p.x - (outgoing.x * incomingLength / outgoingLength),
+        y: join.p.y - (outgoing.y * incomingLength / outgoingLength)
+      };
+      join.continuous = true;
+    } else {
+      join.continuous = false;
+    }
   }
 
   return [...beforeNose, ...noseKnots];
@@ -10335,14 +11107,21 @@ function boardCadNoseOnlyPlanform(board, segments, baseHalf) {
   if (!nose.active) return null;
 
   const boardLength = Number(board?.length) || 0;
+  const noseTipX = boardLength + (nose.mode === "gun" ? nose.extension : 0);
 
   // ── 1. Build a tail-style config in the local (flipped) frame ──────
   // baseHalf is already in board coords (x from tail end toward nose end).
   // joinX in board coords = boardLength − nose.length.
-  const noseJoinX = boardLength - nose.length;
+  const maxHalfWidth = Math.max(0, ...baseHalf.map(point => point.y));
+  const widestNosePoint = nose.mode === "gun"
+    ? baseHalf.filter(point => point.y >= maxHalfWidth - 1e-4).reduce((best, point) => (!best || point.x > best.x ? point : best), null)
+    : null;
+  const noseJoinX = nose.mode === "gun" && widestNosePoint
+    ? widestNosePoint.x
+    : boardLength - nose.length;
   if (noseJoinX < 0) return null;
 
-  const widthScale = widthAdjustScale(nose.widthAdjust);
+  const widthScale = nose.widthScale;
 
   // joinY: outline half-width at the nose join point, scaled by widthAdjust.
   const joinY = Math.max(0, interpolatePolyline(baseHalf, noseJoinX)) * widthScale;
@@ -10358,7 +11137,7 @@ function boardCadNoseOnlyPlanform(board, segments, baseHalf) {
     (nose.shoulderScale || tailPreset.shoulderScale) * widthScale,
     0.01, 5.4, nose.shoulderScale || tailPreset.shoulderScale
   );
-  const capLength = nose.length;
+  const capLength = noseTipX - noseJoinX;
   const tipScale  = clampNumber(
     (tailPreset.tipScale ?? 0) * widthScale,
     0, Math.max(0, shoulderScale - 0.002), tailPreset.tipScale ?? 0
@@ -10416,9 +11195,11 @@ function boardCadNoseOnlyPlanform(board, segments, baseHalf) {
   const localForwardBase = [{ x: capLength, y: joinY }];
 
   // ── 2. Build the shape in local coords using existing builders ──────
-  const localSpline =
-    buildGunTailSpline({ ...board, tailMode: tailModeKey }, noseTail, localForwardBase)
-    || buildCapTailSpline(noseTail, localForwardBase);
+  const localSpline = nose.mode === "gun"
+    ? buildGunNoseLocalSpline(nose, baseHalf, boardLength, noseJoinX, joinY, joinSlope)
+    : nose.mode === "pin"
+      ? buildPinNoseLocalSpline(nose, joinY, joinSlope)
+      : buildCapTailSpline(noseTail, localForwardBase);
 
   if (!localSpline || !localSpline.length) return null;
 
@@ -10429,11 +11210,11 @@ function boardCadNoseOnlyPlanform(board, segments, baseHalf) {
   const boardSpline = localSpline
     .map(knot => ({
       ...knot,
-      p:    { x: boardLength - knot.p.x,    y: knot.p.y },
+      p:    { x: noseTipX - knot.p.x,    y: knot.p.y },
       // prev/next are control handles; reversing x direction means
       // prev↔next swap AND x is negated relative to p.
-      prev: { x: boardLength - knot.next.x, y: knot.next.y },
-      next: { x: boardLength - knot.prev.x, y: knot.prev.y },
+      prev: { x: noseTipX - knot.next.x, y: knot.next.y },
+      next: { x: noseTipX - knot.prev.x, y: knot.prev.y },
       continuous: knot.continuous
     }))
     .reverse();
@@ -10441,6 +11222,7 @@ function boardCadNoseOnlyPlanform(board, segments, baseHalf) {
   return {
     noseTail,
     noseJoinX,
+    displayLength: noseTipX,
     joinY,
     spline: boardSpline
   };
@@ -10459,11 +11241,17 @@ function boardCadTailPlanform(board, segments = getSegments()) {
     Number(board?.tailRailBlend || 0).toFixed(4),
     Number(board?.tailLinearization || 0).toFixed(4),
     Number(board?.tailWidthAdjust || 0).toFixed(4),
+    serializeTailGunCurve(board?.tailGunCurve),
     String(board?.wingPreset || ""),
     Number(board?.wingPosition || 0).toFixed(4),
     Number(board?.wingWidth || 0).toFixed(4),
+    String(board?.wingShape || ""),
+    Number(board?.wingShoulder || 0).toFixed(4),
+    Number(board?.wingTransition || 0).toFixed(4),
     nose.mode,
     nose.length.toFixed(4),
+    nose.extension.toFixed(4),
+    serializeTailGunCurve(nose.gunCurve),
     nose.shoulderPos.toFixed(4),
     nose.shoulderScale.toFixed(4),
     nose.railBlend.toFixed(4),
@@ -10516,7 +11304,7 @@ function boardCadTailPlanform(board, segments = getSegments()) {
       noseResult.noseJoinX
     );
     const boardLength = Number(board?.length) || 0;
-    noseInfo = { ...nose, tail: noseResult.noseTail, sourceLength: noseResult.noseJoinX, displayLength: boardLength };
+    noseInfo = { ...nose, tail: noseResult.noseTail, sourceLength: noseResult.noseJoinX, displayLength: noseResult.displayLength };
   }
 
   mirroredSpline = mirrorSplineYReverse(positiveSpline);
@@ -10532,6 +11320,66 @@ function boardCadTailPlanform(board, segments = getSegments()) {
   };
   if (board) state.tailPlanformCache.set(board, { key: cacheKey, value: result });
   return result;
+}
+
+function canonicalTailMeasurements(board) {
+  const planform = boardCadTailPlanform(board, Math.max(48, getSegments()));
+  const positive = planform?.positive || [];
+  const widthAt = x => 2 * Math.max(0, interpolatePolyline(positive, x));
+  const tipPoints = positive.filter(point => Math.abs(point.x) <= 1e-4);
+  const tipPodWidth = tipPoints.length ? 2 * Math.max(...tipPoints.map(point => Math.abs(point.y))) : 0;
+  const tail = normalizedTailConfig(board);
+  const topology = canonicalTailTopology(tail.mode);
+  const fishDesign = tail.mode === "fish"
+    ? resolvedFishDesignDimensions(board, tail.baseHalf || wingAdjustedOutlineHalfPoints(board, Math.max(48, getSegments())))
+    : null;
+  const first = planform?.positiveSpline?.[0];
+  const second = planform?.positiveSpline?.[1];
+  let tipCurvature = 0;
+  if (first && second) {
+    const dx = 3 * (first.next.x - first.p.x);
+    const dy = 3 * (first.next.y - first.p.y);
+    const ddx = 6 * (first.p.x - (2 * first.next.x) + second.prev.x);
+    const ddy = 6 * (first.p.y - (2 * first.next.y) + second.prev.y);
+    const denominator = Math.pow((dx * dx) + (dy * dy), 1.5);
+    if (denominator > 1e-9) tipCurvature = Math.abs((dx * ddy) - (dy * ddx)) / denominator;
+  }
+  const terminalTip = topology === "tail.center_notched" && planform?.positiveSpline?.length >= 2
+    ? planform.positiveSpline[1].p
+    : null;
+  return {
+    topology,
+    mode: tail.mode,
+    tailWidth12: widthAt(Math.min(30.48, boardCadTailDisplayLength(board))),
+    tipPodWidth,
+    joinX: tail.active ? Math.max(0, tail.tipLength || tail.length) : 0,
+    pullInLength: tail.active ? Math.max(0, tail.tipLength || tail.length) : 0,
+    tipCurvature,
+    tipRadius: (tail.mode === "pin" || tail.mode === "gun") ? null : (tipCurvature > 1e-9 ? 1 / tipCurvature : null),
+    terminalContinuity: (tail.mode === "pin" || tail.mode === "gun") ? "G0-cusp" : "smooth-turnaround",
+    notchDepth: tail.notched ? tail.depth : 0,
+    tipSeparation: terminalTip ? Math.abs(terminalTip.y) * 2 : 0,
+    eachTipWidth: terminalTip ? Math.max(0, joinPointWidthEstimate(planform.positiveSpline, 1)) : 0,
+    fishTemplateScale: fishDesign ? {
+      length: fishDesign.templateLengthScale,
+      width: fishDesign.templateWidthScale,
+      stationInterval: fishDesign.stationInterval
+    } : null,
+    terminalKind: topology === "tail.solid_block"
+      ? "finite-pod"
+      : topology === "tail.center_notched"
+        ? "notched"
+        : topology === "tail.multi_lobed"
+          ? "multi-lobed"
+          : "center-tip",
+    terminalControlPointRequired: tail.active
+  };
+}
+
+function joinPointWidthEstimate(knots, index) {
+  const knot = knots?.[index];
+  if (!knot) return 0;
+  return Math.abs(knot.y ?? knot.p?.y ?? 0);
 }
 
 function outlineFullPoints(board) {
@@ -10603,6 +11451,26 @@ function shiftSplineKnotsX(knots, shift = 0) {
   return shifted;
 }
 
+function extendProfileSplineToX(knots, targetX, targetY = null) {
+  const extended = boardCadCloneKnots(knots || []);
+  const last = extended[extended.length - 1];
+  if (!last || !(targetX > last.p.x + 1e-6)) return extended;
+  const dx = targetX - last.p.x;
+  const handleDx = last.p.x - last.prev.x;
+  const slope = Math.abs(handleDx) > 1e-9 ? (last.p.y - last.prev.y) / handleDx : 0;
+  const endY = Number.isFinite(targetY) ? targetY : last.p.y + (slope * dx);
+  const end = makeSplineKnot({ x: targetX, y: endY });
+  last.next = { x: last.p.x + (dx / 3), y: last.p.y + (slope * dx / 3) };
+  end.prev = {
+    x: targetX - (dx / 3),
+    y: endY - ((endY - last.p.y) / 3)
+  };
+  last.continuous = true;
+  end.continuous = true;
+  extended.push(end);
+  return extended;
+}
+
 function boardCadSampleXPair(board, x) {
   const rawLength = Math.max(0, Number(board?.length) || 0);
   const rawMax = Math.max(0.1, rawLength - 0.1);
@@ -10642,13 +11510,17 @@ function boardCadBezierDisplayCrossSectionKnotsAt(board, x) {
 
 function tailAdjustedProfileGeometry(board) {
   const shift = boardCadTailDisplayShift(board);
-  const bottomKnots = trimSplineFromX(board.bottom, shift);
-  const deckKnots = trimSplineFromX(board.deck, shift);
+  const displayLength = boardCadTailDisplayLength(board);
+  const rawTargetX = displayLength + shift;
+  const trimmedBottom = trimSplineFromX(board.bottom, shift);
+  const bottomKnots = extendProfileSplineToX(trimmedBottom, rawTargetX);
+  const bottomNoseY = bottomKnots[bottomKnots.length - 1]?.p?.y;
+  const deckKnots = extendProfileSplineToX(trimSplineFromX(board.deck, shift), rawTargetX, bottomNoseY);
   const bottomRaw = flattenSpline(bottomKnots);
   const deckRaw = flattenSpline(deckKnots);
   return {
     shift,
-    displayLength: boardCadTailDisplayLength(board),
+    displayLength,
     displayBoard: boardCadDisplayBoard(board),
     bottomKnots,
     deckKnots,
@@ -10764,7 +11636,13 @@ function drawOutline(board, rect) {
   const fitPoints = (state.tool === "edit" && state.viewOptions.showControlPoints)
     ? points.concat(splineAnchorPoints(renderBoard.outline))
     : points;
-  const transform = boardViewTransform(displayBoard, fitPoints, rect, 32, -Math.min(88, rect.height * 0.12));
+  const transform = boardViewTransform(
+    displayBoard,
+    fitPoints,
+    tailHandleOperationRect(rect, 64),
+    32,
+    -Math.min(88, rect.height * 0.12)
+  );
   const rawTransform = shiftTransformX(transform, outlineShift);
   mark("transform");
   registerPointerTransform("outline", rawTransform, rect);
@@ -10813,11 +11691,16 @@ function drawOutline(board, rect) {
   if (state.viewOptions.showSlidingCrossSection) drawSlidingCrossSectionOnBoard(renderBoard, transform, "outline");
   mark("fins-wing-sliding");
   if (!state.viewOptions.viewBlank) {
-    setEditHandles([{ label: "Outline", knots: renderBoard.outline }], rawTransform);
+    setOutlineEditHandles(renderBoard, rawTransform, transform);
+    appendGunTailEditHandles(renderBoard, planform, transform);
+    appendStarTailEditHandles(renderBoard, planform, transform);
+    appendSwallowTailWidthEditHandle(renderBoard, planform, transform);
+    appendGunNoseEditHandles(renderBoard, planform, transform);
     drawEditHandles();
   }
   mark("edit-handles");
   drawBottomFeatureHandles(renderBoard, transform);
+  drawShaperComment(renderBoard, rect);
   mark("bottom-handles");
   flush();
 }
@@ -10853,12 +11736,9 @@ function drawProfile(board, rect) {
   }
   drawContextToolpaths(renderBoard, rawTransform, "profile");
   drawScanGhostProfile(ghost, transform);
-  if (state.viewOptions.showBaseLine) {
-    drawBaseline(profile.displayBoard, transform);
-    drawProfileReferenceGuides(renderBoard, rawTransform);
-  }
+  if (state.viewOptions.showBaseLine) drawBaseline(profile.displayBoard, transform);
   if (state.viewOptions.showCrossSectionPositions) drawCrossSectionPositionMarkers(renderBoard, transform, "profile");
-  if (state.viewOptions.showFlowlines) drawSurfaceAngleLines(renderBoard, transform, "profile", [10, 27.5, 45], "#5ac8fa");
+  if (state.viewOptions.showFlowlines) drawSurfaceAngleLines(renderBoard, transform, "profile", [27.5], "#5ac8fa");
   if (state.viewOptions.showApexLine) drawSurfaceAngleLines(renderBoard, transform, "profile", [90], "#30d158");
   if (state.viewOptions.showTuckUnderLine) drawSurfaceAngleLines(renderBoard, transform, "profile", [175], "#ff9f0a");
   if (state.viewOptions.showCurvature) {
@@ -10887,25 +11767,6 @@ function drawProfile(board, rect) {
     ], rawTransform);
     drawEditHandles();
   }
-}
-
-function drawProfileReferenceGuides(board, transform) {
-  if (!board || !(board.length > 0)) return;
-  const apex = boardCadRockerApex(board);
-  const stations = sortedUnique([0, board.length * 0.25, apex.x, board.length * 0.5, board.length * 0.75, board.length], 0.001);
-  ctx.save();
-  ctx.globalAlpha = 0.72;
-  ctx.setLineDash([5, 5]);
-  line(transform.x(0), transform.y(apex.rocker), transform.x(board.length), transform.y(apex.rocker), "#30d158", 1);
-  ctx.setLineDash([]);
-  stations.forEach(x => {
-    line(
-      transform.x(x), transform.y(boardCadRockerAtPos(board, x)),
-      transform.x(x), transform.y(boardCadDeckAtPos(board, x)),
-      "#ffd60a", 1
-    );
-  });
-  ctx.restore();
 }
 
 function drawRockerTargetPreview(board, transform, profile, points = null, config = null) {
@@ -11710,6 +12571,313 @@ function currentProbeSimulationPosition(sim) {
   };
 }
 
+function simulationFinGeometry(board) {
+  const fins = normalizedFins(board?.fins);
+  const result = [];
+  const add = (rearX, rearY, frontX, frontY, depth, multiplicity = 1) => {
+    const base = Math.hypot(frontX - rearX, frontY - rearY);
+    if (!(base > 0.1) || !(depth > 0.1)) return;
+    result.push({ x: (rearX + frontX) * 0.5, base, depth, area: base * depth * 0.5, multiplicity });
+  };
+  add(fins[0], fins[1], fins[2], fins[3], fins[7] || 11.5, 2);
+  add(fins[4], 0, fins[5], 0, fins[6] || 12, 1);
+  normalizeFinExtra(board?.finExtra).forEach(fin => {
+    const paired = Math.abs(fin.rearY) + Math.abs(fin.frontY) > 0.1;
+    const depth = fin.role.includes("runner") ? 7 : fin.role === "center" ? 12 : 11.5;
+    add(fin.rearX, fin.rearY, fin.frontX, fin.frontY, depth, paired ? 2 : 1);
+  });
+  return result;
+}
+
+function finGeometryYawEstimate(board, geometry, speed = 5, angleDeg = 5) {
+  const density = 1025;
+  const angle = angleDeg * Math.PI / 180;
+  const center = boardCadCenterOfMass(board);
+  let force = 0;
+  let moment = 0;
+  let count = 0;
+  geometry.forEach(fin => {
+    const areaM2 = fin.area / 10000;
+    const aspectRatio = Math.max(0.25, (fin.depth * fin.depth) / Math.max(0.01, fin.area));
+    const liftSlope = (2 * Math.PI) / (1 + (2 / Math.max(0.25, aspectRatio)));
+    const lift = 0.5 * density * speed * speed * areaM2 * liftSlope * angle * fin.multiplicity;
+    force += lift;
+    moment += lift * Math.abs(fin.x - center) / 100;
+    count += fin.multiplicity;
+  });
+  return { count, force, moment, stiffness: angle > 0 ? moment / angle : 0, speed, angleDeg };
+}
+
+function finYawEstimate(board, speed = 5, angleDeg = 5) {
+  return finGeometryYawEstimate(board, simulationFinGeometry(board), speed, angleDeg);
+}
+
+function finComparisonScenarios(board) {
+  const thruster = finSetupPreset("thruster", board);
+  const tf = normalizedFins(thruster?.fins);
+  const sideX = (tf[0] + tf[2]) * 0.5;
+  const centerX = (tf[4] + tf[5]) * 0.5;
+  const thrusterGeometry = (area, depth) => [
+    { x: sideX, area, depth, multiplicity: 2 },
+    { x: centerX, area, depth, multiplicity: 1 }
+  ];
+  const twoPlusOne = finSetupPreset("2plus1", board);
+  const lf = normalizedFins(twoPlusOne?.fins);
+  const center = { x: (lf[4] + lf[5]) * 0.5, area: 155.18, depth: 17.79, multiplicity: 1 };
+  const sides = { x: (lf[0] + lf[2]) * 0.5, area: 71.40, depth: 9.98, multiplicity: 2 };
+  return {
+    g3: finGeometryYawEstimate(board, thrusterGeometry(91.72, 11.0)),
+    g5: finGeometryYawEstimate(board, thrusterGeometry(95.54, 11.54)),
+    single: finGeometryYawEstimate(board, [center]),
+    twoPlusOne: finGeometryYawEstimate(board, [center, sides])
+  };
+}
+
+function railApexLineSamples(board, count = 40) {
+  const length = boardCadTailDisplayLength(board);
+  const samples = [];
+  for (let i = 0; i <= count; i += 1) {
+    const x = Math.max(0.01, Math.min(length - 0.01, length * i / count));
+    const knots = boardCadInterpolatedDisplayCrossSectionKnots(board, x);
+    if (!knots.length) continue;
+    const apex = knots.reduce((best, knot) => knot.p.x > best.p.x ? knot : best, knots[0]);
+    const thickness = Math.max(0.01, boardCadCrossSectionCenterThickness(knots));
+    samples.push({ x, lateral: apex.p.x, heightRatio: apex.p.y / thickness });
+  }
+  return samples;
+}
+
+function clipPolygonByAxis(points, axis, limit, keepLess = true) {
+  const inside = point => keepLess ? point[axis] <= limit + 1e-9 : point[axis] >= limit - 1e-9;
+  const result = [];
+  points.forEach((current, index) => {
+    const previous = points[(index + points.length - 1) % points.length];
+    const currentInside = inside(current);
+    const previousInside = inside(previous);
+    if (currentInside !== previousInside) {
+      const denominator = current[axis] - previous[axis];
+      const t = Math.abs(denominator) > 1e-9 ? (limit - previous[axis]) / denominator : 0;
+      result.push({ x: lerp(previous.x, current.x, t), y: lerp(previous.y, current.y, t) });
+    }
+    if (currentInside) result.push(current);
+  });
+  return result;
+}
+
+function polygonAreaCentroid(points) {
+  if (!Array.isArray(points) || points.length < 3) return { area: 0, x: 0, y: 0 };
+  let twiceArea = 0, x = 0, y = 0;
+  points.forEach((a, index) => {
+    const b = points[(index + 1) % points.length];
+    const cross = (a.x * b.y) - (b.x * a.y);
+    twiceArea += cross;
+    x += (a.x + b.x) * cross;
+    y += (a.y + b.y) * cross;
+  });
+  if (Math.abs(twiceArea) < 1e-9) return { area: 0, x: 0, y: 0 };
+  return { area: Math.abs(twiceArea) * 0.5, x: x / (3 * twiceArea), y: y / (3 * twiceArea) };
+}
+
+function railGeometryLineSamples(board, count = 40) {
+  return railApexLineSamples(board, count).map(sample => {
+    const knots = boardCadInterpolatedDisplayCrossSectionKnots(board, sample.x);
+    const railIndex = knots.reduce((best, knot, index) => knot.p.x > knots[best].p.x ? index : best, 0);
+    const halfWidth = Math.max(0.01, knots[railIndex].p.x);
+    const tuck = knots[Math.max(0, railIndex - 1)]?.p || { x: 0 };
+    const full = fullCrossSectionPoints(knots);
+    const rightRail = clipPolygonByAxis(full, "x", halfWidth * 0.75, false);
+    const leftRail = clipPolygonByAxis(full, "x", -halfWidth * 0.75, true);
+    return { ...sample, tuckInsetRatio: 1 - Math.abs(tuck.x) / halfWidth, railArea: polygonAreaCentroid(rightRail).area + polygonAreaCentroid(leftRail).area };
+  });
+}
+
+function bankHydrostatics(board, angleDeg, stations = 32) {
+  const length = boardCadTailDisplayLength(board);
+  const angle = angleDeg * Math.PI / 180;
+  const slices = [];
+  for (let i = 0; i <= stations; i += 1) {
+    const x = Math.max(0.01, Math.min(length - 0.01, length * i / stations));
+    const points = fullCrossSectionPoints(boardCadInterpolatedDisplayCrossSectionKnots(board, x));
+    if (points.length < 3) continue;
+    const minY = Math.min(...points.map(point => point.y));
+    const maxY = Math.max(...points.map(point => point.y));
+    const pivotY = (minY + maxY) * 0.5;
+    const rotated = points.map(point => ({
+      x: (point.x * Math.cos(angle)) - ((point.y - pivotY) * Math.sin(angle)),
+      y: (point.x * Math.sin(angle)) + ((point.y - pivotY) * Math.cos(angle))
+    }));
+    const immersed = polygonAreaCentroid(clipPolygonByAxis(rotated, "y", 0, true));
+    slices.push({ stationX: x, area: immersed.area, centerX: immersed.x });
+  }
+  let volumeCm3 = 0, lateralMomentCm4 = 0;
+  for (let i = 1; i < slices.length; i += 1) {
+    const a = slices[i - 1], b = slices[i], dx = b.stationX - a.stationX;
+    volumeCm3 += (a.area + b.area) * 0.5 * dx;
+    lateralMomentCm4 += ((a.area * a.centerX) + (b.area * b.centerX)) * 0.5 * dx;
+  }
+  const center = volumeCm3 > 0 ? lateralMomentCm4 / volumeCm3 : 0;
+  return { angleDeg, immersedLiters: volumeCm3 / 1000, center, restoringMoment: Math.abs(1025 * 9.80665 * (volumeCm3 / 1e6) * (center / 100)) };
+}
+
+function simulationCurveData(board) {
+  const geometry = simulationFinGeometry(board);
+  return {
+    finAngles: Array.from({ length: 7 }, (_, index) => finGeometryYawEstimate(board, geometry, 5, index * 2.5)),
+    bankAngles: Array.from({ length: 7 }, (_, index) => bankHydrostatics(board, index * 5)),
+    rail: railGeometryLineSamples(board, 40)
+  };
+}
+
+function simulationFinPresetCurve(board, setup) {
+  const preset = finSetupPreset(setup, board);
+  if (!preset) return [];
+  const variant = { ...board, fins: preset.fins, finExtra: preset.extra };
+  const geometry = simulationFinGeometry(variant);
+  return Array.from({ length: 7 }, (_, index) => finGeometryYawEstimate(board, geometry, 5, index * 2.5));
+}
+
+function simulationRailPresetCurve(board, mode) {
+  const variant = cloneBoard(board);
+  variant.railMode = normalizeRailModeKey(mode);
+  variant.railStrength = 1;
+  variant.sections.forEach(section => applyBoardRailAndEdgeToSection(variant, section));
+  return railGeometryLineSamples(variant, 40);
+}
+
+function simulationSelectedComparisons(board) {
+  const finA = finSetupKey(els.simulationFinA?.value) || "thruster";
+  const finB = finSetupKey(els.simulationFinB?.value) || "5fin";
+  const railA = normalizeRailModeKey(els.simulationRailA?.value) || "5050";
+  const railB = normalizeRailModeKey(els.simulationRailB?.value) || "7030";
+  return {
+    finA: { key: finA, samples: simulationFinPresetCurve(board, finA) },
+    finB: { key: finB, samples: simulationFinPresetCurve(board, finB) },
+    railA: { key: railA, samples: simulationRailPresetCurve(board, railA) },
+    railB: { key: railB, samples: simulationRailPresetCurve(board, railB) }
+  };
+}
+
+function hydrodynamicSimulationMetrics(board) {
+  const volumeLiters = boardCadVolume(board) / 1000;
+  const buoyancySamples = boardCadVolumeDistributionSamples(board, 40);
+  return {
+    volumeLiters,
+    seawaterSupportKg: volumeLiters * 1.025,
+    freshwaterSupportKg: volumeLiters,
+    centerOfBuoyancy: boardCadCenterOfMass(board),
+    buoyancySamples,
+    apexSamples: railApexLineSamples(board, 40),
+    fins: finYawEstimate(board),
+    comparisons: finComparisonScenarios(board),
+    curves: simulationCurveData(board),
+    selected: simulationSelectedComparisons(board)
+  };
+}
+
+function drawHydrodynamicSimulation(board, rect) {
+  const metrics = hydrodynamicSimulationMetrics(board);
+  const ja = state.language === "ja";
+  const pad = 18;
+  const headerH = 112;
+  ctx.fillStyle = "rgba(20,21,24,.94)";
+  ctx.fillRect(rect.left, rect.top, rect.width, rect.height);
+  label(ja ? "流体シミュレーション（準静的・比較モデル）" : "Hydrodynamic simulation (quasi-static comparison model)", pad, 26, "#f2f2f7");
+  const cards = [
+    [ja ? "体積" : "Volume", `${fmt(metrics.volumeLiters)} L`],
+    [ja ? "海水中の最大支持質量" : "Max seawater support", `${fmt(metrics.seawaterSupportKg)} kg`],
+    [ja ? "浮力中心 X" : "Center of buoyancy X", `${fmt(metrics.centerOfBuoyancy)} cm`],
+    [ja ? "フィン / 5°横力" : "Fins / force at 5°", `${metrics.fins.count} / ${fmt(metrics.fins.force)} N`],
+    [ja ? "Yaw復原モーメント" : "Yaw restoring moment", `${fmt(metrics.fins.moment)} N·m`]
+  ];
+  const cardW = (rect.width - pad * 2 - 8 * (cards.length - 1)) / cards.length;
+  cards.forEach((card, i) => {
+    const x = pad + i * (cardW + 8);
+    ctx.fillStyle = "rgba(46,48,54,.94)";
+    ctx.fillRect(x, 40, cardW, 54);
+    label(card[0], x + 9, 58, "#aeb4bf");
+    label(card[1], x + 9, 81, "#64d2ff");
+  });
+  const gap = 12;
+  const comparisonY = headerH;
+  const comparisons = [
+    ["Thruster G3 → G5", metrics.comparisons.g3, metrics.comparisons.g5],
+    [ja ? "Longboard: centerのみ → 2+1" : "Longboard: center only → 2+1", metrics.comparisons.single, metrics.comparisons.twoPlusOne]
+  ];
+  comparisons.forEach((item, index) => {
+    const x = pad + index * ((rect.width - pad * 2 + gap) / 2);
+    const w = (rect.width - pad * 2 - gap) / 2;
+    const forceChange = item[1].force > 0 ? ((item[2].force / item[1].force) - 1) * 100 : 0;
+    const momentChange = item[1].moment > 0 ? ((item[2].moment / item[1].moment) - 1) * 100 : 0;
+    ctx.fillStyle = "rgba(40,43,49,.94)";
+    ctx.fillRect(x, comparisonY, w, 58);
+    label(item[0], x + 10, comparisonY + 20, "#f2f2f7");
+    label(`${ja ? "横力" : "Force"} ${fmt(item[1].force)} → ${fmt(item[2].force)} N (${forceChange >= 0 ? "+" : ""}${fmt(forceChange)}%)`, x + 10, comparisonY + 39, "#64d2ff");
+    label(`${ja ? "Yawモーメント" : "Yaw moment"} ${fmt(item[1].moment)} → ${fmt(item[2].moment)} N·m (${momentChange >= 0 ? "+" : ""}${fmt(momentChange)}%)`, x + w * 0.52, comparisonY + 39, "#ff9f0a");
+  });
+  const panelY = comparisonY + 70;
+  const panelH = rect.height - panelY - 42;
+  const panelW = (rect.width - pad * 2 - gap * 2) / 3;
+  const drawChart = (x, title, samples, series, xLabel, xTicks) => {
+    ctx.fillStyle = "rgba(34,36,41,.92)";
+    ctx.fillRect(x, panelY, panelW, panelH);
+    label(title, x + 10, panelY + 20, "#f2f2f7");
+    const left = x + 12, right = x + panelW - 12, top = panelY + 38, bottom = panelY + panelH - 28;
+    const scaleMax = new Map();
+    series.forEach(item => {
+      const itemSamples = item.samples || samples;
+      const group = item.group || item.label;
+      scaleMax.set(group, Math.max(scaleMax.get(group) || 1e-9, ...itemSamples.map(item.value)));
+    });
+    series.forEach((item, seriesIndex) => {
+      const itemSamples = item.samples || samples;
+      const seriesMax = scaleMax.get(item.group || item.label);
+      ctx.beginPath();
+      itemSamples.forEach((sample, index) => {
+        const px = left + (right - left) * index / Math.max(1, itemSamples.length - 1);
+        const py = bottom - (bottom - top) * item.value(sample) / seriesMax;
+        if (index === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+      });
+      ctx.strokeStyle = item.color;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      const column = seriesIndex % Math.min(3, series.length);
+      const row = Math.floor(seriesIndex / Math.min(3, series.length));
+      label(`${item.label} ${fmt(item.value(itemSamples.at(-1)))}${item.unit || ""}`, left + column * ((right - left) / Math.min(3, series.length)), bottom + 16 + row * 14, item.color);
+    });
+    ctx.strokeStyle = "rgba(174,174,178,.35)";
+    ctx.lineWidth = 1;
+    line(left, bottom, right, bottom);
+    [0, 0.5, 1].forEach(u => {
+      const px = lerp(left, right, u);
+      line(px, bottom - 3, px, bottom + 3);
+      label(xTicks(u), px - 7, top + 11, "#8e8e93");
+    });
+    if (xLabel) label(xLabel, right - 70, top + 11, "#8e8e93");
+  };
+  drawChart(pad, ja ? "フィンA/B：迎角―横力／Yaw" : "Fin A/B: angle — force / yaw", [], [
+    { label: `${metrics.selected.finA.key} F`, group: "force", unit: "N", samples: metrics.selected.finA.samples, value: item => item.force, color: "#64d2ff" },
+    { label: `${metrics.selected.finB.key} F`, group: "force", unit: "N", samples: metrics.selected.finB.samples, value: item => item.force, color: "#30d158" },
+    { label: `${metrics.selected.finA.key} Y`, group: "yaw", unit: "Nm", samples: metrics.selected.finA.samples, value: item => item.moment, color: "#ff9f0a" },
+    { label: `${metrics.selected.finB.key} Y`, group: "yaw", unit: "Nm", samples: metrics.selected.finB.samples, value: item => item.moment, color: "#ff375f" }
+  ], ja ? "迎角" : "angle", u => `${fmt(15 * u)}°`);
+  drawChart(pad + panelW + gap, ja ? "バンク角―浸水量／復原モーメント" : "Bank — immersion / restoring moment", metrics.curves.bankAngles, [
+    { label: ja ? "浸水 L" : "Immersed L", group: "immersion", unit: "L", value: item => item.immersedLiters, color: "#30d158" },
+    { label: ja ? "復原" : "Restore", group: "restoring", unit: "Nm", value: item => item.restoringMoment, color: "#ff375f" }
+  ], ja ? "バンク角" : "bank", u => `${fmt(30 * u)}°`);
+  drawChart(pad + (panelW + gap) * 2, ja ? "レールA/B：Apex／Tuck／面積" : "Rail A/B: apex / tuck / area", [], [
+    { label: `${metrics.selected.railA.key} Apex`, group: "apex", unit: "%", samples: metrics.selected.railA.samples, value: item => item.heightRatio * 100, color: "#ff9f0a" },
+    { label: `${metrics.selected.railB.key} Apex`, group: "apex", unit: "%", samples: metrics.selected.railB.samples, value: item => item.heightRatio * 100, color: "#ffd60a" },
+    { label: `${metrics.selected.railA.key} Tuck`, group: "tuck", unit: "%", samples: metrics.selected.railA.samples, value: item => item.tuckInsetRatio * 100, color: "#64d2ff" },
+    { label: `${metrics.selected.railB.key} Tuck`, group: "tuck", unit: "%", samples: metrics.selected.railB.samples, value: item => item.tuckInsetRatio * 100, color: "#30d158" },
+    { label: `${metrics.selected.railA.key} Rail`, group: "railArea", unit: "cm²", samples: metrics.selected.railA.samples, value: item => item.railArea, color: "#bf5af2" },
+    { label: `${metrics.selected.railB.key} Rail`, group: "railArea", unit: "cm²", samples: metrics.selected.railB.samples, value: item => item.railArea, color: "#ff375f" }
+  ], ja ? "テール→ノーズ" : "tail → nose", u => [ja ? "テール" : "Tail", ja ? "中央" : "Center", ja ? "ノーズ" : "Nose"][u * 2]);
+  label(ja
+    ? "条件: 海水1025 kg/m³、速度5 m/s、横流れ5°。フィンは有限翼近似。実旋回半径・失速・波面・乗り手入力は未計算。"
+    : "Conditions: seawater 1025 kg/m³, 5 m/s, 5° sideslip. Fins use a finite-wing estimate; turn radius, stall, wave face and rider input are not solved.",
+    pad, rect.height - 14, "#8e8e93");
+}
+
 function drawQuad(board, rect) {
   state.editHandles = [];
   const gap = 3;
@@ -11750,7 +12918,12 @@ function drawQuadOutline(board, rect) {
   const fitPoints = (state.tool === "edit" && state.quadActivePane === "outline" && state.viewOptions.showControlPoints)
     ? points.concat(ghostPoints, splineAnchorPoints(renderBoard.outline))
     : points.concat(ghostPoints);
-  const transform = boardViewTransform(boardCadDisplayBoard(renderBoard), fitPoints, rect, 16);
+  const transform = boardViewTransform(
+    boardCadDisplayBoard(renderBoard),
+    fitPoints,
+    tailHandleOperationRect(rect, 28),
+    16
+  );
   const rawTransform = shiftTransformX(transform, outlineShift);
   if (state.quadActivePane === "outline") registerPointerTransform("quad", rawTransform, rect);
   if (!state.viewOptions.viewBlank) {
@@ -11807,7 +12980,7 @@ function drawQuadProfile(board, rect) {
   drawContextToolpaths(renderBoard, rawTransform, "profile");
   if (state.viewOptions.showBaseLine) drawBaseline(profile.displayBoard, transform);
   if (state.viewOptions.showCrossSectionPositions) drawCrossSectionPositionMarkers(renderBoard, transform, "profile");
-  if (state.viewOptions.showFlowlines) drawSurfaceAngleLines(renderBoard, transform, "profile", [10, 27.5, 45], "#5ac8fa");
+  if (state.viewOptions.showFlowlines) drawSurfaceAngleLines(renderBoard, transform, "profile", [27.5], "#5ac8fa");
   if (state.viewOptions.showApexLine) drawSurfaceAngleLines(renderBoard, transform, "profile", [90], "#30d158");
   if (state.viewOptions.showTuckUnderLine) drawSurfaceAngleLines(renderBoard, transform, "profile", [175], "#ff9f0a");
   if (state.viewOptions.showCurvature) {
@@ -11834,8 +13007,17 @@ function registerQuadEditHandles(board, paneId, rect, active) {
     const points = outlineFullPoints(board);
     const ghostBoard = currentGhostBoard(board);
     const ghostPoints = ghostBoard ? transformedGhostOutlinePoints(ghostBoard) : [];
-    const transform = boardViewTransform(boardCadDisplayBoard(board), points.concat(ghostPoints, splineAnchorPoints(board.outline)), rect, 16);
-    setEditHandles([{ label: "Outline", knots: board.outline }], shiftTransformX(transform, boardCadTailDisplayShift(board)));
+    const transform = boardViewTransform(
+      boardCadDisplayBoard(board),
+      points.concat(ghostPoints, splineAnchorPoints(board.outline)),
+      tailHandleOperationRect(rect, 28),
+      16
+    );
+    setOutlineEditHandles(board, shiftTransformX(transform, boardCadTailDisplayShift(board)), transform);
+    appendGunTailEditHandles(board, boardCadTailPlanform(board), transform);
+    appendStarTailEditHandles(board, boardCadTailPlanform(board), transform);
+    appendSwallowTailWidthEditHandle(board, boardCadTailPlanform(board), transform);
+    appendGunNoseEditHandles(board, boardCadTailPlanform(board), transform);
   } else if (paneId === "profile") {
     const profile = tailAdjustedProfileGeometry(board);
     const ghostBoard = currentGhostBoard(board);
@@ -12613,6 +13795,13 @@ function insetRect(rect, left, top, right, bottom) {
   };
 }
 
+function tailHandleOperationRect(rect, extra = 64) {
+  const tailExtra = Math.max(0, Number(extra) || 0);
+  return state.flipped
+    ? insetRect(rect, 0, 0, tailExtra, 0)
+    : insetRect(rect, tailExtra, 0, 0, 0);
+}
+
 function surfaceLabel(value) {
   if (value === "deck") return "デッキ";
   if (value === "both") return "ハル+デッキ";
@@ -12737,6 +13926,124 @@ function setEditHandles(splines, transform) {
   });
 }
 
+function setOutlineEditHandles(board, transform, displayTransform = transform) {
+  state.editHandles = [];
+  if (state.tool !== "edit" || !board?.outline?.length) return;
+  if (normalizedTailConfig(board).active || normalizedNoseConfig(board).active) {
+    const knots = boardCadTailPlanform(board).positiveSpline;
+    knots.forEach((knot, knotIndex) => {
+      ["p", "prev", "next"].forEach((pointKey, which) => state.editHandles.push({
+        splineIndex: 0, splineLabel: "Outline", knots, knotIndex, pointKey, which,
+        transform: displayTransform, customKind: "procedural-outline"
+      }));
+    });
+    return;
+  }
+  const tail = normalizedTailConfig(board);
+  const nose = normalizedNoseConfig(board);
+  const tailJoinX = tail.active ? (tail.rawJoinX || tail.length) : -Infinity;
+  const noseJoinX = nose.active ? (Number(board.length) - nose.length) : Infinity;
+  const visibleKnotIndexes = board.outline
+    .map((knot, index) => ({ knot, index }))
+    .filter(({ knot }) => knot.p.x > tailJoinX + 1e-6 && knot.p.x < noseJoinX - 1e-6)
+    .map(({ index }) => index);
+
+  // Keep one source CP nearest the physical tail end. It provides the local
+  // shape control needed at the tip without restoring the redundant CPs near
+  // the procedural tail-to-outline junction.
+  if (tail.active) {
+    const tailTipControl = board.outline
+      .map((knot, index) => ({ knot, index }))
+      .filter(({ knot }) => knot.p.x >= -1e-6 && knot.p.x < tailJoinX - 1e-6)
+      .sort((a, b) => a.knot.p.x - b.knot.p.x)
+      .find(({ knot }) => knot.p.x > 1e-6);
+    if (tailTipControl && !visibleKnotIndexes.includes(tailTipControl.index)) {
+      visibleKnotIndexes.unshift(tailTipControl.index);
+    }
+  }
+
+  if (!tail.active && !nose.active) {
+    board.outline.forEach((knot, knotIndex) => {
+      state.editHandles.push({ splineIndex: 0, splineLabel: "Outline", knots: board.outline, knotIndex, pointKey: "p", which: 0, transform });
+      state.editHandles.push({ splineIndex: 0, splineLabel: "Outline", knots: board.outline, knotIndex, pointKey: "prev", which: 1, transform });
+      state.editHandles.push({ splineIndex: 0, splineLabel: "Outline", knots: board.outline, knotIndex, pointKey: "next", which: 2, transform });
+    });
+    return;
+  }
+
+  visibleKnotIndexes.forEach((knotIndex, visibleIndex) => {
+    state.editHandles.push({ splineIndex: 0, splineLabel: "Outline", knots: board.outline, knotIndex, pointKey: "p", which: 0, transform });
+    const isTailTipControl = tail.active && visibleIndex === 0 && board.outline[knotIndex].p.x < tailJoinX - 1e-6;
+    if (isTailTipControl || !(tail.active && visibleIndex === 0)) {
+      state.editHandles.push({ splineIndex: 0, splineLabel: "Outline", knots: board.outline, knotIndex, pointKey: "prev", which: 1, transform });
+    }
+    if (isTailTipControl || !(nose.active && visibleIndex === visibleKnotIndexes.length - 1)) {
+      state.editHandles.push({ splineIndex: 0, splineLabel: "Outline", knots: board.outline, knotIndex, pointKey: "next", which: 2, transform });
+    }
+  });
+}
+
+function materializeProceduralOutlineHandle(handle) {
+  if (handle?.customKind !== "procedural-outline" || !state.board) return false;
+  bakeProceduralOutlineForExport(state.board);
+  handle.knots = state.board.outline;
+  handle.customKind = "";
+  markGeometryDirty();
+  updateBoardPanel();
+  return true;
+}
+
+function appendGunTailEditHandles(board, planform, transform) {
+  if (state.tool !== "edit" || normalizeTailModeKey(board?.tailMode) !== "gun") return;
+  const knots = planform?.positiveSpline;
+  if (!Array.isArray(knots) || knots.length < 2) return;
+  state.editHandles.push({
+    splineIndex: -1, splineLabel: "Gun tail", knots, knotIndex: 0,
+    pointKey: "next", which: 2, transform, customKind: "gun-tail", controlKey: "c1"
+  });
+  state.editHandles.push({
+    splineIndex: -1, splineLabel: "Gun tail", knots, knotIndex: 1,
+    pointKey: "prev", which: 1, transform, customKind: "gun-tail", controlKey: "c2"
+  });
+}
+
+function appendStarTailEditHandles(board, planform, transform) {
+  if (state.tool !== "edit" || normalizeTailModeKey(board?.tailMode) !== "star") return;
+  const knots = planform?.positiveSpline;
+  if (!Array.isArray(knots) || knots.length < 3) return;
+  state.editHandles.push({
+    splineIndex: -1, splineLabel: "Star corner", knots, knotIndex: 1,
+    pointKey: "p", which: 0, transform, customKind: "star-corner"
+  });
+}
+
+function appendSwallowTailWidthEditHandle(board, planform, transform) {
+  if (state.tool !== "edit" || normalizeTailModeKey(board?.tailMode) !== "swallow") return;
+  const knots = planform?.positiveSpline;
+  if (!Array.isArray(knots) || knots.length < 3 || !knots[1]?.p) return;
+  state.editHandles.push({
+    splineIndex: -1,
+    splineLabel: "Swallow tail width",
+    knots,
+    knotIndex: 1,
+    pointKey: "p",
+    which: 0,
+    transform,
+    customKind: "swallow-width"
+  });
+}
+
+function appendGunNoseEditHandles(board, planform, transform) {
+  const mode = normalizeNoseModeKey(board?.noseMode);
+  if (state.tool !== "edit" || !(mode === "gun" || mode === "pin")) return;
+  const knots = planform?.positiveSpline;
+  if (!Array.isArray(knots) || knots.length < 2) return;
+  const tipIndex = knots.length - 1;
+  const joinIndex = tipIndex - 1;
+  state.editHandles.push({ splineIndex: -1, splineLabel: "Point nose", knots, knotIndex: tipIndex, pointKey: "prev", which: 1, transform, customKind: "gun-nose", controlKey: "c1" });
+  state.editHandles.push({ splineIndex: -1, splineLabel: "Point nose", knots, knotIndex: joinIndex, pointKey: "next", which: 2, transform, customKind: "gun-nose", controlKey: "c2" });
+}
+
 function drawEditHandles() {
   if (state.tool !== "edit" || !state.viewOptions.showControlPoints || !state.editHandles.length) return;
   ctx.save();
@@ -12768,6 +14075,10 @@ function drawEditHandles() {
 }
 
 function sameHandle(a, b) {
+  if (a?.customKind === "gun-tail" && b?.customKind === "gun-tail") return a.controlKey === b.controlKey;
+  if (a?.customKind === "star-corner" && b?.customKind === "star-corner") return true;
+  if (a?.customKind === "swallow-width" && b?.customKind === "swallow-width") return true;
+  if (a?.customKind === "gun-nose" && b?.customKind === "gun-nose") return a.controlKey === b.controlKey;
   return !!a && !!b && a.knots === b.knots && a.knotIndex === b.knotIndex && a.pointKey === b.pointKey;
 }
 
@@ -12969,6 +14280,10 @@ function onCanvasPointerDown(event) {
   state.contextEditPoint = null;
   updateCursorPoint(event);
   const screenPoint = canvasPoint(event);
+  if (!is3DInteractiveView() && event.button === 1) {
+    start2DViewDrag(event, screenPoint);
+    return;
+  }
   if (is3DInteractiveView()) {
     start3DViewDrag(event, screenPoint);
     return;
@@ -13034,6 +14349,8 @@ function onCanvasPointerDown(event) {
   }
   if (hit) {
     event.preventDefault();
+    const before = cloneBoard(state.board);
+    materializeProceduralOutlineHandle(hit);
     state.selection = hit;
     clearGuidePointSelection();
     state.wingSelection = null;
@@ -13042,7 +14359,7 @@ function onCanvasPointerDown(event) {
     state.drag = {
       type: "controlpoint",
       handle: hit,
-      before: cloneBoard(state.board),
+      before,
       originalKnot: cloneKnot(hit.knots[hit.knotIndex]),
       start: boardPointFromHandleEvent(hit, event),
       moved: false
@@ -13386,6 +14703,7 @@ function showSpotCheck(screenPoint) {
 
 function start2DViewDrag(event, screenPoint) {
   event.preventDefault();
+  els.canvas.classList.add("is-panning");
   state.viewDrag = {
     type: "2d-pan",
     startScreen: screenPoint,
@@ -13532,6 +14850,93 @@ function onCanvasPointerMove(event) {
   const dx = state.editLocks.x ? 0 : current.x - state.drag.start.x;
   const dy = state.editLocks.y ? 0 : current.y - state.drag.start.y;
   if (Math.hypot(dx, dy) > 1e-6) state.drag.moved = true;
+  if (state.drag.handle.customKind === "gun-tail") {
+    const knots = state.drag.handle.knots;
+    const join = knots[1]?.p;
+    if (join && Math.abs(join.x) > 1e-9 && Math.abs(join.y) > 1e-9) {
+      const controls = normalizeTailGunCurve(state.board.tailGunCurve) || {
+        c1: { x: knots[0].next.x / join.x, y: knots[0].next.y / join.y },
+        c2: { x: knots[1].prev.x / join.x, y: knots[1].prev.y / join.y }
+      };
+      const originalPoint = state.drag.originalKnot[state.drag.handle.pointKey];
+      controls[state.drag.handle.controlKey] = {
+        x: clampNumber((originalPoint.x + dx) / join.x, -1, 2, 0),
+        y: clampNumber((originalPoint.y + dy) / join.y, -2, 3, 0)
+      };
+      state.board.tailGunCurve = normalizeTailGunCurve(controls);
+    }
+    markGeometryDirty();
+    updateEditInfo();
+    draw();
+    return;
+  }
+  if (state.drag.handle.customKind === "star-corner") {
+    const target = {
+      x: state.drag.originalKnot.p.x + dx,
+      y: state.drag.originalKnot.p.y + dy
+    };
+    const planform = boardCadTailPlanform(state.board);
+    const tail = planform.tail;
+    const join = planform.positiveSpline?.[2]?.p;
+    if (tail?.active && join?.x > 1e-9 && tail.joinY > 1e-9) {
+      state.board.tailShoulderPos = clampNumber(target.x / join.x, 0.12, 0.88, tail.shoulderPos);
+      state.board.tailShoulderScale = clampNumber(
+        target.y / (tail.joinY * Math.max(1e-9, tail.widthScale)),
+        0.05,
+        1.35,
+        tail.shoulderScale
+      );
+    }
+    markGeometryDirty();
+    updateBoardPanel();
+    updateEditInfo();
+    draw();
+    return;
+  }
+  if (state.drag.handle.customKind === "swallow-width") {
+    const planform = boardCadTailPlanform(state.board);
+    const tail = planform.tail;
+    const originalCorner = state.drag.originalKnot.p;
+    if (tail?.active && tail.mode === "swallow" && originalCorner?.y > 1e-9) {
+      const originalScale = widthAdjustScale(tail.widthAdjust);
+      const unscaledCornerY = originalCorner.y / Math.max(1e-9, originalScale);
+      const targetY = clampNumber(
+        originalCorner.y + dy,
+        Math.max(0.1, tail.joinY * 0.08),
+        Math.max(0.1, tail.joinY * 0.98),
+        originalCorner.y
+      );
+      const targetScale = targetY / Math.max(1e-9, unscaledCornerY);
+      state.board.tailWidthAdjust = clampNumber(Math.log(targetScale) / Math.log(4), -1, 1, tail.widthAdjust);
+    }
+    markGeometryDirty();
+    updateBoardPanel();
+    updateEditInfo();
+    draw();
+    return;
+  }
+  if (state.drag.handle.customKind === "gun-nose") {
+    const knots = state.drag.handle.knots;
+    const join = knots[knots.length - 2]?.p;
+    const tip = knots[knots.length - 1]?.p;
+    const span = (tip?.x ?? 0) - (join?.x ?? 0);
+    if (join && tip && span > 1e-9 && join.y > 1e-9) {
+      const controls = normalizeTailGunCurve(state.board.noseGunCurve) || {
+        c1: { x: (tip.x - knots.at(-1).prev.x) / span, y: knots.at(-1).prev.y / join.y },
+        c2: { x: (tip.x - knots.at(-2).next.x) / span, y: knots.at(-2).next.y / join.y }
+      };
+      const point = state.drag.originalKnot[state.drag.handle.pointKey];
+      controls[state.drag.handle.controlKey] = {
+        x: clampNumber((tip.x - (point.x + dx)) / span, -1, 2, 0),
+        y: clampNumber((point.y + dy) / join.y, -2, 3, 0)
+      };
+      state.board.noseGunCurve = normalizeTailGunCurve(controls);
+    }
+    markGeometryDirty();
+    updateEditInfo();
+    draw();
+    return;
+  }
   moveKnotPoint(state.drag.handle.knots[state.drag.handle.knotIndex], state.drag.originalKnot, state.drag.handle.which, dx, dy);
   markGeometryDirty();
   updateEditInfo();
@@ -13562,6 +14967,7 @@ function updateViewDrag(event) {
 
 function onCanvasPointerUp() {
   if (state.viewDrag) {
+    els.canvas.classList.remove("is-panning");
     state.viewDrag = null;
     return;
   }
@@ -13606,6 +15012,7 @@ function onCanvasPointerLeave() {
   state.cursorPoint = null;
   state.cursorScreen = null;
   if (state.viewDrag) {
+    els.canvas.classList.remove("is-panning");
     state.viewDrag = null;
     return;
   }
@@ -14099,6 +15506,36 @@ function parseFinExtra(value) {
 function serializeFinExtra(extra) {
   const normalized = normalizeFinExtra(extra);
   return normalized.length ? JSON.stringify(normalized) : "";
+}
+
+function normalizeTailGunCurve(value) {
+  if (!value || typeof value !== "object") return null;
+  const c1 = value.c1;
+  const c2 = value.c2;
+  if (![c1?.x, c1?.y, c2?.x, c2?.y].every(item => Number.isFinite(Number(item)))) return null;
+  return {
+    c1: { x: clampNumber(c1.x, -1, 2, 0), y: clampNumber(c1.y, -2, 3, 0.2) },
+    c2: { x: clampNumber(c2.x, -1, 2, 0.62), y: clampNumber(c2.y, -2, 3, 0.8) }
+  };
+}
+
+function parseTailGunCurve(value) {
+  const text = String(value || "").replace(/\\n/g, "\n").trim();
+  if (!text) return null;
+  try {
+    const parsed = JSON.parse(text);
+    if (Array.isArray(parsed) && parsed.length >= 4) {
+      return normalizeTailGunCurve({ c1: { x: parsed[0], y: parsed[1] }, c2: { x: parsed[2], y: parsed[3] } });
+    }
+    return normalizeTailGunCurve(parsed);
+  } catch {
+    return null;
+  }
+}
+
+function serializeTailGunCurve(value) {
+  const curve = normalizeTailGunCurve(value);
+  return curve ? JSON.stringify([curve.c1.x, curve.c1.y, curve.c2.x, curve.c2.y]) : "";
 }
 
 function moveFinDrag(handle, originalFins, dx, dy, originalFinExtra = null) {
@@ -15127,6 +16564,26 @@ function boardCadPointByNormalReverse(knots, angleDegrees) {
   return boardCadPointByS(knots, s);
 }
 
+function boardCadTrackedAnglePoint(board, x, angle, preferredS = null) {
+  const { rawX, displayX } = boardCadSampleXPair(board, x);
+  const knots = boardCadInterpolatedDisplayCrossSectionKnots(board, displayX);
+  const samples = knots.length ? boardCadSplineSamples(knots, 32) : [];
+  if (!samples.length) return null;
+  const total = samples[samples.length - 1].length;
+  const target = normalizeAngleRad((angle - 90) * Math.PI / 180);
+  let best = null;
+  for (const sample of samples) {
+    const s = total > 1e-9 ? sample.length / total : 0;
+    const continuity = preferredS === null ? 0 : Math.abs(s - preferredS) * Math.PI;
+    const score = angleDistance(sample.tangent, target) + continuity;
+    if (!best || score < best.score) best = { sample, s, score };
+  }
+  return best ? {
+    s: best.s,
+    point: { x: displayX, y: best.sample.x, z: best.sample.y + boardCadRockerAtPos(board, rawX) }
+  } : null;
+}
+
 function boardCadSurfaceAngleLine(board, angle) {
   if (state.flowlineCache.revision !== state.geometryRevision) {
     state.flowlineCache.revision = state.geometryRevision;
@@ -15134,16 +16591,21 @@ function boardCadSurfaceAngleLine(board, angle) {
   }
   const key = `${state.crossSectionInterpolation}:${angle}:${board.sections.length}:${boardCadTailDisplayLength(board).toFixed(4)}:${boardCadTailDisplayShift(board).toFixed(4)}`;
   if (state.flowlineCache.lines.has(key)) return state.flowlineCache.lines.get(key);
+  const stations = board.sections.map(section => boardCadDisplayXFromRawX(board, section.position));
+  const anchors = Array(stations.length);
+  const middle = Math.floor(stations.length / 2);
+  anchors[middle] = boardCadTrackedAnglePoint(board, stations[middle], angle);
+  for (let i = middle - 1; i >= 0; i--) anchors[i] = boardCadTrackedAnglePoint(board, stations[i], angle, anchors[i + 1]?.s ?? null);
+  for (let i = middle + 1; i < stations.length; i++) anchors[i] = boardCadTrackedAnglePoint(board, stations[i], angle, anchors[i - 1]?.s ?? null);
   const points = [];
   const segmentsPerSpan = angle === 175 ? 10 : 6;
-  for (let i = 0; i < board.sections.length; i++) {
-    const previous = i === 0 ? 0 : boardCadDisplayXFromRawX(board, board.sections[i - 1].position);
-    const current = boardCadDisplayXFromRawX(board, board.sections[i].position);
-    const step = (current - previous) / segmentsPerSpan;
-    const start = i === 0 ? 0 : 1;
-    for (let k = start; k <= segmentsPerSpan; k++) {
-      const point = boardCadSurfacePointAtAngle(board, previous + k * step, angle);
-      if (point) points.push(point);
+  for (let i = 1; i < anchors.length; i++) {
+    const left = anchors[i - 1]?.point;
+    const right = anchors[i]?.point;
+    if (!left || !right) continue;
+    for (let k = i === 1 ? 0 : 1; k <= segmentsPerSpan; k++) {
+      const t = k / segmentsPerSpan;
+      points.push({ x: lerp(left.x, right.x, t), y: lerp(left.y, right.y, t), z: lerp(left.z, right.z, t) });
     }
   }
   state.flowlineCache.lines.set(key, points);
@@ -15191,18 +16653,6 @@ function boardCadSByNormalReverseFromSamples(samples, angleDegrees) {
     if (error < bestError) {
       bestError = error;
       best = samples[i];
-    }
-    const prev = samples[i - 1];
-    if (prev) {
-      const currentDelta = normalizeAngleRad(samples[i].tangent - target);
-      const prevDelta = normalizeAngleRad(prev.tangent - target);
-      if (Math.sign(currentDelta) !== Math.sign(prevDelta) && Math.abs(currentDelta - prevDelta) < Math.PI) {
-        const span = Math.abs(currentDelta) + Math.abs(prevDelta);
-        const t = span > 1e-9 ? Math.abs(prevDelta) / span : 0;
-        const lengthAtTarget = lerp(prev.length, samples[i].length, clamp01(t));
-        const total = samples[samples.length - 1].length;
-        return total > 1e-9 ? clamp01(lengthAtTarget / total) : 0;
-      }
     }
   }
   const totalLength = samples[samples.length - 1].length;
@@ -15452,6 +16902,31 @@ function label(text, x, y, color) {
   ctx.fillText(text, x, y);
 }
 
+function drawShaperComment(board, rect) {
+  const comment = String(board?.fields?.[SHAPER_COMMENT_FIELD_ID] || "").trim();
+  if (!comment) return;
+  const x = rect.left + 20;
+  const maxWidth = Math.min(900, rect.width - 40);
+  const words = comment.split(/\s+/);
+  const lines = [];
+  ctx.save();
+  ctx.font = "12px -apple-system, BlinkMacSystemFont, sans-serif";
+  for (const word of words) {
+    const candidate = lines.length ? `${lines.at(-1)} ${word}` : word;
+    if (lines.length && ctx.measureText(candidate).width > maxWidth) lines.push(word);
+    else if (lines.length) lines[lines.length - 1] = candidate;
+    else lines.push(word);
+  }
+  const visible = lines.slice(0, 7);
+  if (lines.length > visible.length) visible[visible.length - 1] += " …";
+  const top = rect.top + rect.height - 24 - (visible.length * 16);
+  ctx.fillStyle = "rgba(20,21,24,.78)";
+  ctx.fillRect(x - 10, top - 22, maxWidth + 20, visible.length * 16 + 30);
+  label(state.language === "ja" ? "シェーパーのコメント" : "Shaper's Comments", x, top - 5, "#64d2ff");
+  visible.forEach((lineText, index) => label(lineText, x, top + 15 + index * 16, "#d1d1d6"));
+  ctx.restore();
+}
+
 function updateInfo() {
   const board = state.board;
   if (!board) {
@@ -15468,6 +16943,7 @@ function updateInfo() {
       els.summary.innerHTML = items.map(text => `<span>${text}</span>`).join("");
     }
     updateBoardPanel();
+    syncStationEditor();
     return;
   }
   els.boardName.textContent = board.name || board.filename;
@@ -15525,6 +17001,7 @@ function updateInfo() {
   }
   els.summary.innerHTML = summaryItems.map(text => `<span>${text}</span>`).join("");
   updateBoardPanel();
+  syncStationEditor();
 }
 
 function updateSectionInfo() {
@@ -17738,7 +19215,7 @@ function boardPanelInputs() {
     els.finType, els.finTemplate, els.finSetup, els.finSideRearX, els.finSideRearY, els.finSideFrontX, els.finSideFrontY,
     els.finCenterRear, els.finCenterFront, els.finCenterDepth, els.finSideDepth, els.finSideSplay, els.finToeIn, els.finCant,
     els.tailMode, els.tailLength, els.tailDepth, els.tailShoulderPos, els.tailShoulderScale, els.tailRailBlend, els.tailWidthAdjust,
-    els.noseMode, els.noseLength, els.noseShoulderPos, els.noseShoulderScale, els.noseRailBlend, els.noseWidthAdjust,
+    els.noseMode, els.noseTipShape, els.noseLength, els.noseExtension, els.noseShoulderPos, els.noseShoulderScale, els.noseRailBlend, els.noseWidthAdjust,
     els.wingPreset, els.wingPosition, els.wingWidth, els.wingShape, els.wingShoulder, els.wingTransition,
     els.rockerPreset, els.rockerEnabled, els.rockerNose, els.rockerTail, els.rockerEntryLength, els.rockerEntryLift,
     els.rockerMiddleFlatness, els.rockerTailKickLength, els.rockerTailKick, els.rockerApexShift, els.rockerBlend,
@@ -17837,8 +19314,10 @@ function updateBoardPanel(options = {}) {
   }
   if (els.tailWidthAdjust) els.tailWidthAdjust.value = String(clampNumber(board.tailWidthAdjust, -1, 1, 0));
   if (els.noseMode) els.noseMode.value = normalizeNoseModeKey(board.noseMode);
+  if (els.noseTipShape) els.noseTipShape.value = normalizeNoseTipShape(board.noseTipShape);
   const noseDefaults = nosePresetForBoard(board.noseMode, board) || { length: 0, shoulderPos: 0, shoulderScale: 0, railBlend: 0, linearization: 0 };
   if (els.noseLength) els.noseLength.value = fmt(Number(board.noseLength) || noseDefaults.length || 0);
+  if (els.noseExtension) els.noseExtension.value = fmt(board.noseExtension !== null && board.noseExtension !== undefined && Number.isFinite(Number(board.noseExtension)) ? Number(board.noseExtension) : (noseDefaults.extension || 0));
   if (els.noseShoulderPos) els.noseShoulderPos.value = fmt(Number(board.noseShoulderPos) || noseDefaults.shoulderPos || 0);
   if (els.noseShoulderScale) els.noseShoulderScale.value = fmt(Number(board.noseShoulderScale) || noseDefaults.shoulderScale || 0);
   if (els.noseRailBlend) {
@@ -18002,11 +19481,15 @@ function rockerPresetConfigForBoard(preset, board) {
   const currentMeasurement = measurementBoard ? rockerStationMeasurements(measurementBoard) : [];
   const tail = currentMeasurement.find(station => station.key === "tail");
   const nose = currentMeasurement.find(station => station.key === "nose");
+  if (normalizedPreset === "custom") return { ...current, preset: "custom" };
+  const numericReference = ROCKER_NUMERIC_REFERENCES[normalizedPreset];
+  const boardLength = Math.max(1, Number(board?.length) || numericReference?.lengthCm || 1);
+  const lengthScale = numericReference ? boardLength / numericReference.lengthCm : 1;
   return normalizeRockerConfig({
     ...defaultRockerConfig(normalizedPreset),
     enabled: true,
-    noseRocker: Number.isFinite(Number(current.noseRocker)) && current.noseRocker > 0 ? current.noseRocker : (nose?.rocker || 0),
-    tailRocker: Number.isFinite(Number(current.tailRocker)) && current.tailRocker > 0 ? current.tailRocker : (tail?.rocker || 0)
+    noseRocker: numericReference ? numericReference.noseCm * lengthScale : (nose?.rocker || 0),
+    tailRocker: numericReference ? numericReference.tailCm * lengthScale : (tail?.rocker || 0)
   }, normalizedPreset);
 }
 
@@ -18180,7 +19663,10 @@ function edgeEffectAtSection(board, section, config = normalizedEdgeConfig(board
   const fade = Math.max(0, Number(config.fade) || 0);
   let factor = 1;
   if (fade > 1e-9 && pos > config.length - fade) {
-    factor = clampNumber((config.length - pos) / fade, 0, 1, 1);
+    const u = clampNumber((config.length - pos) / fade, 0, 1, 1);
+    // Zero slope and curvature at both ends avoids a longitudinal bump where
+    // the release feature grows out of the otherwise soft rail.
+    factor = u * u * u * ((u * ((u * 6) - 15)) + 10);
   }
   return clampNumber(config.strength * factor, 0, 1, 0);
 }
@@ -18588,12 +20074,71 @@ function alignSyntheticRailUpperDeckTangent(template) {
   return template;
 }
 
+function matchBezierJoinCurvature(previous, knot, next) {
+  if (!previous?.next || !knot?.p || !knot?.prev || !knot?.next || !next?.prev) return;
+  const inX = knot.p.x - knot.prev.x;
+  const inY = knot.p.y - knot.prev.y;
+  const outX = knot.next.x - knot.p.x;
+  const outY = knot.next.y - knot.p.y;
+  const inLength = Math.hypot(inX, inY);
+  const outLength = Math.hypot(outX, outY);
+  if (inLength <= 1e-6 || outLength <= 1e-6) return;
+  // Resolve the common tangent from the neighbouring semantic landmarks. This
+  // keeps it inside both adjacent spans, so later anti-loop sanitization does
+  // not have to rotate either handle and undo continuity.
+  const tangent = localTangentUnit(previous.p, knot.p, next.p);
+  const ux = tangent.x;
+  const uy = tangent.y;
+  const crossIn = (ux * (previous.next.y - knot.p.y)) - (uy * (previous.next.x - knot.p.x));
+  const crossOut = (ux * (next.prev.y - knot.p.y)) - (uy * (next.prev.x - knot.p.x));
+  // A positive ratio exists only when both spans bend to the same side. Do not
+  // erase an intentional inflection by forcing a false curvature match.
+  if (crossIn * crossOut <= 1e-10) return;
+  const ratio = Math.sqrt(Math.abs(crossOut / crossIn));
+  if (!Number.isFinite(ratio) || ratio <= 1e-4) return;
+  const previousSpan = Math.hypot(knot.p.x - previous.p.x, knot.p.y - previous.p.y);
+  const nextSpan = Math.hypot(next.p.x - knot.p.x, next.p.y - knot.p.y);
+  const axisLimit = (from, to) => {
+    const limits = [];
+    if (Math.abs(ux) > 1e-6) limits.push(Math.abs(to.x - from.x) / Math.abs(ux));
+    if (Math.abs(uy) > 1e-6) limits.push(Math.abs(to.y - from.y) / Math.abs(uy));
+    return limits.length ? Math.min(...limits) * 0.98 : Number.POSITIVE_INFINITY;
+  };
+  const previousAxisLimit = axisLimit(knot.p, previous.p);
+  const nextAxisLimit = axisLimit(knot.p, next.p);
+  const preferredIn = (inLength + (outLength / ratio)) * 0.5;
+  const matchedIn = Math.max(0.01, Math.min(
+    preferredIn,
+    previousSpan * 0.46,
+    previousAxisLimit,
+    (nextSpan * 0.46) / ratio,
+    nextAxisLimit / ratio
+  ));
+  const matchedOut = matchedIn * ratio;
+  setKnotHandlesOnAxis(knot, ux, uy, matchedIn, matchedOut);
+}
+
+function fairSyntheticRailInnerJoins(template) {
+  if (!Array.isArray(template) || template.length < 5) return template;
+  matchBezierJoinCurvature(template[0], template[1], template[2]);
+  matchBezierJoinCurvature(template[2], template[3], template[4]);
+  return template;
+}
+
 function syntheticRailTemplateSpline(key) {
   const normalizedKey = normalizeRailModeKey(key);
   if (normalizedKey === "5050") return synthetic5050TemplateSpline();
   const cacheKey = `rail-template-spline:synthetic-${normalizedKey}`;
   if (railTemplateCache.has(cacheKey)) return railTemplateCache.get(cacheKey);
   const configs = {
+    "6040": {
+      lower1: { x: 0.80, y: 0.10 },
+      apex: { x: 1, y: 0.40 },
+      upper1: { x: 0.78, y: 0.82 },
+      lowerHandles: [{ x: 0.50, y: 0.015 }, { x: 0.96, y: 0.22 }],
+      apexHandle: 0.27,
+      upperHandles: [{ x: 0.96, y: 0.60 }, { x: 0.46, y: 0.97 }]
+    },
     "7030": {
       lower1: { x: 0.77, y: 0.05 },
       apex: { x: 1, y: 0.305 },
@@ -18727,7 +20272,41 @@ function syntheticRailTemplateSpline(key) {
       other: false
     }
   ];
+  // The normalized templates are also applied directly when their knot count
+  // matches the source section. Keep the semantic rail landmarks G1 here as
+  // well as in the fallback deformation path, otherwise 60/40 develops small
+  // shoulders between the rail apex and the deck/bottom curves.
+  if (normalizedKey === "6040") {
+    harmonize6040RailCluster(template[2], template[1], template[3], template[0], template[4]);
+  }
+  if (normalizedKey === "7030") {
+    harmonize7030RailCluster(template[2], template[1], template[3], template[0], template[4]);
+  }
+  if (normalizedKey === "8020") {
+    harmonize8020RailCluster(template[2], template[1], template[3], template[0], template[4]);
+  }
+  if (normalizedKey === "egg") {
+    harmonizeEggRailCluster(template[2], template[1], template[3], template[0], template[4]);
+  }
+  if (normalizedKey === "full-soft") {
+    harmonizeFullSoftRailCluster(template[2], template[1], template[3], template[0], template[4]);
+  }
+  if (normalizedKey === "boxy") {
+    harmonizeBoxyRailCluster(template[2], template[1], template[3], template[0], template[4]);
+  }
+  if (normalizedKey === "down") {
+    harmonizeDownRailCluster(template[2], template[1], template[3], template[0], template[4]);
+  }
+  if (normalizedKey === "pinched") {
+    harmonizePinchedRailCluster(template[2], template[1], template[3], template[0], template[4]);
+  }
+  if (normalizedKey === "knifey") {
+    harmonizeKnifeyRailCluster(template[2], template[1], template[3], template[0], template[4]);
+  }
   alignSyntheticRailUpperDeckTangent(template);
+  if (!new Set(["chine", "tucked-edge", "hard-edge"]).has(normalizedKey)) {
+    fairSyntheticRailInnerJoins(template);
+  }
   railTemplateCache.set(cacheKey, template);
   return template;
 }
@@ -18735,9 +20314,8 @@ function syntheticRailTemplateSpline(key) {
 function railTemplateSplineNormalized(mode) {
   const key = normalizeRailModeKey(mode);
   if (key === "5050") return synthetic5050TemplateSpline();
-  if (key === "6040") return longboard6040TemplateSpline();
-  if (key === "boxy") return shortboardTailBoxyTemplateSpline() || syntheticRailTemplateSpline(key);
-  if (key === "7030" || key === "8020" || key === "egg" || key === "full-soft" || key === "boxy" || key === "down" || key === "pinched" || key === "knifey" || key === "chine" || key === "tucked-edge" || key === "hard-edge") return syntheticRailTemplateSpline(key);
+  if (key === "6040") return syntheticRailTemplateSpline(key);
+  if (key === "6040" || key === "7030" || key === "8020" || key === "egg" || key === "full-soft" || key === "boxy" || key === "down" || key === "pinched" || key === "knifey" || key === "chine" || key === "tucked-edge" || key === "hard-edge") return syntheticRailTemplateSpline(key);
   return null;
 }
 
@@ -19124,6 +20702,14 @@ function deformRailSplineFromProfile(baseSpline, profilePoints, strength = 1, mo
 
   if (key === "5050" && lower1 && upper1) harmonize5050RailCluster(apex, lower1, upper1, lower2, upper2);
   if (key === "6040" && lower1 && upper1) harmonize6040RailCluster(apex, lower1, upper1, lower2, upper2);
+  if (key === "7030" && lower1 && upper1) harmonize7030RailCluster(apex, lower1, upper1, lower2, upper2);
+  if (key === "8020" && lower1 && upper1) harmonize8020RailCluster(apex, lower1, upper1, lower2, upper2);
+  if (key === "egg" && lower1 && upper1) harmonizeEggRailCluster(apex, lower1, upper1, lower2, upper2);
+  if (key === "full-soft" && lower1 && upper1) harmonizeFullSoftRailCluster(apex, lower1, upper1, lower2, upper2);
+  if (key === "boxy" && lower1 && upper1) harmonizeBoxyRailCluster(apex, lower1, upper1, lower2, upper2);
+  if (key === "down" && lower1 && upper1) harmonizeDownRailCluster(apex, lower1, upper1, lower2, upper2);
+  if (key === "pinched" && lower1 && upper1) harmonizePinchedRailCluster(apex, lower1, upper1, lower2, upper2);
+  if (key === "knifey" && lower1 && upper1) harmonizeKnifeyRailCluster(apex, lower1, upper1, lower2, upper2);
 
   // Keep deck-side control point positions from dropping below the source profile.
   // We still allow handle reshaping, but the deck-side knot coordinates themselves
@@ -19196,12 +20782,12 @@ function harmonizeRailCluster(apex, lower1, upper1, lower2, upper2, options = {}
 
 function harmonize5050RailCluster(apex, lower1, upper1, lower2, upper2) {
   harmonizeRailCluster(apex, lower1, upper1, lower2, upper2, {
-    apexPrevFactor: 0.48,
-    apexNextFactor: 0.7423416,
-    lowerPrevFactor: 0.31,
-    lowerNextFactor: 0.31,
-    upperPrevFactor: 0.31,
-    upperNextFactor: 0.31
+    apexPrevFactor: 0.54,
+    apexNextFactor: 0.54,
+    lowerPrevFactor: 0.32,
+    lowerNextFactor: 0.32,
+    upperPrevFactor: 0.32,
+    upperNextFactor: 0.32
   });
 }
 
@@ -19213,6 +20799,112 @@ function harmonize6040RailCluster(apex, lower1, upper1, lower2, upper2) {
     lowerNextFactor: 0.32,
     upperPrevFactor: 0.32,
     upperNextFactor: 0.38
+  });
+}
+
+function harmonize7030RailCluster(apex, lower1, upper1, lower2, upper2) {
+  harmonizeRailCluster(apex, lower1, upper1, lower2, upper2, {
+    // A 70/30 rail keeps a short, tighter bottom transition and a longer
+    // deck-side curve. Hardness/tuck remain independent edge properties.
+    apexPrevFactor: 0.48,
+    apexNextFactor: 0.40,
+    lowerPrevFactor: 0.38,
+    lowerNextFactor: 0.30,
+    upperPrevFactor: 0.31,
+    upperNextFactor: 0.42
+  });
+}
+
+function harmonize8020RailCluster(apex, lower1, upper1, lower2, upper2) {
+  harmonizeRailCluster(apex, lower1, upper1, lower2, upper2, {
+    // 80/20 resolves the low apex and asymmetric radii only. A tucked or
+    // crisp release edge must still be requested through the edge controls.
+    apexPrevFactor: 0.44,
+    apexNextFactor: 0.36,
+    lowerPrevFactor: 0.40,
+    lowerNextFactor: 0.27,
+    upperPrevFactor: 0.29,
+    upperNextFactor: 0.45
+  });
+}
+
+function harmonizeEggRailCluster(apex, lower1, upper1, lower2, upper2) {
+  harmonizeRailCluster(apex, lower1, upper1, lower2, upper2, {
+    // Egg describes a softly pinched, rounded profile rather than an edge.
+    // Balanced handle lengths avoid a flat spot on either side of the apex.
+    apexPrevFactor: 0.52,
+    apexNextFactor: 0.52,
+    lowerPrevFactor: 0.35,
+    lowerNextFactor: 0.35,
+    upperPrevFactor: 0.35,
+    upperNextFactor: 0.35
+  });
+}
+
+function harmonizeFullSoftRailCluster(apex, lower1, upper1, lower2, upper2) {
+  harmonizeRailCluster(apex, lower1, upper1, lower2, upper2, {
+    // Full-soft carries more area close to the rail while retaining one broad,
+    // round transition. Longer balanced handles suppress boxy shoulders.
+    apexPrevFactor: 0.58,
+    apexNextFactor: 0.58,
+    lowerPrevFactor: 0.39,
+    lowerNextFactor: 0.39,
+    upperPrevFactor: 0.39,
+    upperNextFactor: 0.39
+  });
+}
+
+function harmonizeBoxyRailCluster(apex, lower1, upper1, lower2, upper2) {
+  harmonizeRailCluster(apex, lower1, upper1, lower2, upper2, {
+    // Boxy means retained rail volume and a comparatively upright outer
+    // profile, not a polygonal or hard-edged rail. Shorter handles retain the
+    // shoulder while keeping the resolved surface tangent-continuous.
+    apexPrevFactor: 0.38,
+    apexNextFactor: 0.40,
+    lowerPrevFactor: 0.27,
+    lowerNextFactor: 0.25,
+    upperPrevFactor: 0.26,
+    upperNextFactor: 0.29
+  });
+}
+
+function harmonizeDownRailCluster(apex, lower1, upper1, lower2, upper2) {
+  harmonizeRailCluster(apex, lower1, upper1, lower2, upper2, {
+    // Down rail is the low-apex envelope, not a knife edge. Use a generous
+    // turn around the apex while keeping the bottom transition shorter than
+    // the deck-side run; tuck and edge radius remain separate controls.
+    apexPrevFactor: 0.54,
+    apexNextFactor: 0.48,
+    lowerPrevFactor: 0.43,
+    lowerNextFactor: 0.35,
+    upperPrevFactor: 0.37,
+    upperNextFactor: 0.48
+  });
+}
+
+function harmonizePinchedRailCluster(apex, lower1, upper1, lower2, upper2) {
+  harmonizeRailCluster(apex, lower1, upper1, lower2, upper2, {
+    // Pinched reduces fullness on both sides of the rail. It retains a small
+    // rounded apex and must not collapse into the sharper knifey preset.
+    apexPrevFactor: 0.43,
+    apexNextFactor: 0.43,
+    lowerPrevFactor: 0.31,
+    lowerNextFactor: 0.29,
+    upperPrevFactor: 0.29,
+    upperNextFactor: 0.31
+  });
+}
+
+function harmonizeKnifeyRailCluster(apex, lower1, upper1, lower2, upper2) {
+  harmonizeRailCluster(apex, lower1, upper1, lower2, upper2, {
+    // Knifey is a very low-volume rail with a tight finished radius, not a G0
+    // corner. Keep enough radius for a realizable foam/laminate transition.
+    apexPrevFactor: 0.31,
+    apexNextFactor: 0.31,
+    lowerPrevFactor: 0.27,
+    lowerNextFactor: 0.23,
+    upperPrevFactor: 0.23,
+    upperNextFactor: 0.27
   });
 }
 
@@ -19423,14 +21115,14 @@ function applyEdgeModeToSection(section, type, strength = 1) {
     x: lerp(lower.next.x, lower.p.x + nextLen, amount),
     y: lerp(lower.next.y, lower.p.y + thickness * (key === "soft" ? 0.025 : 0.008), amount)
   };
-  const apexPrevLen = Math.max(0.01, Math.hypot(apex.p.x - lower.p.x, apex.p.y - lower.p.y) * (key === "hard" ? 0.16 : 0.25));
-  apex.prev = {
-    x: lerp(apex.prev.x, apex.p.x - apexPrevLen, amount),
-    y: lerp(apex.prev.y, apex.p.y - thickness * (key === "hard" ? 0.01 : 0.02), amount)
-  };
+  if (key === "soft") {
+    const tangent = localTangentUnit(lowerInner.p, lower.p, apex.p);
+    setKnotHandlesOnAxis(lower, tangent.x, tangent.y, prevLen, nextLen);
+    matchBezierJoinCurvature(lowerInner, lower, apex);
+    lower.continuous = true;
+  }
   if (key === "hard") {
     lower.continuous = false;
-    apex.continuous = false;
   } else if (key === "tucked") {
     lower.continuous = false;
   }
@@ -19440,12 +21132,20 @@ function applyEdgeModeToSection(section, type, strength = 1) {
   });
 }
 
+function railLongitudinalStrengthFactor(board, section) {
+  const length = Math.max(0, Number(board?.length) || 0);
+  const position = Number(section?.position);
+  if (!(length > 0) || !Number.isFinite(position)) return 1;
+  const u = clampNumber(position / length, 0, 1, 0.5);
+  return Math.min(smootherstep01(u / 0.2), smootherstep01((1 - u) / 0.2));
+}
+
 function applyBoardRailAndEdgeToSection(board, section) {
   if (!board || !section?.spline?.length) return;
   const baseSpline = cloneSectionRailBaseSpline(section);
   if (baseSpline) section.spline = baseSpline;
   const railMode = normalizeRailModeKey(board.railMode);
-  const railStrength = clampNumber(board.railStrength, 0, 1, 1);
+  const railStrength = clampNumber(board.railStrength, 0, 1, 1) * railLongitudinalStrengthFactor(board, section);
   const edgeConfig = normalizedEdgeConfig(board);
   const edgeStrength = edgeEffectAtSection(board, section, edgeConfig);
   if (railMode) {
@@ -19471,6 +21171,9 @@ function updateNoseWidthAdjustReadout(value) {
 function updateTailPanelFields() {
   const boardActive = !!state.board;
   const mode = normalizeTailModeKey(els.tailMode?.value || state.board?.tailMode || "");
+  if (els.tailShoulderPosLabel) {
+    els.tailShoulderPosLabel.textContent = t(mode === "star" ? "star_corner_pos" : "shoulder_pos");
+  }
   if (els.tailDepth) {
     els.tailDepth.disabled = !boardActive || !tailModeUsesDepth(mode);
   }
@@ -19485,11 +21188,13 @@ function updateNosePanelFields() {
   const boardActive = !!state.board;
   const mode = normalizeNoseModeKey(els.noseMode?.value || state.board?.noseMode || "");
   const enabled = boardActive && !!mode;
-  if (els.noseLength) els.noseLength.disabled = !enabled;
-  if (els.noseShoulderPos) els.noseShoulderPos.disabled = !enabled;
-  if (els.noseShoulderScale) els.noseShoulderScale.disabled = !enabled;
+  if (els.noseTipShape) els.noseTipShape.disabled = !boardActive;
+  if (els.noseLength) els.noseLength.disabled = !enabled || mode === "gun";
+  if (els.noseExtension) els.noseExtension.disabled = !enabled || mode !== "gun";
+  if (els.noseShoulderPos) els.noseShoulderPos.disabled = !enabled || mode === "gun";
+  if (els.noseShoulderScale) els.noseShoulderScale.disabled = !enabled || mode === "gun";
   if (els.noseRailBlend) els.noseRailBlend.disabled = !enabled;
-  if (els.noseWidthAdjust) els.noseWidthAdjust.disabled = !enabled;
+  if (els.noseWidthAdjust) els.noseWidthAdjust.disabled = !enabled || mode === "gun";
   updateNoseWidthAdjustReadout(els.noseWidthAdjust?.value || state.board?.noseWidthAdjust || 0);
 }
 
@@ -19558,18 +21263,26 @@ function setNoseFromPanel() {
   if (!state.board) return;
   const before = cloneBoard(state.board);
   const mode = normalizeNoseModeKey(els.noseMode?.value || "");
+  const tipShape = normalizeNoseTipShape(els.noseTipShape?.value);
+  const tipBaseDeck = Array.isArray(state.board.noseTipBaseDeck)
+    ? boardCadCloneKnots(state.board.noseTipBaseDeck)
+    : boardCadCloneKnots(state.board.deck);
   const preset = nosePresetForBoard(mode, state.board) || { length: 0, shoulderPos: 0, shoulderScale: 0, railBlend: 0, linearization: 0 };
   state.board.noseMode = mode;
+  state.board.noseTipShape = tipShape;
+  state.board.deck = tipShape ? buildNoseTipDeckSpline(state.board, tipBaseDeck, tipShape) : tipBaseDeck;
+  state.board.noseTipBaseDeck = tipShape ? tipBaseDeck : null;
   state.board.noseLength = mode ? clampNumber(els.noseLength?.value, 0.5, Math.max(1, state.board.length * 0.25), preset.length) : 0;
+  state.board.noseExtension = mode === "gun" ? clampNumber(els.noseExtension?.value, 0, 70, preset.extension ?? 50) : 0;
   state.board.noseShoulderPos = mode ? clampNumber(els.noseShoulderPos?.value, 0.12, 0.88, preset.shoulderPos) : 0;
   state.board.noseShoulderScale = mode ? clampNumber(els.noseShoulderScale?.value, 0.05, 1.35, preset.shoulderScale) : 0;
   state.board.noseRailBlend = mode ? clampNumber(els.noseRailBlend?.value, 0, 2.5, preset.railBlend) : 0;
   state.board.noseLinearization = 0;
   state.board.noseWidthAdjust = mode ? clampNumber(els.noseWidthAdjust?.value, -1, 1, 0) : 0;
   commitBoardMutation(before);
-  if (mode) {
+  if (mode || state.board.noseTipShape) {
     setStatus("status_nose_shape_applied", {
-      shape: noseModeLabel(mode),
+      shape: mode ? noseModeLabel(mode) : t(`nose_tip_${state.board.noseTipShape}`),
       length: fmt(state.board.noseLength),
       shoulder: fmt(state.board.noseShoulderPos),
       width: fmt(state.board.noseShoulderScale),
@@ -19696,6 +21409,10 @@ function bottomPresetLabel(key) {
   if (key === "shortboard-single-to-double") return t("bottom_preset_shortboard_single_to_double");
   if (key === "shortboard-single-to-vee") return t("bottom_preset_shortboard_single_to_vee");
   if (key === "performance-channel-quad") return t("bottom_preset_performance_channel_quad");
+  if (key === "rider-paddle-glide") return t("bottom_preset_rider_paddle_glide");
+  if (key === "rider-balanced-control") return t("bottom_preset_rider_balanced_control");
+  if (key === "rider-speed-drive") return t("bottom_preset_rider_speed_drive");
+  if (key === "rider-loose-turn") return t("bottom_preset_rider_loose_turn");
   return t("custom");
 }
 
@@ -19730,6 +21447,45 @@ function bottomPresetFeatures(key, board = state.board) {
     ...overrides
   });
   const presetFeatures = features => normalizeBottomFeatures(features);
+  if (preset === "rider-paddle-glide") {
+    return presetFeatures([feature("hull", {
+      start: length * 0.38, peak: length * 0.7, end: length,
+      depth: 0.07 + (narrowness * 0.015), width: 0.94,
+      blend: 1.12, power: 2.1
+    }, 0)]);
+  }
+  if (preset === "rider-balanced-control") {
+    return presetFeatures([
+      feature("single-concave", {
+        start: length * 0.18, peak: length * 0.48, end: length * 0.72,
+        depth: 0.13 + (shortness * 0.025), width: 0.76, blend: 1.05, power: 1.8
+      }, 0),
+      feature("vee", {
+        start: length * 0.58, peak: length * 0.82, end: length,
+        depth: 0.08 + (shortness * 0.015), width: 1, blend: 1.12, power: 1.15
+      }, 1)
+    ]);
+  }
+  if (preset === "rider-speed-drive") {
+    return presetFeatures([
+      feature("single-concave", {
+        start: length * 0.14, peak: length * 0.44, end: length * 0.68,
+        depth: 0.17 + (shortness * 0.035), width: 0.8, blend: 1.02, power: 1.9
+      }, 0),
+      feature("double-concave", {
+        start: length * 0.5, peak: length * 0.76, end: length,
+        centerDepth: 0.045, railDepth: 0.15 + (shortness * 0.025),
+        width: 0.7, offset: 0.43, blend: 1.05, power: 1.65
+      }, 1)
+    ]);
+  }
+  if (preset === "rider-loose-turn") {
+    return presetFeatures([feature("vee", {
+      start: length * 0.52, peak: length * 0.82, end: length,
+      depth: 0.11 + (shortness * 0.02), width: 1,
+      blend: 1.18, power: 1.12
+    }, 0)]);
+  }
   if (preset === "displacement-hull") {
     return presetFeatures([
       feature("displacement-hull", {
@@ -20484,10 +22240,10 @@ function finSetupPreset(setup, board) {
     extra
   });
   const singleCenter = center(15, 42, "FINBOX");
-  const trailer = center(18, 35, "FINBOX");
   const bonzerCenter = center(14.6, 35, "FINBOX");
   const thrusterSide = side(30, 41, 3.2, 0.64, "side", "FCSII", 6);
   const sideBite = side(39.5, 49.5, 3.2, 0.4, "2plus1-sidebite", "FCSII", 4);
+  const trailer = center(18, sideBite.rearX, "FINBOX");
   const twinFishSide = side(17, 30, 2.6, 0.35, "twin-fish", "FCS", 5);
   const twinPerformanceSide = side(22, 34, 3.2, 0.55, "twin-performance", "FCSII", 6);
   const quadRear = side(16, 26, 4.4, 0.32, "quad-rear", "FCSII", 4);
@@ -21004,6 +22760,92 @@ function deleteSelectedControlPoint() {
   setStatus("status_control_point_removed");
 }
 
+function outlineVolumeUncached(board) {
+  const length = boardCadTailDisplayLength(board);
+  return length > 0.02 ? simpsonIntegral(x => boardCadDisplayCrossSectionAreaAt(board, x), 0.01, length - 0.01, 40) : 0;
+}
+
+function outlineWithoutKnot(knots, index) {
+  const source = boardCadCloneKnots(knots);
+  const left = source[index - 1];
+  const right = source[index + 1];
+  const fitted = fitBezierSegmentToSamples(left.p, right.p, x => boardCadSplineValueAt(knots, x), {
+    samples: 20,
+    xCandidates: [[0.16, 0.58], [0.22, 0.64], [0.28, 0.7], [1 / 3, 2 / 3]],
+    keepYOrder: true
+  });
+  left.next = { ...fitted.c1 };
+  right.prev = { ...fitted.c2 };
+  source.splice(index, 1);
+  return source;
+}
+
+function outlineSimplificationError(reference, candidate, steps = 240) {
+  const start = reference[0].p.x;
+  const end = reference[reference.length - 1].p.x;
+  let maxError = 0;
+  for (let i = 0; i <= steps; i++) {
+    const x = lerp(start, end, i / steps);
+    maxError = Math.max(maxError, Math.abs(boardCadSplineValueAt(reference, x) - boardCadSplineValueAt(candidate, x)));
+  }
+  return maxError;
+}
+
+function simplifyOutlineKnots(board, maxErrorCm = 0.05, maxVolumeRatio = 0.001) {
+  const reference = boardCadCloneKnots(board.outline || []);
+  const referenceVolume = outlineVolumeUncached(board);
+  const protectedEndRange = Math.min(30.48, (Number(board.length) || 0) * 0.2);
+  let maxError = 0;
+  let volumeRatio = 0;
+  let changed = true;
+  while (changed && board.outline.length > 3) {
+    changed = false;
+    let best = null;
+    for (let index = 1; index < board.outline.length - 1; index++) {
+      const knot = board.outline[index];
+      if (!knot.continuous || knot.p.x <= protectedEndRange || knot.p.x >= board.length - protectedEndRange) continue;
+      const candidate = outlineWithoutKnot(board.outline, index);
+      const error = outlineSimplificationError(reference, candidate);
+      if (error > maxErrorCm) continue;
+      const candidateBoard = { ...board, outline: candidate };
+      const candidateVolume = outlineVolumeUncached(candidateBoard);
+      const ratio = referenceVolume > 1e-9 ? Math.abs(candidateVolume - referenceVolume) / referenceVolume : 0;
+      if (ratio > maxVolumeRatio) continue;
+      if (!best || error < best.error) best = { candidate, error, ratio };
+    }
+    if (best) {
+      board.outline = best.candidate;
+      maxError = Math.max(maxError, best.error);
+      volumeRatio = best.ratio;
+      changed = true;
+    }
+  }
+  return { before: reference.length, after: board.outline.length, maxError, volumeRatio };
+}
+
+function simplifyOutline() {
+  if (!state.board) return;
+  const before = cloneBoard(state.board);
+  const working = cloneBoard(state.board);
+  bakeProceduralOutlineForExport(working);
+  const result = simplifyOutlineKnots(working);
+  if (result.after >= result.before) {
+    setStatus("status_outline_already_simple");
+    return;
+  }
+  state.board = working;
+  state.selection = null;
+  state.lastEditPoint = null;
+  state.contextEditPoint = null;
+  commitBoardMutation(before);
+  setStatus("status_outline_simplified", {
+    before: result.before,
+    after: result.after,
+    error: (result.maxError * 10).toFixed(2),
+    volume: (result.volumeRatio * 100).toFixed(3)
+  });
+}
+
 function setSelectedControlPointFromPanel() {
   if (!state.selection || !state.board) return;
   const knot = state.selection.knots[state.selection.knotIndex];
@@ -21244,7 +23086,7 @@ function updateHistoryButtons() {
   if (els.undoButton) els.undoButton.disabled = !state.history.undo.length;
   if (els.redoButton) els.redoButton.disabled = !state.history.redo.length;
   setDisabled([
-    els.saveProjectButton, els.saveBrdButton, els.saveBrdAsButton, els.exportOtlButton, els.exportPflButton, els.pdfButton, els.templatePdfButton,
+    els.saveBrdButton, els.overwriteBrdButton, els.saveBrdAsButton, els.exportOtlButton, els.exportPflButton, els.pdfButton, els.templatePdfButton,
     els.dxfOutlineSplineButton, els.dxfProfileSplineButton, els.dxfOutlineButton, els.dxfProfileButton,
     els.gcodeButton, els.cncButton
   ], !state.board);
@@ -21257,6 +23099,7 @@ function updateHistoryButtons() {
   setDisabled([els.dxfSectionSplineButton, els.dxfSectionButton], !activeSection);
   if (els.addControlPointButton) els.addControlPointButton.disabled = !canAddControlPoint();
   if (els.deleteControlPointButton) els.deleteControlPointButton.disabled = !canDeleteControlPoint();
+  if (els.simplifyOutlineButton) els.simplifyOutlineButton.disabled = !state.board;
   setDisabled([els.nextSectionButton, els.nextSectionPanelButton], !canStepCrossSection(1));
   setDisabled([els.previousSectionButton, els.previousSectionPanelButton], !canStepCrossSection(-1));
   setDisabled([els.addSectionButton, els.addSectionPanelButton], !canAddCrossSection());
@@ -21327,8 +23170,13 @@ function cloneBoard(board) {
     tailRailBlend: Number(board.tailRailBlend) || 0,
     tailLinearization: Number(board.tailLinearization) || 0,
     tailWidthAdjust: Number(board.tailWidthAdjust) || 0,
+    tailGunCurve: normalizeTailGunCurve(board.tailGunCurve),
     noseMode: normalizeNoseModeKey(board.noseMode),
+    noseTipShape: normalizeNoseTipShape(board.noseTipShape),
+    noseTipBaseDeck: Array.isArray(board.noseTipBaseDeck) ? boardCadCloneKnots(board.noseTipBaseDeck) : null,
     noseLength: Number(board.noseLength) || 0,
+    noseExtension: Number(board.noseExtension) || 0,
+    noseGunCurve: normalizeTailGunCurve(board.noseGunCurve),
     noseShoulderPos: Number(board.noseShoulderPos) || 0,
     noseShoulderScale: Number(board.noseShoulderScale) || 0,
     noseRailBlend: Number(board.noseRailBlend) || 0,
@@ -21466,39 +23314,12 @@ const BRD_WRITE_ORDER = [
   1, 2, 3, 4, 7, 8, 45, 54, 55, 56, 57, 43, 11, 12, 13, 14, 15, 16,
   17, 18, 99, 19, 20, 21, 22, 23, 24, 25, 42, 26, 44, 46, 47, 38, 53,
   41, 48, 49, 51, 50, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 74, 68, 69, 70, 71, 72, 73, 75, 76, 77, 78, 79, 80, 81, 82,
-  EDGE_TYPE_FIELD_ID, EDGE_STRENGTH_FIELD_ID, EDGE_LENGTH_FIELD_ID, EDGE_FADE_FIELD_ID,
-  BOTTOM_FEATURE_FIELD_ID, BOTTOM_PRESET_FIELD_ID, ROCKER_PRESET_FIELD_ID, ROCKER_CONFIG_FIELD_ID, 27, 28, 29, 30, 31
+  EDGE_TYPE_FIELD_ID, EDGE_STRENGTH_FIELD_ID, EDGE_LENGTH_FIELD_ID, EDGE_FADE_FIELD_ID, SHAPER_COMMENT_FIELD_ID,
+  BOTTOM_FEATURE_FIELD_ID, BOTTOM_PRESET_FIELD_ID, ROCKER_PRESET_FIELD_ID, ROCKER_CONFIG_FIELD_ID, TAIL_GUN_CURVE_FIELD_ID, NOSE_EXTENSION_FIELD_ID, NOSE_GUN_CURVE_FIELD_ID, RAIL_MODE_FIELD_ID, RAIL_STRENGTH_FIELD_ID, NOSE_TIP_SHAPE_FIELD_ID, 27, 28, 29, 30, 31
 ];
-const BRD_STRING_FIELDS = new Set([7, 8, 43, 45, 48, 49, 51, 54, 55, 56, 57, 58, 61, 62, 68, 71, 75, EDGE_TYPE_FIELD_ID, BOTTOM_FEATURE_FIELD_ID, BOTTOM_PRESET_FIELD_ID, ROCKER_PRESET_FIELD_ID, ROCKER_CONFIG_FIELD_ID]);
+const BRD_STRING_FIELDS = new Set([7, 8, 43, 45, 48, 49, 51, 54, 55, 56, 57, 58, 61, 62, 68, 71, 75, EDGE_TYPE_FIELD_ID, BOTTOM_FEATURE_FIELD_ID, BOTTOM_PRESET_FIELD_ID, ROCKER_PRESET_FIELD_ID, ROCKER_CONFIG_FIELD_ID, TAIL_GUN_CURVE_FIELD_ID, NOSE_GUN_CURVE_FIELD_ID, RAIL_MODE_FIELD_ID, NOSE_TIP_SHAPE_FIELD_ID, SHAPER_COMMENT_FIELD_ID]);
 const BRD_ARRAY_FIELDS = new Set([50]);
 const BRD_BOOLEAN_FIELDS = new Set([41]);
-
-const BOARDCAD_PROJECT_FORMAT = "boardcad-web-project";
-const BOARDCAD_PROJECT_VERSION = 1;
-
-function makeBoardProject(board) {
-  if (!board) throw new Error("Board data is missing.");
-  return JSON.stringify({
-    format: BOARDCAD_PROJECT_FORMAT,
-    version: BOARDCAD_PROJECT_VERSION,
-    savedAt: new Date().toISOString(),
-    board: cloneBoard(board)
-  }, null, 2) + "\n";
-}
-
-function parseBoardProject(text, filename = "board.boardcad.json") {
-  const payload = JSON.parse(String(text || ""));
-  if (payload?.format !== BOARDCAD_PROJECT_FORMAT || payload?.version !== BOARDCAD_PROJECT_VERSION) {
-    throw new Error("Unsupported BoardCAD Web project format.");
-  }
-  const board = payload.board;
-  if (!board || !Array.isArray(board.outline) || !Array.isArray(board.bottom) || !Array.isArray(board.deck) || !Array.isArray(board.sections)) {
-    throw new Error("BoardCAD Web project geometry is incomplete.");
-  }
-  const restored = cloneBoard(board);
-  restored.filename = filename;
-  return restored;
-}
 
 function makeBrd(board) {
   const exportBoard = prepareBoardForBrdExport(board);
@@ -21543,10 +23364,10 @@ function makePfl(board) {
   ].join("\n") + "\n";
 }
 
-const PROCEDURAL_OUTLINE_FIELD_IDS = [62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82];
+const PROCEDURAL_OUTLINE_FIELD_IDS = [62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, TAIL_GUN_CURVE_FIELD_ID, NOSE_EXTENSION_FIELD_ID, NOSE_GUN_CURVE_FIELD_ID, NOSE_TIP_SHAPE_FIELD_ID];
 
 function proceduralOutlineExportActive(board) {
-  return normalizedTailConfig(board).active || normalizedNoseConfig(board).active || normalizedWingConfig(board).active;
+  return normalizedTailConfig(board).active || normalizedNoseConfig(board).active || normalizedWingConfig(board).active || !!normalizeNoseTipShape(board?.noseTipShape);
 }
 
 function shiftGuidePointsForExport(points = [], shift = 0) {
@@ -21602,8 +23423,12 @@ function bakeProceduralOutlineForExport(board) {
   board.tailRailBlend = 0;
   board.tailLinearization = 0;
   board.tailWidthAdjust = 0;
+  board.tailGunCurve = null;
   board.noseMode = "";
+  board.noseTipShape = "";
   board.noseLength = 0;
+  board.noseExtension = 0;
+  board.noseGunCurve = null;
   board.noseShoulderPos = 0;
   board.noseShoulderScale = 0;
   board.noseRailBlend = 0;
@@ -21705,6 +23530,12 @@ function brdExportValue(board, id) {
   if (id === 80) return Number(board.noseLinearization) || 0;
   if (id === 81) return Number(board.tailWidthAdjust) || 0;
   if (id === 82) return Number(board.noseWidthAdjust) || 0;
+  if (id === NOSE_EXTENSION_FIELD_ID) return Number(board.noseExtension) || 0;
+  if (id === NOSE_GUN_CURVE_FIELD_ID) return serializeTailGunCurve(board.noseGunCurve);
+  if (id === NOSE_TIP_SHAPE_FIELD_ID) return normalizeNoseTipShape(board.noseTipShape);
+  if (id === RAIL_MODE_FIELD_ID) return normalizeRailModeKey(board.railMode) || "";
+  if (id === RAIL_STRENGTH_FIELD_ID) return clampNumber(board.railStrength, 0, 1, 1);
+  if (id === TAIL_GUN_CURVE_FIELD_ID) return serializeTailGunCurve(board.tailGunCurve);
   if (id === EDGE_TYPE_FIELD_ID) return normalizeEdgeTypeKey(board.edgeType) || "";
   if (id === EDGE_STRENGTH_FIELD_ID) return clampNumber(board.edgeStrength, 0, 1, 0);
   if (id === EDGE_LENGTH_FIELD_ID) return Number(board.edgeLength) || 0;
@@ -22985,8 +24816,6 @@ function downloadBlob(filename, content, type) {
 window.boardcadWeb = {
   state,
   parseBrd,
-  makeBoardProject,
-  parseBoardProject,
   makeBrd,
   makeOtl,
   makePfl,
@@ -23049,11 +24878,16 @@ window.boardcadWeb = {
     normalizeRockerPresetKey,
     rockerPresetOrDefault,
     defaultRockerConfig,
+    rockerPresetConfigForBoard,
     normalizeRockerConfig,
     parseRockerConfig,
     serializeRockerConfig,
     rockerMeasurementStations,
     rockerStationMeasurements,
+    dimensionStations,
+    applyStationMeasurement,
+    applyBoardLength,
+    syncStationEditor,
     rockerTargetCurvePoints,
     applyRockerConfigToBoard,
     boardCadMaxRawWidthPos,
@@ -23069,6 +24903,7 @@ window.boardcadWeb = {
     drawOutlineBottomFeatureRanges,
     bottomFeatureRailAnchorX,
     insertLowerHalfSplineKnotAtX,
+    insertHalfSplineKnotAtX,
     insertBottomFeatureAnchorKnots,
     ensureBottomFeatureAnchorsOnSections,
     rebuildBoardBottomFeatureSections,
@@ -23081,12 +24916,22 @@ window.boardcadWeb = {
     moveBottomFeatureSectionDrag,
     boardCadTailWidthLandmarks,
     normalizedWingConfig,
+    wingOffsetAtX,
     normalizeTailModeKey,
+    canonicalTailTopology,
+    canonicalTailMeasurements,
+    greenlightFishTailDimensions,
+    swaylocksFishTemplateScale,
+    resolvedFishDesignDimensions,
     normalizeNoseModeKey,
+    normalizeNoseTipShape,
+    noseTipDeckLift,
+    buildNoseTipDeckSpline,
     nosePresetForBoard,
     normalizedNoseConfig,
     normalizedTailConfig,
     boardCadTailPlanform,
+    appendSwallowTailWidthEditHandle,
     boardCadSampleXPair,
     boardCadThicknessAtPos,
     boardCadRockerAtPos,
@@ -23106,8 +24951,6 @@ window.boardcadWeb = {
     outlineFullPoints,
     tailAdjustedProfileGeometry,
     scaleBoardTo,
-    makeBoardProject,
-    parseBoardProject,
     makeBrd,
     makeOtl,
     makePfl,
@@ -23167,6 +25010,18 @@ window.boardcadWeb = {
     finToeInFromSegment,
     finSetupPreset,
     applyFinSetupPreset,
+    simulationFinGeometry,
+    finYawEstimate,
+    finGeometryYawEstimate,
+    finComparisonScenarios,
+    railApexLineSamples,
+    railGeometryLineSamples,
+    bankHydrostatics,
+    simulationCurveData,
+    simulationFinPresetCurve,
+    simulationRailPresetCurve,
+    simulationSelectedComparisons,
+    hydrodynamicSimulationMetrics,
     normalizeFinExtra,
     moveWingDrag,
     syncBottomFeaturePanel,
@@ -23176,6 +25031,7 @@ window.boardcadWeb = {
     normalizeEdgeTypeKey,
     normalizedEdgeConfig,
     edgeEffectAtSection,
+    railLongitudinalStrengthFactor,
     railModeSpec,
     applyRailModeToSection,
     applyEdgeModeToSection,
@@ -23189,6 +25045,7 @@ window.boardcadWeb = {
     moveBottomFeatureFromPanel,
     boardWithPendingBottomFeaturePreview,
     loadGhostBoard,
+    keepCurrentBoardAsGhost,
     scaleGhostToCurrentBoard,
     moveGhostByKey,
     ghostCommandAvailable,
@@ -23252,6 +25109,8 @@ window.boardcadWeb = {
     editGuidePointFromPanel,
     addControlPoint,
     deleteSelectedControlPoint,
+    simplifyOutlineKnots,
+    outlineSimplificationError,
     setSelectedControlPointFromPanel,
     addCrossSectionFromPanel,
     moveCrossSectionFromPanel,
@@ -23262,6 +25121,8 @@ window.boardcadWeb = {
     deleteSelectedGuidePoint,
     moveSelectedControlPointByKey,
     moveSelectedGuidePointByKey,
+    setOutlineEditHandles,
+    materializeProceduralOutlineHandle,
     draw
   }
 };
@@ -23751,3 +25612,4 @@ applyLanguageToStaticUI();
 syncSettingsControls();
 draw();
 loadStartupSampleFromQuery();
+loadBlankCatalog();

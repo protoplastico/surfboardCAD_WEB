@@ -1,0 +1,130 @@
+{
+  "schemaVersion": "1.0.0",
+  "createdAt": "2026-08-12",
+  "language": "ja",
+  "research": {
+    "agentAssignments": 50,
+    "sourceReportDirectory": "docs/research/surfboard-design-50-agents",
+    "method": ["professional_sources", "official_cad_docs", "academic_sources", "implementation_audit", "image_link_verification"],
+    "evidenceGrades": {
+      "A": "experiment_or_field_measurement",
+      "B": "cfd_or_bounded_physics_inference",
+      "C": "multiple_professional_consensus",
+      "D": "single_commercial_or_unverified_metaphor",
+      "X": "misuse_or_unsupported_causal_claim"
+    }
+  },
+  "principles": [
+    "Geometry with explicit units and datum is authoritative; market names are presets or aliases.",
+    "Topology, dimensions, modifiers, and performance claims are separate layers.",
+    "Use few semantic control points; measurement stations remain virtual constraints when possible.",
+    "Use G1 for ordinary joins and target G2 for fair regions; preserve intentional corners and feature lines.",
+    "Keep terminal tail and nose control points because they control tip radius, pod width, lobes, and notches.",
+    "Do not infer performance from one detail without operating conditions and evidence."
+  ],
+  "units": { "length": "mm", "angle": "deg", "area": "mm2", "volume": "mm3" },
+  "taxonomy": {
+    "tail": [
+      {"id":"tail.solid_block","topology":"finite terminal block","variants":["square","rounded_square"],"required":["tailWidth12Mm","blockWidthMm","cornerRadiusMm","hipXMm","joinXMm","joinContinuity"]},
+      {"id":"tail.solid_rounded","topology":"single rounded terminal curve","variants":["squash","round","thumb"],"required":["tailWidth12Mm","tipWidthMm","tipRadiusMm","hipXMm","joinXMm","joinContinuity"]},
+      {"id":"tail.solid_pointed","topology":"monotonic convergence to center terminal","variants":["pin","round_pin","diamond"],"required":["tailWidth12Mm","tipPodWidthMm","tipRadiusMm","shoulderXMm","joinContinuity"]},
+      {"id":"tail.center_notched","topology":"two rear tips and center notch","variants":["swallow","deep_swallow","half_moon","split"],"required":["tailWidth12Mm","tipSeparationMm","eachTipWidthMm","notchDepthMm","notchRadiusMm","outerCornerRadiusMm","joinContinuity"]},
+      {"id":"tail.multi_lobed","topology":"three or more terminal extrema","variants":["bat","star"],"required":["terminalPoints","cutoutDepthsMm","cornerRadiiMm","joinContinuity"]}
+    ],
+    "nose": [
+      {"id":"nose.pointed","topology":"convergence to center tip","variants":["point","gun_point"],"required":["noseWidth12Mm","tipPodWidthMm","tipRadiusMm","shoulderXMm","joinXMm","joinContinuity"]},
+      {"id":"nose.rounded","topology":"single rounded terminal curve","variants":["round","round_point","full_round"],"required":["noseWidth12Mm","tipWidthMm","tipRadiusMm","shoulderXMm","joinXMm","joinContinuity"]},
+      {"id":"nose.block","topology":"finite transverse pod with corners","variants":["square","snub","blunt"],"required":["noseWidth12Mm","podWidthMm","cornerRadiusMm","shoulderXMm","joinContinuity"]}
+    ],
+    "rail": [
+      {"id":"rail.rounded","required":["apexHeightRatioPath","apexInsetMmPath","deckFullnessPath","bottomFullnessPath","outerRadiusMmPath","deckTangency","bottomTangency"]},
+      {"id":"rail.chined","required":["apexHeightRatioPath","boundaryPaths","bevelWidthsMm","bevelAnglesDeg","cornerRadiiMm"]}
+    ],
+    "bottom": ["bottom.planar","bottom.single_concave","bottom.double_concave","bottom.vee","bottom.convex_hull","bottom.displacement_hull","bottom.channel","bottom.chine"],
+    "rocker": ["rocker.base_curve","rocker.entry_lift","rocker.tail_kick","rocker.center_flatten"],
+    "edge": ["edge.outer_rail_radius","edge.tucked_under","edge.bottom_release","edge.tail_block","edge.chine_boundary"],
+    "deck": ["deck.planar","deck.domed","deck.concave","deck.step"],
+    "foil": ["foil.thickness_distribution","foil.volume_distribution","foil.rail_volume_distribution"],
+    "finSetup": ["fin.single","fin.twin","fin.thruster","fin.quad","fin.two_plus_one","fin.five_box","fin.finless"]
+  },
+  "ambiguousTerms": [
+    {"term":"fish","doNotAutoResolve":true,"reason":"board family and deep/wide swallow preset are different scopes"},
+    {"term":"wing","doNotAutoResolve":true,"reason":"outline modifier, not primary tail topology"},
+    {"term":"wide nose","doNotAutoResolve":true,"reason":"continuous width/area/fullness modifier"},
+    {"term":"gun","doNotAutoResolve":true,"reason":"board family or intent; geometry must be resolved"},
+    {"term":"50/50 rail","doNotAutoResolve":true,"reason":"preset requiring resolved apex/fullness/radius paths"},
+    {"term":"hard rail","doNotAutoResolve":true,"reason":"outer radius and bottom release edge are distinct"},
+    {"term":"spiral vee","doNotAutoResolve":true,"reason":"industry usage is inconsistent and not a mathematical spiral"},
+    {"term":"Bonzer","doNotAutoResolve":true,"reason":"compound bottom and fin system"}
+  ],
+  "continuity": {
+    "ordinaryJoinMinimum": "G1",
+    "fairRegionTarget": "G2",
+    "intentionalExceptions": ["square_corner","swallow_notch","wing","channel_wall","chine_boundary","hard_release_edge"],
+    "terminalSemanticControlPoints": "retain"
+  },
+  "implementationAudit": {
+    "p0": [
+      "rail semantic/base geometry persistence is incomplete",
+      "legacy overlapping bottom features may be silently redistributed",
+      "runtime base and generated-section metadata are lost on export",
+      "rocker can rebase on already modified geometry after reload"
+    ],
+    "p1": [
+      "square nose selection has no valid generation path",
+      "wide nose is incorrectly modeled as a topology enum and mapped toward a pointed form",
+      "diamond tail can produce a flat center block instead of one center tip",
+      "star tail topology differs from common bat/star definitions",
+      "tail and nose joins are forced to G0 where ordinary joins should be fair",
+      "soft, tucked, and hard edge are incorrectly exclusive",
+      "rail geometry lacks authoritative apex/fullness/tuck/radius paths",
+      "bottom operations create excessive editable sections/control points"
+    ],
+    "classificationData": {
+      "tail": "not suitable as ground truth due to duplicates, conflicting labels, and missing provenance",
+      "nose": "333 records are unlabeled; not a classification ground truth"
+    }
+  },
+  "recommendedSequence": [
+    "stop destructive save/load transformations and add roundtrip tests",
+    "introduce schema v2 with datum, units, base geometry, modifier stack, and semantic landmarks",
+    "preserve legacy baked geometry without forced preset inference",
+    "correct tail/nose taxonomy and ordinary G1/G2 joins while retaining terminal CPs",
+    "split edge into outer radius, tuck, and release roles",
+    "implement longitudinal rail semantic paths and landmark-aligned lofting",
+    "represent bottom as analytic features with smooth envelopes and derived stations",
+    "represent rocker as datum-aware base curves plus fair modifiers",
+    "add fixed-view thumbnails, definitions, dimensions, ambiguity warnings, and evidence grades"
+  ],
+  "gallery": [
+    {"id":"VG-01","topic":"tail shapes","view":"plan","provider":"Greenlight Surf Supply","pageUrl":"https://greenlightsurfsupply.com/pages/surfboard-tail-design-greenlight-surfboard-design-guide","previewAllowed":false,"licenseStatus":"unknown"},
+    {"id":"VG-04","topic":"tail shapes","view":"plan diagram","provider":"Surf Hydrodynamics","pageUrl":"https://www.surfhydrodynamics.com/en/Tail_shape_surf.html","assetUrl":"https://www.surfhydrodynamics.com/en/images/tails_surf.png","previewAllowed":false,"licenseStatus":"permission-required"},
+    {"id":"VG-05","topic":"rails","view":"section flow","provider":"Greenlight Surf Supply","pageUrl":"https://greenlightsurfsupply.com/pages/surfboard-rail-design-greenlight-surfboard-design-guide","previewAllowed":false,"licenseStatus":"unknown"},
+    {"id":"VG-07","topic":"rail foil","view":"section series","provider":"Natural Curves Surfboards","pageUrl":"https://www.naturalcurvesboards.com/html/designhtml/rails.html","previewAllowed":false,"licenseStatus":"unknown"},
+    {"id":"VG-08","topic":"bottom contours","view":"section","provider":"Greenlight Surf Supply","pageUrl":"https://greenlightsurfsupply.com/pages/surfboard-bottom-contour-design-greenlight-surfboard-design-guide","previewAllowed":false,"licenseStatus":"unknown"},
+    {"id":"VG-11","topic":"bottom families","view":"section series","provider":"Natural Curves Surfboards","pageUrl":"https://naturalcurvesboards.com/html/designhtml/bottoms.html","previewAllowed":false,"licenseStatus":"unknown"},
+    {"id":"VG-12","topic":"rocker measurement","view":"profile","provider":"Greenlight Surf Supply","pageUrl":"https://greenlightsurfsupply.com/pages/surfboard-rocker-and-foil-design-greenlight-surfboard-design-guide","previewAllowed":false,"licenseStatus":"unknown"},
+    {"id":"VG-15","topic":"CAD views","view":"plan profile section 3D","provider":"OpenShaper","pageUrl":"https://openshaper.com/surfboard-design-guide","previewAllowed":false,"licenseStatus":"unknown"},
+    {"id":"VG-17","topic":"fin CFD","view":"bottom plan CFD","provider":"Oggiano et al.","pageUrl":"https://www.mdpi.com/2076-3417/10/3/816","previewAllowed":false,"licenseStatus":"open-pending-credit-check"},
+    {"id":"VG-18","topic":"instrumented fin","view":"photo schematic","provider":"Scientific Reports","pageUrl":"https://www.nature.com/articles/s41598-025-94834-0/figures/1","previewAllowed":false,"licenseStatus":"open-pending-credit-check"},
+    {"id":"VG-20","topic":"CNC workflow","view":"CAD CAM","provider":"Shape3d","pageUrl":"https://www.shape3d.com/Support/User_Manual_V9.htm","previewAllowed":false,"licenseStatus":"unknown"},
+    {"id":"VG-21","topic":"nose shapes","view":"plan","provider":"SurfScience","pageUrl":"https://www.surfscience.com/topics/surfboard-anatomy/nose/the-nose-knows","previewAllowed":false,"licenseStatus":"unknown"}
+  ],
+  "imagePolicy": {
+    "default": "link_to_canonical_page_without_copying_or_hotlinking",
+    "previewRequirement": "explicit_permission_or_verified_open_license_and_figure_credit",
+    "brokenOrUnverifiedAssets": "exclude",
+    "reverifyDays": 90,
+    "verifiedAt": "2026-08-12"
+  },
+  "validation": [
+    "all dimensions finite; radii non-negative; ratios between zero and one",
+    "path stations ordered; duplicates allowed only for explicit corners",
+    "no negative thickness or self intersection",
+    "no channel or chine boundary crossing",
+    "G1 minimum at ordinary joins and G2/fairness checks in fair regions",
+    "parameter monotonicity property tests",
+    "save reload save preserves geometry, semantics, units, and datum",
+    "authored key stations remain distinct from derived and CNC stations"
+  ]
+}
