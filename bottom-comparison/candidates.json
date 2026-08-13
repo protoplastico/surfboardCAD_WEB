@@ -1,0 +1,3184 @@
+{
+  "generatedAt": "2026-06-29T01:33:34.819Z",
+  "method": "heuristic",
+  "note": "These are candidate boards for bottom-shape comparison, inferred from filename, folder, tail label, length, and width. They are not ground-truth bottom classifications.",
+  "groups": {
+    "hull": [
+      {
+        "id": "054",
+        "file": "/Users/protoplastico/Desktop/boarddata/Bob Simmons/1950 9planinghull80L.brd",
+        "rel": "Bob Simmons/1950 9planinghull80L.brd",
+        "folder": "Bob Simmons",
+        "name": "1950 9planinghull80L.brd",
+        "tailLabel": "square",
+        "noseWidthAt0": 3.6262658897313353,
+        "length": 274.32,
+        "width": 57.22451009384695,
+        "score": 11.5,
+        "reasons": [
+          "name/folder contains hull keywords",
+          "long planing-hull style length",
+          "wide board supports hull entry",
+          "tail label: square"
+        ]
+      },
+      {
+        "id": "052",
+        "file": "/Users/protoplastico/Desktop/boarddata/Bob Simmons/1949 10.6planinghull102L.brd",
+        "rel": "Bob Simmons/1949 10.6planinghull102L.brd",
+        "folder": "Bob Simmons",
+        "name": "1949 10.6planinghull102L.brd",
+        "tailLabel": "square",
+        "noseWidthAt0": 3.1059875514029787,
+        "length": 320.04,
+        "width": 57.48770261179607,
+        "score": 11.5,
+        "reasons": [
+          "name/folder contains hull keywords",
+          "long planing-hull style length",
+          "wide board supports hull entry",
+          "tail label: square"
+        ]
+      },
+      {
+        "id": "053",
+        "file": "/Users/protoplastico/Desktop/boarddata/Bob Simmons/1950 10.6planinghull96L.brd",
+        "rel": "Bob Simmons/1950 10.6planinghull96L.brd",
+        "folder": "Bob Simmons",
+        "name": "1950 10.6planinghull96L.brd",
+        "tailLabel": "square",
+        "noseWidthAt0": 2.926277624230277,
+        "length": 320.04,
+        "width": 57.215357446746616,
+        "score": 11.5,
+        "reasons": [
+          "name/folder contains hull keywords",
+          "long planing-hull style length",
+          "wide board supports hull entry",
+          "tail label: square"
+        ]
+      },
+      {
+        "id": "099",
+        "file": "/Users/protoplastico/Desktop/boarddata/fatum surf/9.0firm63L.brd",
+        "rel": "fatum surf/9.0firm63L.brd",
+        "folder": "fatum surf",
+        "name": "9.0firm63L.brd",
+        "tailLabel": "round",
+        "noseWidthAt0": 3.2349520161918663,
+        "length": 274.32,
+        "width": 56.89031520743667,
+        "score": 3.5,
+        "reasons": [
+          "long planing-hull style length",
+          "wide board supports hull entry",
+          "tail label: round"
+        ]
+      },
+      {
+        "id": "149",
+        "file": "/Users/protoplastico/Desktop/boarddata/maluku/9.0mal74L.brd",
+        "rel": "maluku/9.0mal74L.brd",
+        "folder": "maluku",
+        "name": "9.0mal74L.brd",
+        "tailLabel": "square",
+        "noseWidthAt0": 2.113902345031857,
+        "length": 274.32,
+        "width": 58.43579478976055,
+        "score": 3.5,
+        "reasons": [
+          "long planing-hull style length",
+          "wide board supports hull entry",
+          "tail label: square"
+        ]
+      },
+      {
+        "id": "028",
+        "file": "/Users/protoplastico/Desktop/boarddata/1template/Fatum/9.2firm66L.brd",
+        "rel": "1template/Fatum/9.2firm66L.brd",
+        "folder": "1template/Fatum",
+        "name": "9.2firm66L.brd",
+        "tailLabel": "round",
+        "noseWidthAt0": 1.1746476111064132,
+        "length": 279.4,
+        "width": 57.84677143549665,
+        "score": 3.5,
+        "reasons": [
+          "long planing-hull style length",
+          "wide board supports hull entry",
+          "tail label: round"
+        ]
+      },
+      {
+        "id": "102",
+        "file": "/Users/protoplastico/Desktop/boarddata/fatum surf/9.2firm66L.brd",
+        "rel": "fatum surf/9.2firm66L.brd",
+        "folder": "fatum surf",
+        "name": "9.2firm66L.brd",
+        "tailLabel": "roud",
+        "noseWidthAt0": 1.1746476111064132,
+        "length": 279.4,
+        "width": 57.84677143549665,
+        "score": 3.5,
+        "reasons": [
+          "long planing-hull style length",
+          "wide board supports hull entry",
+          "tail label: roud"
+        ]
+      },
+      {
+        "id": "128",
+        "file": "/Users/protoplastico/Desktop/boarddata/joel tudor/9.3flatpinnose70L.brd",
+        "rel": "joel tudor/9.3flatpinnose70L.brd",
+        "folder": "joel tudor",
+        "name": "9.3flatpinnose70L.brd",
+        "tailLabel": "square",
+        "noseWidthAt0": 1.7735513917898076,
+        "length": 281.94,
+        "width": 56.78182335422842,
+        "score": 3.5,
+        "reasons": [
+          "long planing-hull style length",
+          "wide board supports hull entry",
+          "tail label: square"
+        ]
+      },
+      {
+        "id": "136",
+        "file": "/Users/protoplastico/Desktop/boarddata/junod/9.3sanddoll80L.brd",
+        "rel": "junod/9.3sanddoll80L.brd",
+        "folder": "junod",
+        "name": "9.3sanddoll80L.brd",
+        "tailLabel": "square",
+        "noseWidthAt0": 3.4027716698219397,
+        "length": 281.94,
+        "width": 61.50144837585483,
+        "score": 3.5,
+        "reasons": [
+          "long planing-hull style length",
+          "wide board supports hull entry",
+          "tail label: square"
+        ]
+      },
+      {
+        "id": "029",
+        "file": "/Users/protoplastico/Desktop/boarddata/1template/Fatum/9.4majestic65L.brd",
+        "rel": "1template/Fatum/9.4majestic65L.brd",
+        "folder": "1template/Fatum",
+        "name": "9.4majestic65L.brd",
+        "tailLabel": "diamond",
+        "noseWidthAt0": 4.82427596276076,
+        "length": 284.48,
+        "width": 56.03605989672945,
+        "score": 3.5,
+        "reasons": [
+          "long planing-hull style length",
+          "wide board supports hull entry",
+          "tail label: diamond"
+        ]
+      },
+      {
+        "id": "030",
+        "file": "/Users/protoplastico/Desktop/boarddata/1template/Fatum/9.ze 4done72L.brd",
+        "rel": "1template/Fatum/9.ze 4done72L.brd",
+        "folder": "1template/Fatum",
+        "name": "9.ze 4done72L.brd",
+        "tailLabel": "diamond",
+        "noseWidthAt0": 2.3323248680108986,
+        "length": 284.48,
+        "width": 58.430498418786364,
+        "score": 3.5,
+        "reasons": [
+          "long planing-hull style length",
+          "wide board supports hull entry",
+          "tail label: diamond"
+        ]
+      },
+      {
+        "id": "103",
+        "file": "/Users/protoplastico/Desktop/boarddata/fatum surf/9.4majestic65L.brd",
+        "rel": "fatum surf/9.4majestic65L.brd",
+        "folder": "fatum surf",
+        "name": "9.4majestic65L.brd",
+        "tailLabel": "diamond",
+        "noseWidthAt0": 4.82427596276076,
+        "length": 284.48,
+        "width": 56.03605989672945,
+        "score": 3.5,
+        "reasons": [
+          "long planing-hull style length",
+          "wide board supports hull entry",
+          "tail label: diamond"
+        ]
+      },
+      {
+        "id": "104",
+        "file": "/Users/protoplastico/Desktop/boarddata/fatum surf/9.ze 4done72L.brd",
+        "rel": "fatum surf/9.ze 4done72L.brd",
+        "folder": "fatum surf",
+        "name": "9.ze 4done72L.brd",
+        "tailLabel": "diamonod",
+        "noseWidthAt0": 2.3323248680108986,
+        "length": 284.48,
+        "width": 58.430498418786364,
+        "score": 3.5,
+        "reasons": [
+          "long planing-hull style length",
+          "wide board supports hull entry",
+          "tail label: diamonod"
+        ]
+      },
+      {
+        "id": "002",
+        "file": "/Users/protoplastico/Desktop/boarddata/1template/9.6MDnoserider68L.brd",
+        "rel": "1template/9.6MDnoserider68L.brd",
+        "folder": "1template",
+        "name": "9.6MDnoserider68L.brd",
+        "tailLabel": "square",
+        "noseWidthAt0": 1.049975924347352,
+        "length": 289.56,
+        "width": 56.550858242982585,
+        "score": 3.5,
+        "reasons": [
+          "long planing-hull style length",
+          "wide board supports hull entry",
+          "tail label: square"
+        ]
+      },
+      {
+        "id": "032",
+        "file": "/Users/protoplastico/Desktop/boarddata/1template/Harbour/9.6classicPig75L.brd",
+        "rel": "1template/Harbour/9.6classicPig75L.brd",
+        "folder": "1template/Harbour",
+        "name": "9.6classicPig75L.brd",
+        "tailLabel": "square",
+        "noseWidthAt0": 1.8743019839939379,
+        "length": 289.56,
+        "width": 57.380074184488485,
+        "score": 3.5,
+        "reasons": [
+          "long planing-hull style length",
+          "wide board supports hull entry",
+          "tail label: square"
+        ]
+      },
+      {
+        "id": "037",
+        "file": "/Users/protoplastico/Desktop/boarddata/Alex knost BMT/9.6flatrocker55L.brd",
+        "rel": "Alex knost BMT/9.6flatrocker55L.brd",
+        "folder": "Alex knost BMT",
+        "name": "9.6flatrocker55L.brd",
+        "tailLabel": "square",
+        "noseWidthAt0": 3.185333628013181,
+        "length": 289.56,
+        "width": 60.24967540950844,
+        "score": 3.5,
+        "reasons": [
+          "long planing-hull style length",
+          "wide board supports hull entry",
+          "tail label: square"
+        ]
+      },
+      {
+        "id": "038",
+        "file": "/Users/protoplastico/Desktop/boarddata/Alex knost BMT/9.6noserider51L.brd",
+        "rel": "Alex knost BMT/9.6noserider51L.brd",
+        "folder": "Alex knost BMT",
+        "name": "9.6noserider51L.brd",
+        "tailLabel": "square",
+        "noseWidthAt0": 3.9730560539854607,
+        "length": 289.56,
+        "width": 57.23618715074133,
+        "score": 3.5,
+        "reasons": [
+          "long planing-hull style length",
+          "wide board supports hull entry",
+          "tail label: square"
+        ]
+      },
+      {
+        "id": "113",
+        "file": "/Users/protoplastico/Desktop/boarddata/Habor/9.6ceeter67L.brd",
+        "rel": "Habor/9.6ceeter67L.brd",
+        "folder": "Habor",
+        "name": "9.6ceeter67L.brd",
+        "tailLabel": "square",
+        "noseWidthAt0": 1.8135290541775257,
+        "length": 289.56,
+        "width": 57.380074184488485,
+        "score": 3.5,
+        "reasons": [
+          "long planing-hull style length",
+          "wide board supports hull entry",
+          "tail label: square"
+        ]
+      },
+      {
+        "id": "115",
+        "file": "/Users/protoplastico/Desktop/boarddata/Habor/9.6classicPig75L.brd",
+        "rel": "Habor/9.6classicPig75L.brd",
+        "folder": "Habor",
+        "name": "9.6classicPig75L.brd",
+        "tailLabel": "square",
+        "noseWidthAt0": 1.8743019839939379,
+        "length": 289.56,
+        "width": 57.380074184488485,
+        "score": 3.5,
+        "reasons": [
+          "long planing-hull style length",
+          "wide board supports hull entry",
+          "tail label: square"
+        ]
+      },
+      {
+        "id": "123",
+        "file": "/Users/protoplastico/Desktop/boarddata/Jed noll/9.6MDnoserider68L.brd",
+        "rel": "Jed noll/9.6MDnoserider68L.brd",
+        "folder": "Jed noll",
+        "name": "9.6MDnoserider68L.brd",
+        "tailLabel": "square",
+        "noseWidthAt0": 1.049975924347352,
+        "length": 289.56,
+        "width": 56.550858242982585,
+        "score": 3.5,
+        "reasons": [
+          "long planing-hull style length",
+          "wide board supports hull entry",
+          "tail label: square"
+        ]
+      },
+      {
+        "id": "129",
+        "file": "/Users/protoplastico/Desktop/boarddata/joel tudor/9.6alamoana76L.brd",
+        "rel": "joel tudor/9.6alamoana76L.brd",
+        "folder": "joel tudor",
+        "name": "9.6alamoana76L.brd",
+        "tailLabel": "round pin",
+        "noseWidthAt0": 3.687275325666158,
+        "length": 289.56,
+        "width": 59.05115536881779,
+        "score": 3.5,
+        "reasons": [
+          "long planing-hull style length",
+          "wide board supports hull entry",
+          "tail label: round pin"
+        ]
+      },
+      {
+        "id": "130",
+        "file": "/Users/protoplastico/Desktop/boarddata/joel tudor/9.6grande76L.brd",
+        "rel": "joel tudor/9.6grande76L.brd",
+        "folder": "joel tudor",
+        "name": "9.6grande76L.brd",
+        "tailLabel": "square",
+        "noseWidthAt0": 3.016252625166068,
+        "length": 289.56,
+        "width": 58.113116078441365,
+        "score": 3.5,
+        "reasons": [
+          "long planing-hull style length",
+          "wide board supports hull entry",
+          "tail label: square"
+        ]
+      },
+      {
+        "id": "131",
+        "file": "/Users/protoplastico/Desktop/boarddata/joel tudor/9.6haffy73L.brd",
+        "rel": "joel tudor/9.6haffy73L.brd",
+        "folder": "joel tudor",
+        "name": "9.6haffy73L.brd",
+        "tailLabel": "square",
+        "noseWidthAt0": 1.8117239299129702,
+        "length": 289.56,
+        "width": 58.113116078441365,
+        "score": 3.5,
+        "reasons": [
+          "long planing-hull style length",
+          "wide board supports hull entry",
+          "tail label: square"
+        ]
+      },
+      {
+        "id": "132",
+        "file": "/Users/protoplastico/Desktop/boarddata/joel tudor/9.6santana78L.brd",
+        "rel": "joel tudor/9.6santana78L.brd",
+        "folder": "joel tudor",
+        "name": "9.6santana78L.brd",
+        "tailLabel": "round",
+        "noseWidthAt0": 3.898410484752625,
+        "length": 289.56,
+        "width": 59.75734513727335,
+        "score": 3.5,
+        "reasons": [
+          "long planing-hull style length",
+          "wide board supports hull entry",
+          "tail label: round"
+        ]
+      },
+      {
+        "id": "133",
+        "file": "/Users/protoplastico/Desktop/boarddata/joel tudor/9.6Wideflat81L.brd",
+        "rel": "joel tudor/9.6Wideflat81L.brd",
+        "folder": "joel tudor",
+        "name": "9.6Wideflat81L.brd",
+        "tailLabel": "round",
+        "noseWidthAt0": 4.760317829583034,
+        "length": 289.56,
+        "width": 62.30435269149757,
+        "score": 3.5,
+        "reasons": [
+          "long planing-hull style length",
+          "wide board supports hull entry",
+          "tail label: round"
+        ]
+      },
+      {
+        "id": "137",
+        "file": "/Users/protoplastico/Desktop/boarddata/junod/9.7nowski74L.brd",
+        "rel": "junod/9.7nowski74L.brd",
+        "folder": "junod",
+        "name": "9.7nowski74L.brd",
+        "tailLabel": "square",
+        "noseWidthAt0": 2.150485972795771,
+        "length": 289.56,
+        "width": 56.45473918114167,
+        "score": 3.5,
+        "reasons": [
+          "long planing-hull style length",
+          "wide board supports hull entry",
+          "tail label: square"
+        ]
+      },
+      {
+        "id": "140",
+        "file": "/Users/protoplastico/Desktop/boarddata/Keyo/9.6k-log68L.brd",
+        "rel": "Keyo/9.6k-log68L.brd",
+        "folder": "Keyo",
+        "name": "9.6k-log68L.brd",
+        "tailLabel": "square",
+        "noseWidthAt0": 1.0156615207171433,
+        "length": 289.56,
+        "width": 57.78307934339518,
+        "score": 3.5,
+        "reasons": [
+          "long planing-hull style length",
+          "wide board supports hull entry",
+          "tail label: square"
+        ]
+      },
+      {
+        "id": "141",
+        "file": "/Users/protoplastico/Desktop/boarddata/Keyo/9.6noserider69L.brd",
+        "rel": "Keyo/9.6noserider69L.brd",
+        "folder": "Keyo",
+        "name": "9.6noserider69L.brd",
+        "tailLabel": "spuare",
+        "noseWidthAt0": 2.9580832151582315,
+        "length": 289.56,
+        "width": 56.550858242982585,
+        "score": 3.5,
+        "reasons": [
+          "long planing-hull style length",
+          "wide board supports hull entry",
+          "tail label: spuare"
+        ]
+      },
+      {
+        "id": "143",
+        "file": "/Users/protoplastico/Desktop/boarddata/Keyo/9.brd",
+        "rel": "Keyo/9.brd",
+        "folder": "Keyo",
+        "name": "9.brd",
+        "tailLabel": "round",
+        "noseWidthAt0": 2.5112067012685784,
+        "length": 289.56,
+        "width": 63.50000172139319,
+        "score": 3.5,
+        "reasons": [
+          "long planing-hull style length",
+          "wide board supports hull entry",
+          "tail label: round"
+        ]
+      },
+      {
+        "id": "145",
+        "file": "/Users/protoplastico/Desktop/boarddata/longboard/9.6CJnelson87L.brd",
+        "rel": "longboard/9.6CJnelson87L.brd",
+        "folder": "longboard",
+        "name": "9.6CJnelson87L.brd",
+        "tailLabel": "square",
+        "noseWidthAt0": 2.3963662137807415,
+        "length": 289.56,
+        "width": 59.647060445004676,
+        "score": 3.5,
+        "reasons": [
+          "long planing-hull style length",
+          "wide board supports hull entry",
+          "tail label: square"
+        ]
+      }
+    ],
+    "single-concave": [
+      {
+        "id": "010",
+        "file": "/Users/protoplastico/Desktop/boarddata/1template/Fatum/5.6habano30L.brd",
+        "rel": "1template/Fatum/5.6habano30L.brd",
+        "folder": "1template/Fatum",
+        "name": "5.6habano30L.brd",
+        "tailLabel": "square",
+        "noseWidthAt0": 1.1948201783109238,
+        "length": 167.64000000000001,
+        "width": 53.263817261179135,
+        "score": 7.5,
+        "reasons": [
+          "performance tail/name keyword",
+          "shortboard to funboard length range",
+          "moderate center width",
+          "tail label: square"
+        ]
+      },
+      {
+        "id": "083",
+        "file": "/Users/protoplastico/Desktop/boarddata/fatum surf/5.6habano30L.brd",
+        "rel": "fatum surf/5.6habano30L.brd",
+        "folder": "fatum surf",
+        "name": "5.6habano30L.brd",
+        "tailLabel": "square",
+        "noseWidthAt0": 1.1948201783109238,
+        "length": 167.64000000000001,
+        "width": 53.263817261179135,
+        "score": 7.5,
+        "reasons": [
+          "performance tail/name keyword",
+          "shortboard to funboard length range",
+          "moderate center width",
+          "tail label: square"
+        ]
+      },
+      {
+        "id": "172",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/5.6なつめ32L.brd",
+        "rel": "protoplastico/5.6なつめ32L.brd",
+        "folder": "protoplastico",
+        "name": "5.6なつめ32L.brd",
+        "tailLabel": "square",
+        "noseWidthAt0": 1.1948201783109238,
+        "length": 167.64000000000001,
+        "width": 53.263817261179135,
+        "score": 7.5,
+        "reasons": [
+          "performance tail/name keyword",
+          "shortboard to funboard length range",
+          "moderate center width",
+          "tail label: square"
+        ]
+      },
+      {
+        "id": "064",
+        "file": "/Users/protoplastico/Desktop/boarddata/Channel islands/5.7spermWhale32l.brd",
+        "rel": "Channel islands/5.7spermWhale32l.brd",
+        "folder": "Channel islands",
+        "name": "5.7spermWhale32l.brd",
+        "tailLabel": "squash",
+        "noseWidthAt0": 1.3998781075999578,
+        "length": 170.18,
+        "width": 55.87688455079159,
+        "score": 7.5,
+        "reasons": [
+          "performance tail/name keyword",
+          "shortboard to funboard length range",
+          "moderate center width",
+          "tail label: squash"
+        ]
+      },
+      {
+        "id": "066",
+        "file": "/Users/protoplastico/Desktop/boarddata/Channel islands/5.9neckbeard31L.brd",
+        "rel": "Channel islands/5.9neckbeard31L.brd",
+        "folder": "Channel islands",
+        "name": "5.9neckbeard31L.brd",
+        "tailLabel": "square",
+        "noseWidthAt0": 0.5337837572119615,
+        "length": 172.72,
+        "width": 49.96287294783727,
+        "score": 7.5,
+        "reasons": [
+          "performance tail/name keyword",
+          "shortboard to funboard length range",
+          "moderate center width",
+          "tail label: square"
+        ]
+      },
+      {
+        "id": "176",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/5.9ひし31L.brd",
+        "rel": "protoplastico/5.9ひし31L.brd",
+        "folder": "protoplastico",
+        "name": "5.9ひし31L.brd",
+        "tailLabel": "round square",
+        "noseWidthAt0": 2.1016390562125222,
+        "length": 175.26,
+        "width": 54.867454502190135,
+        "score": 7.5,
+        "reasons": [
+          "performance tail/name keyword",
+          "shortboard to funboard length range",
+          "moderate center width",
+          "tail label: round square"
+        ]
+      },
+      {
+        "id": "164",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/5.10あふひ45L.brd",
+        "rel": "protoplastico/5.10あふひ45L.brd",
+        "folder": "protoplastico",
+        "name": "5.10あふひ45L.brd",
+        "tailLabel": "round square",
+        "noseWidthAt0": 0,
+        "length": 178.68600000000004,
+        "width": 52.55098250768269,
+        "score": 7.5,
+        "reasons": [
+          "performance tail/name keyword",
+          "shortboard to funboard length range",
+          "moderate center width",
+          "tail label: round square"
+        ]
+      },
+      {
+        "id": "007",
+        "file": "/Users/protoplastico/Desktop/boarddata/1template/Fatum/5.11disco33L.brd",
+        "rel": "1template/Fatum/5.11disco33L.brd",
+        "folder": "1template/Fatum",
+        "name": "5.11disco33L.brd",
+        "tailLabel": "square",
+        "noseWidthAt0": 0.7608086261839928,
+        "length": 180.34,
+        "width": 49.9126983014739,
+        "score": 7.5,
+        "reasons": [
+          "performance tail/name keyword",
+          "shortboard to funboard length range",
+          "moderate center width",
+          "tail label: square"
+        ]
+      },
+      {
+        "id": "081",
+        "file": "/Users/protoplastico/Desktop/boarddata/fatum surf/5.11disco33L.brd",
+        "rel": "fatum surf/5.11disco33L.brd",
+        "folder": "fatum surf",
+        "name": "5.11disco33L.brd",
+        "tailLabel": "square",
+        "noseWidthAt0": 0.7608086261839928,
+        "length": 180.34,
+        "width": 49.9126983014739,
+        "score": 7.5,
+        "reasons": [
+          "performance tail/name keyword",
+          "shortboard to funboard length range",
+          "moderate center width",
+          "tail label: square"
+        ]
+      },
+      {
+        "id": "012",
+        "file": "/Users/protoplastico/Desktop/boarddata/1template/Fatum/6.0giant39L.brd",
+        "rel": "1template/Fatum/6.0giant39L.brd",
+        "folder": "1template/Fatum",
+        "name": "6.0giant39L.brd",
+        "tailLabel": "square",
+        "noseWidthAt0": 0.7110495235559251,
+        "length": 182.88,
+        "width": 55.160708014566666,
+        "score": 7.5,
+        "reasons": [
+          "performance tail/name keyword",
+          "shortboard to funboard length range",
+          "moderate center width",
+          "tail label: square"
+        ]
+      },
+      {
+        "id": "058",
+        "file": "/Users/protoplastico/Desktop/boarddata/Chanel island/6.0DumpsterDriver35L.brd",
+        "rel": "Chanel island/6.0DumpsterDriver35L.brd",
+        "folder": "Chanel island",
+        "name": "6.0DumpsterDriver35L.brd",
+        "tailLabel": "squash",
+        "noseWidthAt0": 0.796581372702616,
+        "length": 182.88,
+        "width": 51.38460066719764,
+        "score": 7.5,
+        "reasons": [
+          "performance tail/name keyword",
+          "shortboard to funboard length range",
+          "moderate center width",
+          "tail label: squash"
+        ]
+      },
+      {
+        "id": "059",
+        "file": "/Users/protoplastico/Desktop/boarddata/Chanel island/6.0girrabit30L.brd",
+        "rel": "Chanel island/6.0girrabit30L.brd",
+        "folder": "Chanel island",
+        "name": "6.0girrabit30L.brd",
+        "tailLabel": "squash",
+        "noseWidthAt0": 0.9009351571866357,
+        "length": 182.88,
+        "width": 48.10180335282441,
+        "score": 7.5,
+        "reasons": [
+          "performance tail/name keyword",
+          "shortboard to funboard length range",
+          "moderate center width",
+          "tail label: squash"
+        ]
+      },
+      {
+        "id": "060",
+        "file": "/Users/protoplastico/Desktop/boarddata/Chanel island/6.0rookie29L.brd",
+        "rel": "Chanel island/6.0rookie29L.brd",
+        "folder": "Chanel island",
+        "name": "6.0rookie29L.brd",
+        "tailLabel": "squash",
+        "noseWidthAt0": 0.5000469916711902,
+        "length": 182.88,
+        "width": 48.10180335282441,
+        "score": 7.5,
+        "reasons": [
+          "performance tail/name keyword",
+          "shortboard to funboard length range",
+          "moderate center width",
+          "tail label: squash"
+        ]
+      },
+      {
+        "id": "061",
+        "file": "/Users/protoplastico/Desktop/boarddata/Chanel island/6.0Zeus32L.brd",
+        "rel": "Chanel island/6.0Zeus32L.brd",
+        "folder": "Chanel island",
+        "name": "6.0Zeus32L.brd",
+        "tailLabel": "squash",
+        "noseWidthAt0": 0.7701785913017773,
+        "length": 182.88,
+        "width": 48.10180335282441,
+        "score": 7.5,
+        "reasons": [
+          "performance tail/name keyword",
+          "shortboard to funboard length range",
+          "moderate center width",
+          "tail label: squash"
+        ]
+      },
+      {
+        "id": "067",
+        "file": "/Users/protoplastico/Desktop/boarddata/Channel islands/6.0Blackwhite.brd",
+        "rel": "Channel islands/6.0Blackwhite.brd",
+        "folder": "Channel islands",
+        "name": "6.0Blackwhite.brd",
+        "tailLabel": "squash",
+        "noseWidthAt0": 0.5001127366883783,
+        "length": 182.88,
+        "width": 51.79286742942388,
+        "score": 7.5,
+        "reasons": [
+          "performance tail/name keyword",
+          "shortboard to funboard length range",
+          "moderate center width",
+          "tail label: squash"
+        ]
+      },
+      {
+        "id": "068",
+        "file": "/Users/protoplastico/Desktop/boarddata/Channel islands/6.0Sampler37L.brd",
+        "rel": "Channel islands/6.0Sampler37L.brd",
+        "folder": "Channel islands",
+        "name": "6.0Sampler37L.brd",
+        "tailLabel": "squash",
+        "noseWidthAt0": 0.5001127366883783,
+        "length": 182.88,
+        "width": 51.79286742942388,
+        "score": 7.5,
+        "reasons": [
+          "performance tail/name keyword",
+          "shortboard to funboard length range",
+          "moderate center width",
+          "tail label: squash"
+        ]
+      },
+      {
+        "id": "069",
+        "file": "/Users/protoplastico/Desktop/boarddata/Channel islands/6.0SamplerS29L.brd",
+        "rel": "Channel islands/6.0SamplerS29L.brd",
+        "folder": "Channel islands",
+        "name": "6.0SamplerS29L.brd",
+        "tailLabel": "squash",
+        "noseWidthAt0": 0.5001127366883783,
+        "length": 182.88,
+        "width": 51.79286742942388,
+        "score": 7.5,
+        "reasons": [
+          "performance tail/name keyword",
+          "shortboard to funboard length range",
+          "moderate center width",
+          "tail label: squash"
+        ]
+      },
+      {
+        "id": "085",
+        "file": "/Users/protoplastico/Desktop/boarddata/fatum surf/6.0giant39L.brd",
+        "rel": "fatum surf/6.0giant39L.brd",
+        "folder": "fatum surf",
+        "name": "6.0giant39L.brd",
+        "tailLabel": "squash",
+        "noseWidthAt0": 0.7110495235559251,
+        "length": 182.88,
+        "width": 55.160708014566666,
+        "score": 7.5,
+        "reasons": [
+          "performance tail/name keyword",
+          "shortboard to funboard length range",
+          "moderate center width",
+          "tail label: squash"
+        ]
+      },
+      {
+        "id": "105",
+        "file": "/Users/protoplastico/Desktop/boarddata/Firewire/6.0creeper33L.brd",
+        "rel": "Firewire/6.0creeper33L.brd",
+        "folder": "Firewire",
+        "name": "6.0creeper33L.brd",
+        "tailLabel": "round pin",
+        "noseWidthAt0": 0.49999997510993865,
+        "length": 182.88,
+        "width": 52.8796723045036,
+        "score": 7.5,
+        "reasons": [
+          "performance tail/name keyword",
+          "shortboard to funboard length range",
+          "moderate center width",
+          "tail label: round pin"
+        ]
+      },
+      {
+        "id": "106",
+        "file": "/Users/protoplastico/Desktop/boarddata/Firewire/6.0Gamma33L.brd",
+        "rel": "Firewire/6.0Gamma33L.brd",
+        "folder": "Firewire",
+        "name": "6.0Gamma33L.brd",
+        "tailLabel": "squash",
+        "noseWidthAt0": 0.49999997510993865,
+        "length": 182.88,
+        "width": 50.51355269459493,
+        "score": 7.5,
+        "reasons": [
+          "performance tail/name keyword",
+          "shortboard to funboard length range",
+          "moderate center width",
+          "tail label: squash"
+        ]
+      },
+      {
+        "id": "178",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/6.0あふち35L.brd",
+        "rel": "protoplastico/6.0あふち35L.brd",
+        "folder": "protoplastico",
+        "name": "6.0あふち35L.brd",
+        "tailLabel": "round square",
+        "noseWidthAt0": 0.796581372702616,
+        "length": 182.88,
+        "width": 51.38460066719764,
+        "score": 7.5,
+        "reasons": [
+          "performance tail/name keyword",
+          "shortboard to funboard length range",
+          "moderate center width",
+          "tail label: round square"
+        ]
+      },
+      {
+        "id": "179",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/6.0かし34L.brd",
+        "rel": "protoplastico/6.0かし34L.brd",
+        "folder": "protoplastico",
+        "name": "6.0かし34L.brd",
+        "tailLabel": "round squareesquash",
+        "noseWidthAt0": 0.9009351571866357,
+        "length": 182.88,
+        "width": 48.10180335282441,
+        "score": 7.5,
+        "reasons": [
+          "performance tail/name keyword",
+          "shortboard to funboard length range",
+          "moderate center width",
+          "tail label: round squareesquash"
+        ]
+      },
+      {
+        "id": "181",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/6.0たはみづら32L.brd",
+        "rel": "protoplastico/6.0たはみづら32L.brd",
+        "folder": "protoplastico",
+        "name": "6.0たはみづら32L.brd",
+        "tailLabel": "squash",
+        "noseWidthAt0": 1.0068819740279848,
+        "length": 182.88,
+        "width": 48.10180335282441,
+        "score": 7.5,
+        "reasons": [
+          "performance tail/name keyword",
+          "shortboard to funboard length range",
+          "moderate center width",
+          "tail label: squash"
+        ]
+      },
+      {
+        "id": "183",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/6.0ははそ32L.brd",
+        "rel": "protoplastico/6.0ははそ32L.brd",
+        "folder": "protoplastico",
+        "name": "6.0ははそ32L.brd",
+        "tailLabel": "square",
+        "noseWidthAt0": 0.5868332535770815,
+        "length": 182.88,
+        "width": 51.3217388681082,
+        "score": 7.5,
+        "reasons": [
+          "performance tail/name keyword",
+          "shortboard to funboard length range",
+          "moderate center width",
+          "tail label: square"
+        ]
+      },
+      {
+        "id": "015",
+        "file": "/Users/protoplastico/Desktop/boarddata/1template/Fatum/6.1fusion26L.brd",
+        "rel": "1template/Fatum/6.1fusion26L.brd",
+        "folder": "1template/Fatum",
+        "name": "6.1fusion26L.brd",
+        "tailLabel": "round square",
+        "noseWidthAt0": 0,
+        "length": 185.42,
+        "width": 47.280022668565955,
+        "score": 7.5,
+        "reasons": [
+          "performance tail/name keyword",
+          "shortboard to funboard length range",
+          "moderate center width",
+          "tail label: round square"
+        ]
+      },
+      {
+        "id": "088",
+        "file": "/Users/protoplastico/Desktop/boarddata/fatum surf/6.1fusion26L.brd",
+        "rel": "fatum surf/6.1fusion26L.brd",
+        "folder": "fatum surf",
+        "name": "6.1fusion26L.brd",
+        "tailLabel": "squash",
+        "noseWidthAt0": 0,
+        "length": 185.42,
+        "width": 47.280022668565955,
+        "score": 7.5,
+        "reasons": [
+          "performance tail/name keyword",
+          "shortboard to funboard length range",
+          "moderate center width",
+          "tail label: squash"
+        ]
+      },
+      {
+        "id": "090",
+        "file": "/Users/protoplastico/Desktop/boarddata/fatum surf/6.1skipper29L.brd",
+        "rel": "fatum surf/6.1skipper29L.brd",
+        "folder": "fatum surf",
+        "name": "6.1skipper29L.brd",
+        "tailLabel": "squash",
+        "noseWidthAt0": 0,
+        "length": 185.42,
+        "width": 47.280022668565955,
+        "score": 7.5,
+        "reasons": [
+          "performance tail/name keyword",
+          "shortboard to funboard length range",
+          "moderate center width",
+          "tail label: squash"
+        ]
+      },
+      {
+        "id": "184",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/6.1うのはな33L.brd",
+        "rel": "protoplastico/6.1うのはな33L.brd",
+        "folder": "protoplastico",
+        "name": "6.1うのはな33L.brd",
+        "tailLabel": "roumd square",
+        "noseWidthAt0": 0,
+        "length": 185.42,
+        "width": 47.280022668565955,
+        "score": 7.5,
+        "reasons": [
+          "performance tail/name keyword",
+          "shortboard to funboard length range",
+          "moderate center width",
+          "tail label: roumd square"
+        ]
+      },
+      {
+        "id": "185",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/6.1かほばな34L.brd",
+        "rel": "protoplastico/6.1かほばな34L.brd",
+        "folder": "protoplastico",
+        "name": "6.1かほばな34L.brd",
+        "tailLabel": "round square",
+        "noseWidthAt0": 0.5472972700527706,
+        "length": 185.42,
+        "width": 51.17232781805,
+        "score": 7.5,
+        "reasons": [
+          "performance tail/name keyword",
+          "shortboard to funboard length range",
+          "moderate center width",
+          "tail label: round square"
+        ]
+      },
+      {
+        "id": "186",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/6.1つな29L.brd",
+        "rel": "protoplastico/6.1つな29L.brd",
+        "folder": "protoplastico",
+        "name": "6.1つな29L.brd",
+        "tailLabel": "round square",
+        "noseWidthAt0": 0,
+        "length": 185.42,
+        "width": 49.642409678217184,
+        "score": 7.5,
+        "reasons": [
+          "performance tail/name keyword",
+          "shortboard to funboard length range",
+          "moderate center width",
+          "tail label: round square"
+        ]
+      }
+    ],
+    "double-concave": [
+      {
+        "id": "064",
+        "file": "/Users/protoplastico/Desktop/boarddata/Channel islands/5.7spermWhale32l.brd",
+        "rel": "Channel islands/5.7spermWhale32l.brd",
+        "folder": "Channel islands",
+        "name": "5.7spermWhale32l.brd",
+        "tailLabel": "squash",
+        "noseWidthAt0": 1.3998781075999578,
+        "length": 170.18,
+        "width": 55.87688455079159,
+        "score": 8.5,
+        "reasons": [
+          "tail/name suggests modern performance bottom",
+          "shortboard length range",
+          "supports double-concave planform",
+          "tail label: squash"
+        ]
+      },
+      {
+        "id": "065",
+        "file": "/Users/protoplastico/Desktop/boarddata/Channel islands/5.9joe39l.brd",
+        "rel": "Channel islands/5.9joe39l.brd",
+        "folder": "Channel islands",
+        "name": "5.9joe39l.brd",
+        "tailLabel": "squash",
+        "noseWidthAt0": 1.1754622302593298,
+        "length": 175.26,
+        "width": 56.09315256806618,
+        "score": 8.5,
+        "reasons": [
+          "tail/name suggests modern performance bottom",
+          "shortboard length range",
+          "supports double-concave planform",
+          "tail label: squash"
+        ]
+      },
+      {
+        "id": "007",
+        "file": "/Users/protoplastico/Desktop/boarddata/1template/Fatum/5.11disco33L.brd",
+        "rel": "1template/Fatum/5.11disco33L.brd",
+        "folder": "1template/Fatum",
+        "name": "5.11disco33L.brd",
+        "tailLabel": "square",
+        "noseWidthAt0": 0.7608086261839928,
+        "length": 180.34,
+        "width": 49.9126983014739,
+        "score": 8.5,
+        "reasons": [
+          "tail/name suggests modern performance bottom",
+          "shortboard length range",
+          "supports double-concave planform",
+          "tail label: square"
+        ]
+      },
+      {
+        "id": "081",
+        "file": "/Users/protoplastico/Desktop/boarddata/fatum surf/5.11disco33L.brd",
+        "rel": "fatum surf/5.11disco33L.brd",
+        "folder": "fatum surf",
+        "name": "5.11disco33L.brd",
+        "tailLabel": "square",
+        "noseWidthAt0": 0.7608086261839928,
+        "length": 180.34,
+        "width": 49.9126983014739,
+        "score": 8.5,
+        "reasons": [
+          "tail/name suggests modern performance bottom",
+          "shortboard length range",
+          "supports double-concave planform",
+          "tail label: square"
+        ]
+      },
+      {
+        "id": "011",
+        "file": "/Users/protoplastico/Desktop/boarddata/1template/Fatum/6.0flyingfish32L.brd",
+        "rel": "1template/Fatum/6.0flyingfish32L.brd",
+        "folder": "1template/Fatum",
+        "name": "6.0flyingfish32L.brd",
+        "tailLabel": "swallow",
+        "noseWidthAt0": 0.5867627771886725,
+        "length": 182.88,
+        "width": 51.3217388681082,
+        "score": 8.5,
+        "reasons": [
+          "tail/name suggests modern performance bottom",
+          "shortboard length range",
+          "supports double-concave planform",
+          "tail label: swallow"
+        ]
+      },
+      {
+        "id": "058",
+        "file": "/Users/protoplastico/Desktop/boarddata/Chanel island/6.0DumpsterDriver35L.brd",
+        "rel": "Chanel island/6.0DumpsterDriver35L.brd",
+        "folder": "Chanel island",
+        "name": "6.0DumpsterDriver35L.brd",
+        "tailLabel": "squash",
+        "noseWidthAt0": 0.796581372702616,
+        "length": 182.88,
+        "width": 51.38460066719764,
+        "score": 8.5,
+        "reasons": [
+          "tail/name suggests modern performance bottom",
+          "shortboard length range",
+          "supports double-concave planform",
+          "tail label: squash"
+        ]
+      },
+      {
+        "id": "059",
+        "file": "/Users/protoplastico/Desktop/boarddata/Chanel island/6.0girrabit30L.brd",
+        "rel": "Chanel island/6.0girrabit30L.brd",
+        "folder": "Chanel island",
+        "name": "6.0girrabit30L.brd",
+        "tailLabel": "squash",
+        "noseWidthAt0": 0.9009351571866357,
+        "length": 182.88,
+        "width": 48.10180335282441,
+        "score": 8.5,
+        "reasons": [
+          "tail/name suggests modern performance bottom",
+          "shortboard length range",
+          "supports double-concave planform",
+          "tail label: squash"
+        ]
+      },
+      {
+        "id": "060",
+        "file": "/Users/protoplastico/Desktop/boarddata/Chanel island/6.0rookie29L.brd",
+        "rel": "Chanel island/6.0rookie29L.brd",
+        "folder": "Chanel island",
+        "name": "6.0rookie29L.brd",
+        "tailLabel": "squash",
+        "noseWidthAt0": 0.5000469916711902,
+        "length": 182.88,
+        "width": 48.10180335282441,
+        "score": 8.5,
+        "reasons": [
+          "tail/name suggests modern performance bottom",
+          "shortboard length range",
+          "supports double-concave planform",
+          "tail label: squash"
+        ]
+      },
+      {
+        "id": "061",
+        "file": "/Users/protoplastico/Desktop/boarddata/Chanel island/6.0Zeus32L.brd",
+        "rel": "Chanel island/6.0Zeus32L.brd",
+        "folder": "Chanel island",
+        "name": "6.0Zeus32L.brd",
+        "tailLabel": "squash",
+        "noseWidthAt0": 0.7701785913017773,
+        "length": 182.88,
+        "width": 48.10180335282441,
+        "score": 8.5,
+        "reasons": [
+          "tail/name suggests modern performance bottom",
+          "shortboard length range",
+          "supports double-concave planform",
+          "tail label: squash"
+        ]
+      },
+      {
+        "id": "067",
+        "file": "/Users/protoplastico/Desktop/boarddata/Channel islands/6.0Blackwhite.brd",
+        "rel": "Channel islands/6.0Blackwhite.brd",
+        "folder": "Channel islands",
+        "name": "6.0Blackwhite.brd",
+        "tailLabel": "squash",
+        "noseWidthAt0": 0.5001127366883783,
+        "length": 182.88,
+        "width": 51.79286742942388,
+        "score": 8.5,
+        "reasons": [
+          "tail/name suggests modern performance bottom",
+          "shortboard length range",
+          "supports double-concave planform",
+          "tail label: squash"
+        ]
+      },
+      {
+        "id": "068",
+        "file": "/Users/protoplastico/Desktop/boarddata/Channel islands/6.0Sampler37L.brd",
+        "rel": "Channel islands/6.0Sampler37L.brd",
+        "folder": "Channel islands",
+        "name": "6.0Sampler37L.brd",
+        "tailLabel": "squash",
+        "noseWidthAt0": 0.5001127366883783,
+        "length": 182.88,
+        "width": 51.79286742942388,
+        "score": 8.5,
+        "reasons": [
+          "tail/name suggests modern performance bottom",
+          "shortboard length range",
+          "supports double-concave planform",
+          "tail label: squash"
+        ]
+      },
+      {
+        "id": "069",
+        "file": "/Users/protoplastico/Desktop/boarddata/Channel islands/6.0SamplerS29L.brd",
+        "rel": "Channel islands/6.0SamplerS29L.brd",
+        "folder": "Channel islands",
+        "name": "6.0SamplerS29L.brd",
+        "tailLabel": "squash",
+        "noseWidthAt0": 0.5001127366883783,
+        "length": 182.88,
+        "width": 51.79286742942388,
+        "score": 8.5,
+        "reasons": [
+          "tail/name suggests modern performance bottom",
+          "shortboard length range",
+          "supports double-concave planform",
+          "tail label: squash"
+        ]
+      },
+      {
+        "id": "084",
+        "file": "/Users/protoplastico/Desktop/boarddata/fatum surf/6.0flyingfish32L.brd",
+        "rel": "fatum surf/6.0flyingfish32L.brd",
+        "folder": "fatum surf",
+        "name": "6.0flyingfish32L.brd",
+        "tailLabel": "square",
+        "noseWidthAt0": 0.5867627771886725,
+        "length": 182.88,
+        "width": 51.3217388681082,
+        "score": 8.5,
+        "reasons": [
+          "tail/name suggests modern performance bottom",
+          "shortboard length range",
+          "supports double-concave planform",
+          "tail label: square"
+        ]
+      },
+      {
+        "id": "085",
+        "file": "/Users/protoplastico/Desktop/boarddata/fatum surf/6.0giant39L.brd",
+        "rel": "fatum surf/6.0giant39L.brd",
+        "folder": "fatum surf",
+        "name": "6.0giant39L.brd",
+        "tailLabel": "squash",
+        "noseWidthAt0": 0.7110495235559251,
+        "length": 182.88,
+        "width": 55.160708014566666,
+        "score": 8.5,
+        "reasons": [
+          "tail/name suggests modern performance bottom",
+          "shortboard length range",
+          "supports double-concave planform",
+          "tail label: squash"
+        ]
+      },
+      {
+        "id": "106",
+        "file": "/Users/protoplastico/Desktop/boarddata/Firewire/6.0Gamma33L.brd",
+        "rel": "Firewire/6.0Gamma33L.brd",
+        "folder": "Firewire",
+        "name": "6.0Gamma33L.brd",
+        "tailLabel": "squash",
+        "noseWidthAt0": 0.49999997510993865,
+        "length": 182.88,
+        "width": 50.51355269459493,
+        "score": 8.5,
+        "reasons": [
+          "tail/name suggests modern performance bottom",
+          "shortboard length range",
+          "supports double-concave planform",
+          "tail label: squash"
+        ]
+      },
+      {
+        "id": "179",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/6.0かし34L.brd",
+        "rel": "protoplastico/6.0かし34L.brd",
+        "folder": "protoplastico",
+        "name": "6.0かし34L.brd",
+        "tailLabel": "round squareesquash",
+        "noseWidthAt0": 0.9009351571866357,
+        "length": 182.88,
+        "width": 48.10180335282441,
+        "score": 8.5,
+        "reasons": [
+          "tail/name suggests modern performance bottom",
+          "shortboard length range",
+          "supports double-concave planform",
+          "tail label: round squareesquash"
+        ]
+      },
+      {
+        "id": "181",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/6.0たはみづら32L.brd",
+        "rel": "protoplastico/6.0たはみづら32L.brd",
+        "folder": "protoplastico",
+        "name": "6.0たはみづら32L.brd",
+        "tailLabel": "squash",
+        "noseWidthAt0": 1.0068819740279848,
+        "length": 182.88,
+        "width": 48.10180335282441,
+        "score": 8.5,
+        "reasons": [
+          "tail/name suggests modern performance bottom",
+          "shortboard length range",
+          "supports double-concave planform",
+          "tail label: squash"
+        ]
+      },
+      {
+        "id": "018",
+        "file": "/Users/protoplastico/Desktop/boarddata/1template/Fatum/6.2axion32L.brd",
+        "rel": "1template/Fatum/6.2axion32L.brd",
+        "folder": "1template/Fatum",
+        "name": "6.2axion32L.brd",
+        "tailLabel": "swallow",
+        "noseWidthAt0": 0.6517015651480254,
+        "length": 187.95999999999998,
+        "width": 49.64987870117546,
+        "score": 8.5,
+        "reasons": [
+          "tail/name suggests modern performance bottom",
+          "shortboard length range",
+          "supports double-concave planform",
+          "tail label: swallow"
+        ]
+      },
+      {
+        "id": "091",
+        "file": "/Users/protoplastico/Desktop/boarddata/fatum surf/6.2axion32L.brd",
+        "rel": "fatum surf/6.2axion32L.brd",
+        "folder": "fatum surf",
+        "name": "6.2axion32L.brd",
+        "tailLabel": "wing swallow",
+        "noseWidthAt0": 0.6517015651480254,
+        "length": 187.95999999999998,
+        "width": 49.64987870117546,
+        "score": 8.5,
+        "reasons": [
+          "tail/name suggests modern performance bottom",
+          "shortboard length range",
+          "supports double-concave planform",
+          "tail label: wing swallow"
+        ]
+      },
+      {
+        "id": "063",
+        "file": "/Users/protoplastico/Desktop/boarddata/Chanel island/6.2Rocket9.brd",
+        "rel": "Chanel island/6.2Rocket9.brd",
+        "folder": "Chanel island",
+        "name": "6.2Rocket9.brd",
+        "tailLabel": "squash",
+        "noseWidthAt0": 0.7964363089163773,
+        "length": 187.96,
+        "width": 50.680735960029956,
+        "score": 8.5,
+        "reasons": [
+          "tail/name suggests modern performance bottom",
+          "shortboard length range",
+          "supports double-concave planform",
+          "tail label: squash"
+        ]
+      },
+      {
+        "id": "070",
+        "file": "/Users/protoplastico/Desktop/boarddata/Channel islands/6.2DFR34L.brd",
+        "rel": "Channel islands/6.2DFR34L.brd",
+        "folder": "Channel islands",
+        "name": "6.2DFR34L.brd",
+        "tailLabel": "squash",
+        "noseWidthAt0": 0.5,
+        "length": 187.96,
+        "width": 48.68775536787127,
+        "score": 8.5,
+        "reasons": [
+          "tail/name suggests modern performance bottom",
+          "shortboard length range",
+          "supports double-concave planform",
+          "tail label: squash"
+        ]
+      },
+      {
+        "id": "086",
+        "file": "/Users/protoplastico/Desktop/boarddata/fatum surf/6.10arnold39L.brd",
+        "rel": "fatum surf/6.10arnold39L.brd",
+        "folder": "fatum surf",
+        "name": "6.10arnold39L.brd",
+        "tailLabel": "squash",
+        "noseWidthAt0": 0,
+        "length": 208.28,
+        "width": 51.177687514560006,
+        "score": 8.5,
+        "reasons": [
+          "tail/name suggests modern performance bottom",
+          "shortboard length range",
+          "supports double-concave planform",
+          "tail label: squash"
+        ]
+      },
+      {
+        "id": "057",
+        "file": "/Users/protoplastico/Desktop/boarddata/Canvas/6'10Fish.brd",
+        "rel": "Canvas/6'10Fish.brd",
+        "folder": "Canvas",
+        "name": "6'10Fish.brd",
+        "tailLabel": "fish",
+        "noseWidthAt0": 0.9887311125494499,
+        "length": 209.07375,
+        "width": 50.636118152474765,
+        "score": 8.5,
+        "reasons": [
+          "tail/name suggests modern performance bottom",
+          "shortboard length range",
+          "supports double-concave planform",
+          "tail label: fish"
+        ]
+      },
+      {
+        "id": "171",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/5.5なぎ32L.brd",
+        "rel": "protoplastico/5.5なぎ32L.brd",
+        "folder": "protoplastico",
+        "name": "5.5なぎ32L.brd",
+        "tailLabel": "fish",
+        "noseWidthAt0": 0.7312022327725873,
+        "length": 165.989,
+        "width": 51.70899671577977,
+        "score": 6.5,
+        "reasons": [
+          "tail/name suggests modern performance bottom",
+          "supports double-concave planform",
+          "tail label: fish"
+        ]
+      },
+      {
+        "id": "177",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/5.brd",
+        "rel": "protoplastico/5.brd",
+        "folder": "protoplastico",
+        "name": "5.brd",
+        "tailLabel": " fish",
+        "noseWidthAt0": 0.6281206543531102,
+        "length": 165.989,
+        "width": 52.23545617499985,
+        "score": 6.5,
+        "reasons": [
+          "tail/name suggests modern performance bottom",
+          "supports double-concave planform",
+          "tail label:  fish"
+        ]
+      },
+      {
+        "id": "004",
+        "file": "/Users/protoplastico/Desktop/boarddata/1template/Fatum/5.10fish40L.brd",
+        "rel": "1template/Fatum/5.10fish40L.brd",
+        "folder": "1template/Fatum",
+        "name": "5.10fish40L.brd",
+        "tailLabel": "fish",
+        "noseWidthAt0": 1.2591521894739075,
+        "length": 178.68600000000004,
+        "width": 60.308305743641874,
+        "score": 6.5,
+        "reasons": [
+          "tail/name suggests modern performance bottom",
+          "shortboard length range",
+          "tail label: fish"
+        ]
+      },
+      {
+        "id": "055",
+        "file": "/Users/protoplastico/Desktop/boarddata/Canvas/5.10fish40L.brd",
+        "rel": "Canvas/5.10fish40L.brd",
+        "folder": "Canvas",
+        "name": "5.10fish40L.brd",
+        "tailLabel": "fish",
+        "noseWidthAt0": 1.2591521894739075,
+        "length": 178.68600000000004,
+        "width": 60.308305743641874,
+        "score": 6.5,
+        "reasons": [
+          "tail/name suggests modern performance bottom",
+          "shortboard length range",
+          "tail label: fish"
+        ]
+      },
+      {
+        "id": "056",
+        "file": "/Users/protoplastico/Desktop/boarddata/Canvas/5'10Fish.brd",
+        "rel": "Canvas/5'10Fish.brd",
+        "folder": "Canvas",
+        "name": "5'10Fish.brd",
+        "tailLabel": "fish",
+        "noseWidthAt0": 1.2591521894739075,
+        "length": 178.68600000000004,
+        "width": 60.308305743641874,
+        "score": 6.5,
+        "reasons": [
+          "tail/name suggests modern performance bottom",
+          "shortboard length range",
+          "tail label: fish"
+        ]
+      },
+      {
+        "id": "017",
+        "file": "/Users/protoplastico/Desktop/boarddata/1template/Fatum/6.1skipper29L.brd",
+        "rel": "1template/Fatum/6.1skipper29L.brd",
+        "folder": "1template/Fatum",
+        "name": "6.1skipper29L.brd",
+        "tailLabel": "wing swallow",
+        "noseWidthAt0": 0,
+        "length": 185.42,
+        "width": 47.280022668565955,
+        "score": 6.5,
+        "reasons": [
+          "tail/name suggests modern performance bottom",
+          "shortboard length range",
+          "tail label: wing swallow"
+        ]
+      },
+      {
+        "id": "088",
+        "file": "/Users/protoplastico/Desktop/boarddata/fatum surf/6.1fusion26L.brd",
+        "rel": "fatum surf/6.1fusion26L.brd",
+        "folder": "fatum surf",
+        "name": "6.1fusion26L.brd",
+        "tailLabel": "squash",
+        "noseWidthAt0": 0,
+        "length": 185.42,
+        "width": 47.280022668565955,
+        "score": 6.5,
+        "reasons": [
+          "tail/name suggests modern performance bottom",
+          "shortboard length range",
+          "tail label: squash"
+        ]
+      }
+    ],
+    "vee": [
+      {
+        "id": "020",
+        "file": "/Users/protoplastico/Desktop/boarddata/1template/Fatum/6.6froid39L.brd",
+        "rel": "1template/Fatum/6.6froid39L.brd",
+        "folder": "1template/Fatum",
+        "name": "6.6froid39L.brd",
+        "tailLabel": "round pin",
+        "noseWidthAt0": 0.6073818055452079,
+        "length": 198.12,
+        "width": 53.26585181168708,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun/egg family often uses vee release",
+          "midlength or longer board",
+          "narrower board supports tail vee",
+          "tail label: round pin"
+        ]
+      },
+      {
+        "id": "035",
+        "file": "/Users/protoplastico/Desktop/boarddata/Alex knost BMT/6.6disco36L.brd",
+        "rel": "Alex knost BMT/6.6disco36L.brd",
+        "folder": "Alex knost BMT",
+        "name": "6.6disco36L.brd",
+        "tailLabel": "pin",
+        "noseWidthAt0": 1.402501618691869,
+        "length": 198.12,
+        "width": 55.09642499239566,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun/egg family often uses vee release",
+          "midlength or longer board",
+          "narrower board supports tail vee",
+          "tail label: pin"
+        ]
+      },
+      {
+        "id": "073",
+        "file": "/Users/protoplastico/Desktop/boarddata/deus ex macina/6.6singlefin32L.brd",
+        "rel": "deus ex macina/6.6singlefin32L.brd",
+        "folder": "deus ex macina",
+        "name": "6.6singlefin32L.brd",
+        "tailLabel": "pin",
+        "noseWidthAt0": 1.6197234580327289,
+        "length": 198.12,
+        "width": 50.7702138054686,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun/egg family often uses vee release",
+          "midlength or longer board",
+          "narrower board supports tail vee",
+          "tail label: pin"
+        ]
+      },
+      {
+        "id": "139",
+        "file": "/Users/protoplastico/Desktop/boarddata/Keyo/6.6egg40L.brd",
+        "rel": "Keyo/6.6egg40L.brd",
+        "folder": "Keyo",
+        "name": "6.6egg40L.brd",
+        "tailLabel": "round",
+        "noseWidthAt0": 3.625037037529105,
+        "length": 198.12,
+        "width": 54.60999975484156,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun/egg family often uses vee release",
+          "midlength or longer board",
+          "narrower board supports tail vee",
+          "tail label: round"
+        ]
+      },
+      {
+        "id": "189",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/6.6かはらふじ41L.brd",
+        "rel": "protoplastico/6.6かはらふじ41L.brd",
+        "folder": "protoplastico",
+        "name": "6.6かはらふじ41L.brd",
+        "tailLabel": "round pin",
+        "noseWidthAt0": 2.9728287402272056,
+        "length": 198.12,
+        "width": 54.66992550709906,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun/egg family often uses vee release",
+          "midlength or longer board",
+          "narrower board supports tail vee",
+          "tail label: round pin"
+        ]
+      },
+      {
+        "id": "190",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/6.6かや40L.brd",
+        "rel": "protoplastico/6.6かや40L.brd",
+        "folder": "protoplastico",
+        "name": "6.6かや40L.brd",
+        "tailLabel": "round pin",
+        "noseWidthAt0": 3.625037037529105,
+        "length": 198.12,
+        "width": 54.60999975484156,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun/egg family often uses vee release",
+          "midlength or longer board",
+          "narrower board supports tail vee",
+          "tail label: round pin"
+        ]
+      },
+      {
+        "id": "191",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/6.6たで41L.brd",
+        "rel": "protoplastico/6.6たで41L.brd",
+        "folder": "protoplastico",
+        "name": "6.6たで41L.brd",
+        "tailLabel": "round pin",
+        "noseWidthAt0": 0.6073818055452079,
+        "length": 198.12,
+        "width": 53.26585181168708,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun/egg family often uses vee release",
+          "midlength or longer board",
+          "narrower board supports tail vee",
+          "tail label: round pin"
+        ]
+      },
+      {
+        "id": "192",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/6.6ふじ44L.brd",
+        "rel": "protoplastico/6.6ふじ44L.brd",
+        "folder": "protoplastico",
+        "name": "6.6ふじ44L.brd",
+        "tailLabel": "pin",
+        "noseWidthAt0": 1.402501618691869,
+        "length": 198.12,
+        "width": 55.09642499239566,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun/egg family often uses vee release",
+          "midlength or longer board",
+          "narrower board supports tail vee",
+          "tail label: pin"
+        ]
+      },
+      {
+        "id": "193",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/6.6まゆみ32L.brd",
+        "rel": "protoplastico/6.6まゆみ32L.brd",
+        "folder": "protoplastico",
+        "name": "6.6まゆみ32L.brd",
+        "tailLabel": "pin",
+        "noseWidthAt0": 1.6256769785279024,
+        "length": 198.12,
+        "width": 53.664993001602376,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun/egg family often uses vee release",
+          "midlength or longer board",
+          "narrower board supports tail vee",
+          "tail label: pin"
+        ]
+      },
+      {
+        "id": "198",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/6.8ふじ40L.brd",
+        "rel": "protoplastico/6.8ふじ40L.brd",
+        "folder": "protoplastico",
+        "name": "6.8ふじ40L.brd",
+        "tailLabel": "wing pin",
+        "noseWidthAt0": 0,
+        "length": 201.16799999999998,
+        "width": 50.881781535359686,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun/egg family often uses vee release",
+          "midlength or longer board",
+          "narrower board supports tail vee",
+          "tail label: wing pin"
+        ]
+      },
+      {
+        "id": "122",
+        "file": "/Users/protoplastico/Desktop/boarddata/HPD/6.8CLminimal39L.brd",
+        "rel": "HPD/6.8CLminimal39L.brd",
+        "folder": "HPD",
+        "name": "6.8CLminimal39L.brd",
+        "tailLabel": "round pin",
+        "noseWidthAt0": 1.0330603771120612,
+        "length": 203.2,
+        "width": 49.83245506713221,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun/egg family often uses vee release",
+          "midlength or longer board",
+          "narrower board supports tail vee",
+          "tail label: round pin"
+        ]
+      },
+      {
+        "id": "199",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/7.0あべたちばな48L.brd",
+        "rel": "protoplastico/7.0あべたちばな48L.brd",
+        "folder": "protoplastico",
+        "name": "7.0あべたちばな48L.brd",
+        "tailLabel": "round pin",
+        "noseWidthAt0": 0.908417575186943,
+        "length": 213.36,
+        "width": 55.30697238549905,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun/egg family often uses vee release",
+          "midlength or longer board",
+          "narrower board supports tail vee",
+          "tail label: round pin"
+        ]
+      },
+      {
+        "id": "074",
+        "file": "/Users/protoplastico/Desktop/boarddata/deus ex macina/7.2midlength44L.brd",
+        "rel": "deus ex macina/7.2midlength44L.brd",
+        "folder": "deus ex macina",
+        "name": "7.2midlength44L.brd",
+        "tailLabel": "round",
+        "noseWidthAt0": 0.4969908062922731,
+        "length": 218.44000000000003,
+        "width": 51.077333403641695,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun/egg family often uses vee release",
+          "midlength or longer board",
+          "narrower board supports tail vee",
+          "tail label: round"
+        ]
+      },
+      {
+        "id": "075",
+        "file": "/Users/protoplastico/Desktop/boarddata/deus ex macina/7.2single40L.brd",
+        "rel": "deus ex macina/7.2single40L.brd",
+        "folder": "deus ex macina",
+        "name": "7.2single40L.brd",
+        "tailLabel": "pin",
+        "noseWidthAt0": 0.6299214192302927,
+        "length": 218.44000000000003,
+        "width": 51.59753194839731,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun/egg family often uses vee release",
+          "midlength or longer board",
+          "narrower board supports tail vee",
+          "tail label: pin"
+        ]
+      },
+      {
+        "id": "036",
+        "file": "/Users/protoplastico/Desktop/boarddata/Alex knost BMT/7.9gun32L.brd",
+        "rel": "Alex knost BMT/7.9gun32L.brd",
+        "folder": "Alex knost BMT",
+        "name": "7.9gun32L.brd",
+        "tailLabel": "gun",
+        "noseWidthAt0": 0.2781703871774714,
+        "length": 236.22,
+        "width": 45.507964813679315,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun/egg family often uses vee release",
+          "midlength or longer board",
+          "narrower board supports tail vee",
+          "tail label: gun"
+        ]
+      },
+      {
+        "id": "126",
+        "file": "/Users/protoplastico/Desktop/boarddata/joel tudor/7.10singlegun48L.brd",
+        "rel": "joel tudor/7.10singlegun48L.brd",
+        "folder": "joel tudor",
+        "name": "7.10singlegun48L.brd",
+        "tailLabel": "pin",
+        "noseWidthAt0": 0.6210989804565679,
+        "length": 238.76000000000002,
+        "width": 52.81481412164932,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun/egg family often uses vee release",
+          "midlength or longer board",
+          "narrower board supports tail vee",
+          "tail label: pin"
+        ]
+      },
+      {
+        "id": "134",
+        "file": "/Users/protoplastico/Desktop/boarddata/john wasley/8.1Midpintail58L.brd",
+        "rel": "john wasley/8.1Midpintail58L.brd",
+        "folder": "john wasley",
+        "name": "8.1Midpintail58L.brd",
+        "tailLabel": "pin",
+        "noseWidthAt0": 1.8719919662658693,
+        "length": 246.38,
+        "width": 55.22598524143686,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun/egg family often uses vee release",
+          "midlength or longer board",
+          "narrower board supports tail vee",
+          "tail label: pin"
+        ]
+      },
+      {
+        "id": "026",
+        "file": "/Users/protoplastico/Desktop/boarddata/1template/Fatum/9.0sniper71L.brd",
+        "rel": "1template/Fatum/9.0sniper71L.brd",
+        "folder": "1template/Fatum",
+        "name": "9.0sniper71L.brd",
+        "tailLabel": "round pin",
+        "noseWidthAt0": 2.284083835033928,
+        "length": 274.32,
+        "width": 54.188700804230606,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun/egg family often uses vee release",
+          "midlength or longer board",
+          "narrower board supports tail vee",
+          "tail label: round pin"
+        ]
+      },
+      {
+        "id": "100",
+        "file": "/Users/protoplastico/Desktop/boarddata/fatum surf/9.0sniper71L.brd",
+        "rel": "fatum surf/9.0sniper71L.brd",
+        "folder": "fatum surf",
+        "name": "9.0sniper71L.brd",
+        "tailLabel": "round pin",
+        "noseWidthAt0": 2.284083835033928,
+        "length": 274.32,
+        "width": 54.188700804230606,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun/egg family often uses vee release",
+          "midlength or longer board",
+          "narrower board supports tail vee",
+          "tail label: round pin"
+        ]
+      },
+      {
+        "id": "033",
+        "file": "/Users/protoplastico/Desktop/boarddata/1template/Harbour/9.6ClassicPinnose62L.brd",
+        "rel": "1template/Harbour/9.6ClassicPinnose62L.brd",
+        "folder": "1template/Harbour",
+        "name": "9.6ClassicPinnose62L.brd",
+        "tailLabel": "square",
+        "noseWidthAt0": 0.7510092662789328,
+        "length": 289.56,
+        "width": 54.376507692713496,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun/egg family often uses vee release",
+          "midlength or longer board",
+          "narrower board supports tail vee",
+          "tail label: square"
+        ]
+      },
+      {
+        "id": "116",
+        "file": "/Users/protoplastico/Desktop/boarddata/Habor/9.6ClassicPinnose62L.brd",
+        "rel": "Habor/9.6ClassicPinnose62L.brd",
+        "folder": "Habor",
+        "name": "9.6ClassicPinnose62L.brd",
+        "tailLabel": "swuare",
+        "noseWidthAt0": 0.7510092662789328,
+        "length": 289.56,
+        "width": 54.376507692713496,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun/egg family often uses vee release",
+          "midlength or longer board",
+          "narrower board supports tail vee",
+          "tail label: swuare"
+        ]
+      },
+      {
+        "id": "333",
+        "file": "/Users/protoplastico/Desktop/boarddata/simon anderson/7.6single.brd",
+        "rel": "simon anderson/7.6single.brd",
+        "folder": "simon anderson",
+        "name": "7.6single.brd",
+        "tailLabel": "",
+        "noseWidthAt0": 0.5668598072527269,
+        "length": 228.60000000000002,
+        "width": 48.894999780497685,
+        "score": 7,
+        "reasons": [
+          "pin/gun/egg family often uses vee release",
+          "midlength or longer board",
+          "narrower board supports tail vee"
+        ]
+      },
+      {
+        "id": "021",
+        "file": "/Users/protoplastico/Desktop/boarddata/1template/Fatum/6.8duke47L.brd",
+        "rel": "1template/Fatum/6.8duke47L.brd",
+        "folder": "1template/Fatum",
+        "name": "6.8duke47L.brd",
+        "tailLabel": "pin",
+        "noseWidthAt0": 2.8339092177883654,
+        "length": 203.2,
+        "width": 57.8316162111532,
+        "score": 6.5,
+        "reasons": [
+          "pin/gun/egg family often uses vee release",
+          "midlength or longer board",
+          "tail label: pin"
+        ]
+      },
+      {
+        "id": "094",
+        "file": "/Users/protoplastico/Desktop/boarddata/fatum surf/6.8duke47L.brd",
+        "rel": "fatum surf/6.8duke47L.brd",
+        "folder": "fatum surf",
+        "name": "6.8duke47L.brd",
+        "tailLabel": "wing pin",
+        "noseWidthAt0": 2.8339092177883654,
+        "length": 203.2,
+        "width": 57.8316162111532,
+        "score": 6.5,
+        "reasons": [
+          "pin/gun/egg family often uses vee release",
+          "midlength or longer board",
+          "tail label: wing pin"
+        ]
+      },
+      {
+        "id": "194",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/6.8こなら47L.brd",
+        "rel": "protoplastico/6.8こなら47L.brd",
+        "folder": "protoplastico",
+        "name": "6.8こなら47L.brd",
+        "tailLabel": "wing pin",
+        "noseWidthAt0": 2.8339092177883654,
+        "length": 203.2,
+        "width": 57.8316162111532,
+        "score": 6.5,
+        "reasons": [
+          "pin/gun/egg family often uses vee release",
+          "midlength or longer board",
+          "tail label: wing pin"
+        ]
+      },
+      {
+        "id": "096",
+        "file": "/Users/protoplastico/Desktop/boarddata/fatum surf/7.0superseven44L.brd",
+        "rel": "fatum surf/7.0superseven44L.brd",
+        "folder": "fatum surf",
+        "name": "7.0superseven44L.brd",
+        "tailLabel": "pin",
+        "noseWidthAt0": 0.6550519014683971,
+        "length": 213.36,
+        "width": 56.112688563416754,
+        "score": 6.5,
+        "reasons": [
+          "pin/gun/egg family often uses vee release",
+          "midlength or longer board",
+          "tail label: pin"
+        ]
+      },
+      {
+        "id": "077",
+        "file": "/Users/protoplastico/Desktop/boarddata/Driftwood caravan/7.2midlength51L.brd",
+        "rel": "Driftwood caravan/7.2midlength51L.brd",
+        "folder": "Driftwood caravan",
+        "name": "7.2midlength51L.brd",
+        "tailLabel": "squash",
+        "noseWidthAt0": 0.9521946195944345,
+        "length": 218.44000000000003,
+        "width": 58.01606663264404,
+        "score": 6.5,
+        "reasons": [
+          "pin/gun/egg family often uses vee release",
+          "midlength or longer board",
+          "tail label: squash"
+        ]
+      },
+      {
+        "id": "039",
+        "file": "/Users/protoplastico/Desktop/boarddata/almond/7.2egg.brd",
+        "rel": "almond/7.2egg.brd",
+        "folder": "almond",
+        "name": "7.2egg.brd",
+        "tailLabel": "round pin",
+        "noseWidthAt0": 3.8381227225077184,
+        "length": 219.45600000000002,
+        "width": 57.78499963973649,
+        "score": 6.5,
+        "reasons": [
+          "pin/gun/egg family often uses vee release",
+          "midlength or longer board",
+          "tail label: round pin"
+        ]
+      },
+      {
+        "id": "040",
+        "file": "/Users/protoplastico/Desktop/boarddata/almond/7.2pinlessrocker.brd",
+        "rel": "almond/7.2pinlessrocker.brd",
+        "folder": "almond",
+        "name": "7.2pinlessrocker.brd",
+        "tailLabel": "round pin",
+        "noseWidthAt0": 1.3402057832457193,
+        "length": 219.45600000000002,
+        "width": 57.78499963973649,
+        "score": 6.5,
+        "reasons": [
+          "pin/gun/egg family often uses vee release",
+          "midlength or longer board",
+          "tail label: round pin"
+        ]
+      },
+      {
+        "id": "041",
+        "file": "/Users/protoplastico/Desktop/boarddata/almond/7.2pintail.brd",
+        "rel": "almond/7.2pintail.brd",
+        "folder": "almond",
+        "name": "7.2pintail.brd",
+        "tailLabel": "round pin",
+        "noseWidthAt0": 1.3402057832457193,
+        "length": 219.45600000000002,
+        "width": 57.78499963973649,
+        "score": 6.5,
+        "reasons": [
+          "pin/gun/egg family often uses vee release",
+          "midlength or longer board",
+          "tail label: round pin"
+        ]
+      }
+    ],
+    "spiral-vee": [
+      {
+        "id": "105",
+        "file": "/Users/protoplastico/Desktop/boarddata/Firewire/6.0creeper33L.brd",
+        "rel": "Firewire/6.0creeper33L.brd",
+        "folder": "Firewire",
+        "name": "6.0creeper33L.brd",
+        "tailLabel": "round pin",
+        "noseWidthAt0": 0.49999997510993865,
+        "length": 182.88,
+        "width": 52.8796723045036,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun family suits spiral vee transition",
+          "midlength transition zone",
+          "narrower tail family",
+          "tail label: round pin"
+        ]
+      },
+      {
+        "id": "180",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/6.0しらつつじ34L.brd",
+        "rel": "protoplastico/6.0しらつつじ34L.brd",
+        "folder": "protoplastico",
+        "name": "6.0しらつつじ34L.brd",
+        "tailLabel": "round pin",
+        "noseWidthAt0": 1.5246628586246183,
+        "length": 182.88,
+        "width": 51.84664454362429,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun family suits spiral vee transition",
+          "midlength transition zone",
+          "narrower tail family",
+          "tail label: round pin"
+        ]
+      },
+      {
+        "id": "062",
+        "file": "/Users/protoplastico/Desktop/boarddata/Chanel island/6.2BlackBeauty30L.brd",
+        "rel": "Chanel island/6.2BlackBeauty30L.brd",
+        "folder": "Chanel island",
+        "name": "6.2BlackBeauty30L.brd",
+        "tailLabel": "round pin",
+        "noseWidthAt0": 0.5,
+        "length": 187.96,
+        "width": 46.98999500941384,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun family suits spiral vee transition",
+          "midlength transition zone",
+          "narrower tail family",
+          "tail label: round pin"
+        ]
+      },
+      {
+        "id": "188",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/6.2やまたちばな30L.brd",
+        "rel": "protoplastico/6.2やまたちばな30L.brd",
+        "folder": "protoplastico",
+        "name": "6.2やまたちばな30L.brd",
+        "tailLabel": "pin",
+        "noseWidthAt0": 0.5,
+        "length": 187.96,
+        "width": 47.75975453542852,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun family suits spiral vee transition",
+          "midlength transition zone",
+          "narrower tail family",
+          "tail label: pin"
+        ]
+      },
+      {
+        "id": "014",
+        "file": "/Users/protoplastico/Desktop/boarddata/1template/Fatum/6.1bond27.5L.brd",
+        "rel": "1template/Fatum/6.1bond27.5L.brd",
+        "folder": "1template/Fatum",
+        "name": "6.1bond27.5L.brd",
+        "tailLabel": "round pin",
+        "noseWidthAt0": 0,
+        "length": 190.5,
+        "width": 46.14918530162648,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun family suits spiral vee transition",
+          "midlength transition zone",
+          "narrower tail family",
+          "tail label: round pin"
+        ]
+      },
+      {
+        "id": "087",
+        "file": "/Users/protoplastico/Desktop/boarddata/fatum surf/6.1bond27.5L.brd",
+        "rel": "fatum surf/6.1bond27.5L.brd",
+        "folder": "fatum surf",
+        "name": "6.1bond27.5L.brd",
+        "tailLabel": "round pin",
+        "noseWidthAt0": 0,
+        "length": 190.5,
+        "width": 46.14918530162648,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun family suits spiral vee transition",
+          "midlength transition zone",
+          "narrower tail family",
+          "tail label: round pin"
+        ]
+      },
+      {
+        "id": "020",
+        "file": "/Users/protoplastico/Desktop/boarddata/1template/Fatum/6.6froid39L.brd",
+        "rel": "1template/Fatum/6.6froid39L.brd",
+        "folder": "1template/Fatum",
+        "name": "6.6froid39L.brd",
+        "tailLabel": "round pin",
+        "noseWidthAt0": 0.6073818055452079,
+        "length": 198.12,
+        "width": 53.26585181168708,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun family suits spiral vee transition",
+          "midlength transition zone",
+          "narrower tail family",
+          "tail label: round pin"
+        ]
+      },
+      {
+        "id": "035",
+        "file": "/Users/protoplastico/Desktop/boarddata/Alex knost BMT/6.6disco36L.brd",
+        "rel": "Alex knost BMT/6.6disco36L.brd",
+        "folder": "Alex knost BMT",
+        "name": "6.6disco36L.brd",
+        "tailLabel": "pin",
+        "noseWidthAt0": 1.402501618691869,
+        "length": 198.12,
+        "width": 55.09642499239566,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun family suits spiral vee transition",
+          "midlength transition zone",
+          "narrower tail family",
+          "tail label: pin"
+        ]
+      },
+      {
+        "id": "073",
+        "file": "/Users/protoplastico/Desktop/boarddata/deus ex macina/6.6singlefin32L.brd",
+        "rel": "deus ex macina/6.6singlefin32L.brd",
+        "folder": "deus ex macina",
+        "name": "6.6singlefin32L.brd",
+        "tailLabel": "pin",
+        "noseWidthAt0": 1.6197234580327289,
+        "length": 198.12,
+        "width": 50.7702138054686,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun family suits spiral vee transition",
+          "midlength transition zone",
+          "narrower tail family",
+          "tail label: pin"
+        ]
+      },
+      {
+        "id": "189",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/6.6かはらふじ41L.brd",
+        "rel": "protoplastico/6.6かはらふじ41L.brd",
+        "folder": "protoplastico",
+        "name": "6.6かはらふじ41L.brd",
+        "tailLabel": "round pin",
+        "noseWidthAt0": 2.9728287402272056,
+        "length": 198.12,
+        "width": 54.66992550709906,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun family suits spiral vee transition",
+          "midlength transition zone",
+          "narrower tail family",
+          "tail label: round pin"
+        ]
+      },
+      {
+        "id": "190",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/6.6かや40L.brd",
+        "rel": "protoplastico/6.6かや40L.brd",
+        "folder": "protoplastico",
+        "name": "6.6かや40L.brd",
+        "tailLabel": "round pin",
+        "noseWidthAt0": 3.625037037529105,
+        "length": 198.12,
+        "width": 54.60999975484156,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun family suits spiral vee transition",
+          "midlength transition zone",
+          "narrower tail family",
+          "tail label: round pin"
+        ]
+      },
+      {
+        "id": "191",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/6.6たで41L.brd",
+        "rel": "protoplastico/6.6たで41L.brd",
+        "folder": "protoplastico",
+        "name": "6.6たで41L.brd",
+        "tailLabel": "round pin",
+        "noseWidthAt0": 0.6073818055452079,
+        "length": 198.12,
+        "width": 53.26585181168708,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun family suits spiral vee transition",
+          "midlength transition zone",
+          "narrower tail family",
+          "tail label: round pin"
+        ]
+      },
+      {
+        "id": "192",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/6.6ふじ44L.brd",
+        "rel": "protoplastico/6.6ふじ44L.brd",
+        "folder": "protoplastico",
+        "name": "6.6ふじ44L.brd",
+        "tailLabel": "pin",
+        "noseWidthAt0": 1.402501618691869,
+        "length": 198.12,
+        "width": 55.09642499239566,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun family suits spiral vee transition",
+          "midlength transition zone",
+          "narrower tail family",
+          "tail label: pin"
+        ]
+      },
+      {
+        "id": "193",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/6.6まゆみ32L.brd",
+        "rel": "protoplastico/6.6まゆみ32L.brd",
+        "folder": "protoplastico",
+        "name": "6.6まゆみ32L.brd",
+        "tailLabel": "pin",
+        "noseWidthAt0": 1.6256769785279024,
+        "length": 198.12,
+        "width": 53.664993001602376,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun family suits spiral vee transition",
+          "midlength transition zone",
+          "narrower tail family",
+          "tail label: pin"
+        ]
+      },
+      {
+        "id": "198",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/6.8ふじ40L.brd",
+        "rel": "protoplastico/6.8ふじ40L.brd",
+        "folder": "protoplastico",
+        "name": "6.8ふじ40L.brd",
+        "tailLabel": "wing pin",
+        "noseWidthAt0": 0,
+        "length": 201.16799999999998,
+        "width": 50.881781535359686,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun family suits spiral vee transition",
+          "midlength transition zone",
+          "narrower tail family",
+          "tail label: wing pin"
+        ]
+      },
+      {
+        "id": "122",
+        "file": "/Users/protoplastico/Desktop/boarddata/HPD/6.8CLminimal39L.brd",
+        "rel": "HPD/6.8CLminimal39L.brd",
+        "folder": "HPD",
+        "name": "6.8CLminimal39L.brd",
+        "tailLabel": "round pin",
+        "noseWidthAt0": 1.0330603771120612,
+        "length": 203.2,
+        "width": 49.83245506713221,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun family suits spiral vee transition",
+          "midlength transition zone",
+          "narrower tail family",
+          "tail label: round pin"
+        ]
+      },
+      {
+        "id": "199",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/7.0あべたちばな48L.brd",
+        "rel": "protoplastico/7.0あべたちばな48L.brd",
+        "folder": "protoplastico",
+        "name": "7.0あべたちばな48L.brd",
+        "tailLabel": "round pin",
+        "noseWidthAt0": 0.908417575186943,
+        "length": 213.36,
+        "width": 55.30697238549905,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun family suits spiral vee transition",
+          "midlength transition zone",
+          "narrower tail family",
+          "tail label: round pin"
+        ]
+      },
+      {
+        "id": "075",
+        "file": "/Users/protoplastico/Desktop/boarddata/deus ex macina/7.2single40L.brd",
+        "rel": "deus ex macina/7.2single40L.brd",
+        "folder": "deus ex macina",
+        "name": "7.2single40L.brd",
+        "tailLabel": "pin",
+        "noseWidthAt0": 0.6299214192302927,
+        "length": 218.44000000000003,
+        "width": 51.59753194839731,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun family suits spiral vee transition",
+          "midlength transition zone",
+          "narrower tail family",
+          "tail label: pin"
+        ]
+      },
+      {
+        "id": "036",
+        "file": "/Users/protoplastico/Desktop/boarddata/Alex knost BMT/7.9gun32L.brd",
+        "rel": "Alex knost BMT/7.9gun32L.brd",
+        "folder": "Alex knost BMT",
+        "name": "7.9gun32L.brd",
+        "tailLabel": "gun",
+        "noseWidthAt0": 0.2781703871774714,
+        "length": 236.22,
+        "width": 45.507964813679315,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun family suits spiral vee transition",
+          "midlength transition zone",
+          "narrower tail family",
+          "tail label: gun"
+        ]
+      },
+      {
+        "id": "126",
+        "file": "/Users/protoplastico/Desktop/boarddata/joel tudor/7.10singlegun48L.brd",
+        "rel": "joel tudor/7.10singlegun48L.brd",
+        "folder": "joel tudor",
+        "name": "7.10singlegun48L.brd",
+        "tailLabel": "pin",
+        "noseWidthAt0": 0.6210989804565679,
+        "length": 238.76000000000002,
+        "width": 52.81481412164932,
+        "score": 7.5,
+        "reasons": [
+          "pin/gun family suits spiral vee transition",
+          "midlength transition zone",
+          "narrower tail family",
+          "tail label: pin"
+        ]
+      },
+      {
+        "id": "333",
+        "file": "/Users/protoplastico/Desktop/boarddata/simon anderson/7.6single.brd",
+        "rel": "simon anderson/7.6single.brd",
+        "folder": "simon anderson",
+        "name": "7.6single.brd",
+        "tailLabel": "",
+        "noseWidthAt0": 0.5668598072527269,
+        "length": 228.60000000000002,
+        "width": 48.894999780497685,
+        "score": 7,
+        "reasons": [
+          "pin/gun family suits spiral vee transition",
+          "midlength transition zone",
+          "narrower tail family"
+        ]
+      },
+      {
+        "id": "182",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/6.0つばき39L.brd",
+        "rel": "protoplastico/6.0つばき39L.brd",
+        "folder": "protoplastico",
+        "name": "6.0つばき39L.brd",
+        "tailLabel": "round pin",
+        "noseWidthAt0": 1.143247753626357,
+        "length": 182.88,
+        "width": 56.93146976661274,
+        "score": 6.5,
+        "reasons": [
+          "pin/gun family suits spiral vee transition",
+          "midlength transition zone",
+          "tail label: round pin"
+        ]
+      },
+      {
+        "id": "021",
+        "file": "/Users/protoplastico/Desktop/boarddata/1template/Fatum/6.8duke47L.brd",
+        "rel": "1template/Fatum/6.8duke47L.brd",
+        "folder": "1template/Fatum",
+        "name": "6.8duke47L.brd",
+        "tailLabel": "pin",
+        "noseWidthAt0": 2.8339092177883654,
+        "length": 203.2,
+        "width": 57.8316162111532,
+        "score": 6.5,
+        "reasons": [
+          "pin/gun family suits spiral vee transition",
+          "midlength transition zone",
+          "tail label: pin"
+        ]
+      },
+      {
+        "id": "094",
+        "file": "/Users/protoplastico/Desktop/boarddata/fatum surf/6.8duke47L.brd",
+        "rel": "fatum surf/6.8duke47L.brd",
+        "folder": "fatum surf",
+        "name": "6.8duke47L.brd",
+        "tailLabel": "wing pin",
+        "noseWidthAt0": 2.8339092177883654,
+        "length": 203.2,
+        "width": 57.8316162111532,
+        "score": 6.5,
+        "reasons": [
+          "pin/gun family suits spiral vee transition",
+          "midlength transition zone",
+          "tail label: wing pin"
+        ]
+      },
+      {
+        "id": "194",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/6.8こなら47L.brd",
+        "rel": "protoplastico/6.8こなら47L.brd",
+        "folder": "protoplastico",
+        "name": "6.8こなら47L.brd",
+        "tailLabel": "wing pin",
+        "noseWidthAt0": 2.8339092177883654,
+        "length": 203.2,
+        "width": 57.8316162111532,
+        "score": 6.5,
+        "reasons": [
+          "pin/gun family suits spiral vee transition",
+          "midlength transition zone",
+          "tail label: wing pin"
+        ]
+      },
+      {
+        "id": "096",
+        "file": "/Users/protoplastico/Desktop/boarddata/fatum surf/7.0superseven44L.brd",
+        "rel": "fatum surf/7.0superseven44L.brd",
+        "folder": "fatum surf",
+        "name": "7.0superseven44L.brd",
+        "tailLabel": "pin",
+        "noseWidthAt0": 0.6550519014683971,
+        "length": 213.36,
+        "width": 56.112688563416754,
+        "score": 6.5,
+        "reasons": [
+          "pin/gun family suits spiral vee transition",
+          "midlength transition zone",
+          "tail label: pin"
+        ]
+      },
+      {
+        "id": "039",
+        "file": "/Users/protoplastico/Desktop/boarddata/almond/7.2egg.brd",
+        "rel": "almond/7.2egg.brd",
+        "folder": "almond",
+        "name": "7.2egg.brd",
+        "tailLabel": "round pin",
+        "noseWidthAt0": 3.8381227225077184,
+        "length": 219.45600000000002,
+        "width": 57.78499963973649,
+        "score": 6.5,
+        "reasons": [
+          "pin/gun family suits spiral vee transition",
+          "midlength transition zone",
+          "tail label: round pin"
+        ]
+      },
+      {
+        "id": "040",
+        "file": "/Users/protoplastico/Desktop/boarddata/almond/7.2pinlessrocker.brd",
+        "rel": "almond/7.2pinlessrocker.brd",
+        "folder": "almond",
+        "name": "7.2pinlessrocker.brd",
+        "tailLabel": "round pin",
+        "noseWidthAt0": 1.3402057832457193,
+        "length": 219.45600000000002,
+        "width": 57.78499963973649,
+        "score": 6.5,
+        "reasons": [
+          "pin/gun family suits spiral vee transition",
+          "midlength transition zone",
+          "tail label: round pin"
+        ]
+      },
+      {
+        "id": "041",
+        "file": "/Users/protoplastico/Desktop/boarddata/almond/7.2pintail.brd",
+        "rel": "almond/7.2pintail.brd",
+        "folder": "almond",
+        "name": "7.2pintail.brd",
+        "tailLabel": "round pin",
+        "noseWidthAt0": 1.3402057832457193,
+        "length": 219.45600000000002,
+        "width": 57.78499963973649,
+        "score": 6.5,
+        "reasons": [
+          "pin/gun family suits spiral vee transition",
+          "midlength transition zone",
+          "tail label: round pin"
+        ]
+      },
+      {
+        "id": "042",
+        "file": "/Users/protoplastico/Desktop/boarddata/almond/7.2planaria.brd",
+        "rel": "almond/7.2planaria.brd",
+        "folder": "almond",
+        "name": "7.2planaria.brd",
+        "tailLabel": "round pin",
+        "noseWidthAt0": 5.459427879654918,
+        "length": 219.45600000000002,
+        "width": 58.44144171971593,
+        "score": 6.5,
+        "reasons": [
+          "pin/gun family suits spiral vee transition",
+          "midlength transition zone",
+          "tail label: round pin"
+        ]
+      }
+    ],
+    "channel": [
+      {
+        "id": "171",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/5.5なぎ32L.brd",
+        "rel": "protoplastico/5.5なぎ32L.brd",
+        "folder": "protoplastico",
+        "name": "5.5なぎ32L.brd",
+        "tailLabel": "fish",
+        "noseWidthAt0": 0.7312022327725873,
+        "length": 165.989,
+        "width": 51.70899671577977,
+        "score": 8.5,
+        "reasons": [
+          "tail/name suits channel candidates",
+          "shortboard channel length range",
+          "channel-friendly width",
+          "tail label: fish"
+        ]
+      },
+      {
+        "id": "177",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/5.brd",
+        "rel": "protoplastico/5.brd",
+        "folder": "protoplastico",
+        "name": "5.brd",
+        "tailLabel": " fish",
+        "noseWidthAt0": 0.6281206543531102,
+        "length": 165.989,
+        "width": 52.23545617499985,
+        "score": 8.5,
+        "reasons": [
+          "tail/name suits channel candidates",
+          "shortboard channel length range",
+          "channel-friendly width",
+          "tail label:  fish"
+        ]
+      },
+      {
+        "id": "174",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/5.9え39L.brd",
+        "rel": "protoplastico/5.9え39L.brd",
+        "folder": "protoplastico",
+        "name": "5.9え39L.brd",
+        "tailLabel": "wing bat",
+        "noseWidthAt0": 0.4999368263391366,
+        "length": 176.784,
+        "width": 53.56381355722295,
+        "score": 8.5,
+        "reasons": [
+          "tail/name suits channel candidates",
+          "shortboard channel length range",
+          "channel-friendly width",
+          "tail label: wing bat"
+        ]
+      },
+      {
+        "id": "167",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/5.11こうぞ5.brd",
+        "rel": "protoplastico/5.11こうぞ5.brd",
+        "folder": "protoplastico",
+        "name": "5.11こうぞ5.brd",
+        "tailLabel": "bat",
+        "noseWidthAt0": 0.8564637656223119,
+        "length": 180.848,
+        "width": 53.500959543659484,
+        "score": 8.5,
+        "reasons": [
+          "tail/name suits channel candidates",
+          "shortboard channel length range",
+          "channel-friendly width",
+          "tail label: bat"
+        ]
+      },
+      {
+        "id": "011",
+        "file": "/Users/protoplastico/Desktop/boarddata/1template/Fatum/6.0flyingfish32L.brd",
+        "rel": "1template/Fatum/6.0flyingfish32L.brd",
+        "folder": "1template/Fatum",
+        "name": "6.0flyingfish32L.brd",
+        "tailLabel": "swallow",
+        "noseWidthAt0": 0.5867627771886725,
+        "length": 182.88,
+        "width": 51.3217388681082,
+        "score": 8.5,
+        "reasons": [
+          "tail/name suits channel candidates",
+          "shortboard channel length range",
+          "channel-friendly width",
+          "tail label: swallow"
+        ]
+      },
+      {
+        "id": "084",
+        "file": "/Users/protoplastico/Desktop/boarddata/fatum surf/6.0flyingfish32L.brd",
+        "rel": "fatum surf/6.0flyingfish32L.brd",
+        "folder": "fatum surf",
+        "name": "6.0flyingfish32L.brd",
+        "tailLabel": "square",
+        "noseWidthAt0": 0.5867627771886725,
+        "length": 182.88,
+        "width": 51.3217388681082,
+        "score": 8.5,
+        "reasons": [
+          "tail/name suits channel candidates",
+          "shortboard channel length range",
+          "channel-friendly width",
+          "tail label: square"
+        ]
+      },
+      {
+        "id": "018",
+        "file": "/Users/protoplastico/Desktop/boarddata/1template/Fatum/6.2axion32L.brd",
+        "rel": "1template/Fatum/6.2axion32L.brd",
+        "folder": "1template/Fatum",
+        "name": "6.2axion32L.brd",
+        "tailLabel": "swallow",
+        "noseWidthAt0": 0.6517015651480254,
+        "length": 187.95999999999998,
+        "width": 49.64987870117546,
+        "score": 8.5,
+        "reasons": [
+          "tail/name suits channel candidates",
+          "shortboard channel length range",
+          "channel-friendly width",
+          "tail label: swallow"
+        ]
+      },
+      {
+        "id": "091",
+        "file": "/Users/protoplastico/Desktop/boarddata/fatum surf/6.2axion32L.brd",
+        "rel": "fatum surf/6.2axion32L.brd",
+        "folder": "fatum surf",
+        "name": "6.2axion32L.brd",
+        "tailLabel": "wing swallow",
+        "noseWidthAt0": 0.6517015651480254,
+        "length": 187.95999999999998,
+        "width": 49.64987870117546,
+        "score": 8.5,
+        "reasons": [
+          "tail/name suits channel candidates",
+          "shortboard channel length range",
+          "channel-friendly width",
+          "tail label: wing swallow"
+        ]
+      },
+      {
+        "id": "004",
+        "file": "/Users/protoplastico/Desktop/boarddata/1template/Fatum/5.10fish40L.brd",
+        "rel": "1template/Fatum/5.10fish40L.brd",
+        "folder": "1template/Fatum",
+        "name": "5.10fish40L.brd",
+        "tailLabel": "fish",
+        "noseWidthAt0": 1.2591521894739075,
+        "length": 178.68600000000004,
+        "width": 60.308305743641874,
+        "score": 6.5,
+        "reasons": [
+          "tail/name suits channel candidates",
+          "shortboard channel length range",
+          "tail label: fish"
+        ]
+      },
+      {
+        "id": "055",
+        "file": "/Users/protoplastico/Desktop/boarddata/Canvas/5.10fish40L.brd",
+        "rel": "Canvas/5.10fish40L.brd",
+        "folder": "Canvas",
+        "name": "5.10fish40L.brd",
+        "tailLabel": "fish",
+        "noseWidthAt0": 1.2591521894739075,
+        "length": 178.68600000000004,
+        "width": 60.308305743641874,
+        "score": 6.5,
+        "reasons": [
+          "tail/name suits channel candidates",
+          "shortboard channel length range",
+          "tail label: fish"
+        ]
+      },
+      {
+        "id": "056",
+        "file": "/Users/protoplastico/Desktop/boarddata/Canvas/5'10Fish.brd",
+        "rel": "Canvas/5'10Fish.brd",
+        "folder": "Canvas",
+        "name": "5'10Fish.brd",
+        "tailLabel": "fish",
+        "noseWidthAt0": 1.2591521894739075,
+        "length": 178.68600000000004,
+        "width": 60.308305743641874,
+        "score": 6.5,
+        "reasons": [
+          "tail/name suits channel candidates",
+          "shortboard channel length range",
+          "tail label: fish"
+        ]
+      },
+      {
+        "id": "017",
+        "file": "/Users/protoplastico/Desktop/boarddata/1template/Fatum/6.1skipper29L.brd",
+        "rel": "1template/Fatum/6.1skipper29L.brd",
+        "folder": "1template/Fatum",
+        "name": "6.1skipper29L.brd",
+        "tailLabel": "wing swallow",
+        "noseWidthAt0": 0,
+        "length": 185.42,
+        "width": 47.280022668565955,
+        "score": 6.5,
+        "reasons": [
+          "tail/name suits channel candidates",
+          "shortboard channel length range",
+          "tail label: wing swallow"
+        ]
+      },
+      {
+        "id": "057",
+        "file": "/Users/protoplastico/Desktop/boarddata/Canvas/6'10Fish.brd",
+        "rel": "Canvas/6'10Fish.brd",
+        "folder": "Canvas",
+        "name": "6'10Fish.brd",
+        "tailLabel": "fish",
+        "noseWidthAt0": 0.9887311125494499,
+        "length": 209.07375,
+        "width": 50.636118152474765,
+        "score": 6.5,
+        "reasons": [
+          "tail/name suits channel candidates",
+          "channel-friendly width",
+          "tail label: fish"
+        ]
+      },
+      {
+        "id": "010",
+        "file": "/Users/protoplastico/Desktop/boarddata/1template/Fatum/5.6habano30L.brd",
+        "rel": "1template/Fatum/5.6habano30L.brd",
+        "folder": "1template/Fatum",
+        "name": "5.6habano30L.brd",
+        "tailLabel": "square",
+        "noseWidthAt0": 1.1948201783109238,
+        "length": 167.64000000000001,
+        "width": 53.263817261179135,
+        "score": 4.5,
+        "reasons": [
+          "shortboard channel length range",
+          "channel-friendly width",
+          "tail label: square"
+        ]
+      },
+      {
+        "id": "083",
+        "file": "/Users/protoplastico/Desktop/boarddata/fatum surf/5.6habano30L.brd",
+        "rel": "fatum surf/5.6habano30L.brd",
+        "folder": "fatum surf",
+        "name": "5.6habano30L.brd",
+        "tailLabel": "square",
+        "noseWidthAt0": 1.1948201783109238,
+        "length": 167.64000000000001,
+        "width": 53.263817261179135,
+        "score": 4.5,
+        "reasons": [
+          "shortboard channel length range",
+          "channel-friendly width",
+          "tail label: square"
+        ]
+      },
+      {
+        "id": "172",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/5.6なつめ32L.brd",
+        "rel": "protoplastico/5.6なつめ32L.brd",
+        "folder": "protoplastico",
+        "name": "5.6なつめ32L.brd",
+        "tailLabel": "square",
+        "noseWidthAt0": 1.1948201783109238,
+        "length": 167.64000000000001,
+        "width": 53.263817261179135,
+        "score": 4.5,
+        "reasons": [
+          "shortboard channel length range",
+          "channel-friendly width",
+          "tail label: square"
+        ]
+      },
+      {
+        "id": "064",
+        "file": "/Users/protoplastico/Desktop/boarddata/Channel islands/5.7spermWhale32l.brd",
+        "rel": "Channel islands/5.7spermWhale32l.brd",
+        "folder": "Channel islands",
+        "name": "5.7spermWhale32l.brd",
+        "tailLabel": "squash",
+        "noseWidthAt0": 1.3998781075999578,
+        "length": 170.18,
+        "width": 55.87688455079159,
+        "score": 4.5,
+        "reasons": [
+          "shortboard channel length range",
+          "channel-friendly width",
+          "tail label: squash"
+        ]
+      },
+      {
+        "id": "173",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/5.7かきつばた3１L.brd",
+        "rel": "protoplastico/5.7かきつばた3１L.brd",
+        "folder": "protoplastico",
+        "name": "5.7かきつばた3１L.brd",
+        "tailLabel": "wing pin",
+        "noseWidthAt0": 0.922452022069304,
+        "length": 171.704,
+        "width": 49.14481367853778,
+        "score": 4.5,
+        "reasons": [
+          "shortboard channel length range",
+          "channel-friendly width",
+          "tail label: wing pin"
+        ]
+      },
+      {
+        "id": "066",
+        "file": "/Users/protoplastico/Desktop/boarddata/Channel islands/5.9neckbeard31L.brd",
+        "rel": "Channel islands/5.9neckbeard31L.brd",
+        "folder": "Channel islands",
+        "name": "5.9neckbeard31L.brd",
+        "tailLabel": "square",
+        "noseWidthAt0": 0.5337837572119615,
+        "length": 172.72,
+        "width": 49.96287294783727,
+        "score": 4.5,
+        "reasons": [
+          "shortboard channel length range",
+          "channel-friendly width",
+          "tail label: square"
+        ]
+      },
+      {
+        "id": "065",
+        "file": "/Users/protoplastico/Desktop/boarddata/Channel islands/5.9joe39l.brd",
+        "rel": "Channel islands/5.9joe39l.brd",
+        "folder": "Channel islands",
+        "name": "5.9joe39l.brd",
+        "tailLabel": "squash",
+        "noseWidthAt0": 1.1754622302593298,
+        "length": 175.26,
+        "width": 56.09315256806618,
+        "score": 4.5,
+        "reasons": [
+          "shortboard channel length range",
+          "channel-friendly width",
+          "tail label: squash"
+        ]
+      },
+      {
+        "id": "138",
+        "file": "/Users/protoplastico/Desktop/boarddata/Keyo/5.9gill-wing31L.brd",
+        "rel": "Keyo/5.9gill-wing31L.brd",
+        "folder": "Keyo",
+        "name": "5.9gill-wing31L.brd",
+        "tailLabel": "round",
+        "noseWidthAt0": 2.250160982220398,
+        "length": 175.26,
+        "width": 54.867454502190135,
+        "score": 4.5,
+        "reasons": [
+          "shortboard channel length range",
+          "channel-friendly width",
+          "tail label: round"
+        ]
+      },
+      {
+        "id": "150",
+        "file": "/Users/protoplastico/Desktop/boarddata/mandara/5.9mandala35L.brd",
+        "rel": "mandara/5.9mandala35L.brd",
+        "folder": "mandara",
+        "name": "5.9mandala35L.brd",
+        "tailLabel": "round",
+        "noseWidthAt0": 4.907136041752807,
+        "length": 175.26,
+        "width": 54.987800333569496,
+        "score": 4.5,
+        "reasons": [
+          "shortboard channel length range",
+          "channel-friendly width",
+          "tail label: round"
+        ]
+      },
+      {
+        "id": "176",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/5.9ひし31L.brd",
+        "rel": "protoplastico/5.9ひし31L.brd",
+        "folder": "protoplastico",
+        "name": "5.9ひし31L.brd",
+        "tailLabel": "round square",
+        "noseWidthAt0": 2.1016390562125222,
+        "length": 175.26,
+        "width": 54.867454502190135,
+        "score": 4.5,
+        "reasons": [
+          "shortboard channel length range",
+          "channel-friendly width",
+          "tail label: round square"
+        ]
+      },
+      {
+        "id": "175",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/5.9かづのき35L.brd",
+        "rel": "protoplastico/5.9かづのき35L.brd",
+        "folder": "protoplastico",
+        "name": "5.9かづのき35L.brd",
+        "tailLabel": "round suqare",
+        "noseWidthAt0": 0.9762674596720942,
+        "length": 176.784,
+        "width": 52.28738795643804,
+        "score": 4.5,
+        "reasons": [
+          "shortboard channel length range",
+          "channel-friendly width",
+          "tail label: round suqare"
+        ]
+      },
+      {
+        "id": "001",
+        "file": "/Users/protoplastico/Desktop/boarddata/1template/5.10JJs38L.brd",
+        "rel": "1template/5.10JJs38L.brd",
+        "folder": "1template",
+        "name": "5.10JJs38L.brd",
+        "tailLabel": "square",
+        "noseWidthAt0": 0.7185212368710384,
+        "length": 177.8,
+        "width": 56.98456894021876,
+        "score": 4.5,
+        "reasons": [
+          "shortboard channel length range",
+          "channel-friendly width",
+          "tail label: square"
+        ]
+      },
+      {
+        "id": "003",
+        "file": "/Users/protoplastico/Desktop/boarddata/1template/Fatum/5.10chilpil33L.brd",
+        "rel": "1template/Fatum/5.10chilpil33L.brd",
+        "folder": "1template/Fatum",
+        "name": "5.10chilpil33L.brd",
+        "tailLabel": "round pin",
+        "noseWidthAt0": 0.5464178528575258,
+        "length": 177.8,
+        "width": 50.86539683106877,
+        "score": 4.5,
+        "reasons": [
+          "shortboard channel length range",
+          "channel-friendly width",
+          "tail label: round pin"
+        ]
+      },
+      {
+        "id": "078",
+        "file": "/Users/protoplastico/Desktop/boarddata/fatum surf/5.10chilpil33L.brd",
+        "rel": "fatum surf/5.10chilpil33L.brd",
+        "folder": "fatum surf",
+        "name": "5.10chilpil33L.brd",
+        "tailLabel": "round",
+        "noseWidthAt0": 0.5464178528575258,
+        "length": 177.8,
+        "width": 50.86539683106877,
+        "score": 4.5,
+        "reasons": [
+          "shortboard channel length range",
+          "channel-friendly width",
+          "tail label: round"
+        ]
+      },
+      {
+        "id": "165",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/5.10うけら33L.brd",
+        "rel": "protoplastico/5.10うけら33L.brd",
+        "folder": "protoplastico",
+        "name": "5.10うけら33L.brd",
+        "tailLabel": "round",
+        "noseWidthAt0": 0.5787155459280326,
+        "length": 177.8,
+        "width": 53.620511374584524,
+        "score": 4.5,
+        "reasons": [
+          "shortboard channel length range",
+          "channel-friendly width",
+          "tail label: round"
+        ]
+      },
+      {
+        "id": "164",
+        "file": "/Users/protoplastico/Desktop/boarddata/protoplastico/5.10あふひ45L.brd",
+        "rel": "protoplastico/5.10あふひ45L.brd",
+        "folder": "protoplastico",
+        "name": "5.10あふひ45L.brd",
+        "tailLabel": "round square",
+        "noseWidthAt0": 0,
+        "length": 178.68600000000004,
+        "width": 52.55098250768269,
+        "score": 4.5,
+        "reasons": [
+          "shortboard channel length range",
+          "channel-friendly width",
+          "tail label: round square"
+        ]
+      },
+      {
+        "id": "006",
+        "file": "/Users/protoplastico/Desktop/boarddata/1template/Fatum/5.11bulldog30L.brd",
+        "rel": "1template/Fatum/5.11bulldog30L.brd",
+        "folder": "1template/Fatum",
+        "name": "5.11bulldog30L.brd",
+        "tailLabel": "diamond",
+        "noseWidthAt0": 0.6478166517208696,
+        "length": 180.34,
+        "width": 50.53058801323177,
+        "score": 4.5,
+        "reasons": [
+          "shortboard channel length range",
+          "channel-friendly width",
+          "tail label: diamond"
+        ]
+      }
+    ]
+  }
+}

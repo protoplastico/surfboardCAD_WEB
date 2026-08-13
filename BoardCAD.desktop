@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=BoardCAD Web
+Name[ja]=BoardCAD Web 起動
+Comment=Start BoardCAD Web on localhost
+Comment[ja]=クリックしてBoardCAD Webをlocalhostで起動
+Terminal=false
+Categories=Graphics;Engineering;
+StartupNotify=true
+Icon=applications-engineering
+Exec=bash -c 'd="$(dirname "$1")"; exec "$d/launch.sh"' _ %k

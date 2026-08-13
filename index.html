@@ -1,0 +1,1106 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BoardCAD Web</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="app-chrome">
+    <div class="title-row">
+      <div class="title-brand">
+        <h1 data-i18n="app_title">BoardCAD Web</h1>
+        <span id="appBuildVersion" class="app-build-version">JS --</span>
+      </div>
+      <p id="status" data-i18n="status_load_brd">.brdファイルを読み込んでください。</p>
+    </div>
+    <nav class="menu-bar" aria-label="BoardCAD menus" data-i18n-aria-label="boardcad_menus">
+      <details class="menu">
+        <summary data-i18n="menu_file">File</summary>
+        <div class="menu-items">
+          <button type="button" data-action="new" data-i18n="new">New</button>
+          <button type="button" data-action="open" data-i18n="open">Open</button>
+          <button type="button" data-action="open-ghost" data-i18n="open_ghost">Open Ghost</button>
+          <input id="fileInput" type="file" accept=".brd,.otl,.pfl,.crs,.csv,text/plain" hidden>
+          <input id="ghostFileInput" type="file" accept=".brd,text/plain" hidden>
+          <details class="menu-submenu">
+            <summary data-i18n="menu_sample">Sample</summary>
+            <div class="menu-subitems">
+              <button type="button" data-action="sample-current" data-i18n="open_selected_sample">Open Selected Sample</button>
+              <button type="button" data-action="sample-direct" data-sample-url="./Shortboard.brd" data-i18n="sample_shortboard">Shortboard</button>
+              <button type="button" data-action="sample-direct" data-sample-url="./Funboard.brd" data-i18n="sample_funboard">Funboard</button>
+              <button type="button" data-action="sample-direct" data-sample-url="./Longboard.brd" data-i18n="sample_longboard">Longboard</button>
+            </div>
+          </details>
+          <button type="button" data-action="scan-new-board" data-i18n="scan_new_board">Scan New Board</button>
+          <hr>
+          <button id="pdfButton" type="button" data-action="pdf" disabled data-i18n="print_pdf">Print / PDF Drawing</button>
+          <button id="templatePdfButton" type="button" data-action="template-pdf" disabled data-i18n="print_templates_pdf">Print Templates PDF</button>
+          <button id="dxfOutlineSplineButton" type="button" data-action="dxf-outline-spline" disabled data-i18n="dxf_outline_spline">DXF Outline Spline</button>
+          <button id="dxfProfileSplineButton" type="button" data-action="dxf-profile-spline" disabled data-i18n="dxf_profile_spline">DXF Profile Spline</button>
+          <button id="dxfSectionSplineButton" type="button" data-action="dxf-section-spline" disabled data-i18n="dxf_cross_section_spline">DXF Cross section Spline</button>
+          <button id="dxfOutlineButton" type="button" data-action="dxf-outline" disabled data-i18n="dxf_outline_polyline">DXF Outline Polyline</button>
+          <button id="dxfProfileButton" type="button" data-action="dxf-profile" disabled data-i18n="dxf_profile_polyline">DXF Profile Polyline</button>
+          <button id="dxfSectionButton" type="button" data-action="dxf-section" disabled data-i18n="dxf_cross_section_polyline">DXF Cross section Polyline</button>
+          <button id="gcodeButton" type="button" data-action="laser" disabled data-i18n="gcode_laser_outline">G-Code Laser Outline</button>
+          <button id="cncButton" type="button" data-action="cnc" disabled data-i18n="gcode_cnc">G-Code CNC</button>
+          <hr>
+          <button id="saveBrdButton" type="button" data-action="save-brd" disabled data-i18n="save_brd">Save BRD</button>
+          <button id="saveBrdAsButton" type="button" data-action="save-brd-as" disabled data-i18n="save_brd_as">Save BRD as</button>
+          <button id="exportOtlButton" type="button" data-action="export-otl" disabled data-i18n="export_outline_otl">Export Outline (.otl)</button>
+          <button id="exportPflButton" type="button" data-action="export-pfl" disabled data-i18n="export_profile_pfl">Export Profile (.pfl)</button>
+        </div>
+      </details>
+      <details class="menu">
+        <summary data-i18n="menu_edit">Edit</summary>
+        <div class="menu-items">
+          <button id="undoButton" type="button" data-action="undo" disabled data-i18n="undo">Undo</button>
+          <button id="redoButton" type="button" data-action="redo" disabled data-i18n="redo">Redo</button>
+          <hr>
+          <button id="addControlPointButton" type="button" data-action="add-controlpoint" disabled data-i18n="add_control_point">Add ControlPoint</button>
+          <button id="deleteControlPointButton" type="button" data-action="delete-controlpoint" disabled data-i18n="delete_control_points">Delete ControlPoints</button>
+        </div>
+      </details>
+      <details class="menu">
+        <summary data-i18n="menu_view">View</summary>
+        <div class="menu-items">
+          <button type="button" data-view="outline" data-i18n="outline">Outline</button>
+          <button type="button" data-view="profile" data-i18n="profile">Profile</button>
+          <button type="button" data-view="sections" data-i18n="menu_cross_sections">Cross sections</button>
+          <button type="button" data-view="quad" data-i18n="quad">Quad</button>
+          <button type="button" data-view="toolpath" data-i18n="toolpath">Toolpath</button>
+          <hr>
+          <button type="button" data-action="fit" data-i18n="fit">Fit</button>
+          <label class="menu-check"><input type="checkbox" data-view-option="showGrid" checked><span data-i18n="show_grid">Show grid</span></label>
+          <label class="menu-check"><input type="checkbox" data-view-option="showGhostBoard" checked><span data-i18n="show_ghost_board">Show Ghost board</span></label>
+          <label class="menu-check"><input type="checkbox" data-view-option="showControlPoints" checked><span data-i18n="show_control_points">Show Control points</span></label>
+          <label class="menu-check"><input type="checkbox" data-view-option="showCurvature" checked><span data-i18n="show_curvature">Show Curvature</span></label>
+          <label class="menu-check"><input type="checkbox" data-view-option="showNonActiveCrossSections" checked><span data-i18n="show_non_active_cross_sections">Show Non-active crosssections</span></label>
+          <label class="menu-check"><input type="checkbox" data-view-option="showBaseLine" checked><span data-i18n="show_base_line">Show base line</span></label>
+          <label class="menu-check"><input type="checkbox" data-view-option="showCenterLine" checked><span data-i18n="show_center_line">Show center line</span></label>
+          <label class="menu-check"><input type="checkbox" data-view-option="showCrossSectionPositions" checked><span data-i18n="show_cross_section_positions">Show crossections positions</span></label>
+          <label class="menu-check"><input type="checkbox" data-view-option="showSlidingInfo" checked><span data-i18n="show_sliding_info">Show Sliding info</span></label>
+          <label class="menu-check"><input type="checkbox" data-view-option="showSlidingCrossSection" checked><span data-i18n="show_sliding_cross_section">Show Sliding Cross section</span></label>
+          <label class="menu-check"><input type="checkbox" data-view-option="showVolumeDistribution" checked><span data-i18n="show_volume_distribution">Show Volume distribution</span></label>
+          <label class="menu-check"><input type="checkbox" data-view-option="showCenterOfMass" checked><span data-i18n="show_center_of_mass">Show center of mass</span></label>
+          <label class="menu-check"><input type="checkbox" data-view-option="showOverBottomCurveMeasurements" checked><span data-i18n="show_over_bottom_curve_measurements">Show over bottom curve measurements</span></label>
+          <label class="menu-check"><input type="checkbox" data-view-option="showMomentOfInertia" checked><span data-i18n="show_moment_of_inertia">Show moment of inertia</span></label>
+          <label class="menu-check"><input type="checkbox" data-view-option="showFlowlines" checked><span data-i18n="show_flowlines">Show flowlines</span></label>
+          <label class="menu-check"><input type="checkbox" data-view-option="showApexLine" checked><span data-i18n="show_apex_line">Show apex line</span></label>
+          <label class="menu-check"><input type="checkbox" data-view-option="showTuckUnderLine" checked><span data-i18n="show_tuck_under_line">Tuck under line</span></label>
+          <label class="menu-check"><input type="checkbox" data-view-option="showFootMarks"><span data-i18n="show_foot_marks">Show foot marks</span></label>
+          <label class="menu-check"><input type="checkbox" data-view-option="showGuidePoints" checked><span data-i18n="show_guide_points">Show guide points</span></label>
+          <label class="menu-check"><input type="checkbox" data-view-option="useFill" checked><span data-i18n="use_fill">Use fill</span></label>
+          <label class="menu-check"><input type="checkbox" data-view-option="show3DShaded"><span data-i18n="show_3d_shaded">3D white render</span></label>
+          <label class="menu-check"><input type="checkbox" data-view-option="show3DMoire" checked><span data-i18n="show_3d_moire">3D moire stripes</span></label>
+        </div>
+      </details>
+      <details class="menu">
+        <summary data-i18n="menu_cross_sections">Cross sections</summary>
+        <div class="menu-items">
+          <button id="nextSectionButton" type="button" data-action="next-section" disabled data-i18n="next_cross_section">Next cross section</button>
+          <button id="previousSectionButton" type="button" data-action="previous-section" disabled data-i18n="previous_cross_section">Previous cross section</button>
+          <button id="addSectionButton" type="button" data-action="add-section" disabled data-i18n="add_cross_section">Add cross section</button>
+          <button id="moveSectionButton" type="button" data-action="move-section" disabled data-i18n="move_cross_section">Move cross section</button>
+          <button id="removeSectionButton" type="button" data-action="remove-section" disabled data-i18n="remove_cross_section">Remove cross section</button>
+          <hr>
+          <button id="copySectionButton" type="button" data-action="copy-section" disabled data-i18n="copy_cross_section">Copy cross section</button>
+          <button id="pasteSectionButton" type="button" data-action="paste-section" disabled data-i18n="paste_cross_section">Paste cross section</button>
+          <hr>
+          <button id="importSectionButton" type="button" data-action="import-crosssection" disabled data-i18n="import_cross_section">Import cross section</button>
+          <button id="exportSectionButton" type="button" data-action="export-crosssection" disabled data-i18n="export_cross_section">Export cross section</button>
+          <input id="crossSectionInput" type="file" accept=".crs,text/plain" hidden>
+        </div>
+      </details>
+      <details class="menu">
+        <summary data-i18n="menu_board">Board</summary>
+        <div class="menu-items">
+          <button id="scaleBoardButton" type="button" data-action="scale-board" disabled data-i18n="scale_current_board">Scale current board</button>
+          <button id="scaleGhostButton" type="button" data-action="scale-ghost" disabled data-i18n="scale_ghost_to_current">Scale ghost to current board size</button>
+          <button id="boardInfoButton" type="button" data-action="board-info" disabled data-i18n="info">Info</button>
+          <button id="tailButton" type="button" data-action="show-panel" data-panel-target="tailPanel" disabled data-i18n="tail">Tail</button>
+          <button id="noseButton" type="button" data-action="show-panel" data-panel-target="nosePanel" disabled data-i18n="nose">Nose</button>
+          <button id="wingButton" type="button" data-action="show-panel" data-panel-target="wingPanel" disabled data-i18n="wing">Wing</button>
+          <button id="rockerButton" type="button" data-action="show-panel" data-panel-target="rockerPanel" disabled data-i18n="rocker">Rocker</button>
+          <button id="bottomButton" type="button" data-action="show-panel" data-panel-target="bottomPanel" disabled data-i18n="bottom">Bottom</button>
+          <button id="finsButton" type="button" data-action="show-panel" data-panel-target="finsPanel" disabled data-i18n="fins">Fins</button>
+          <button id="guidePointsButton" type="button" data-action="show-panel" data-panel-target="guidePointPanel" disabled data-i18n="guide_points">Guide points</button>
+          <button id="weightCalcButton" type="button" data-action="show-panel" data-panel-target="weightPanel" disabled data-i18n="weight_calculator">Weight calculator</button>
+          <button id="flipBoardViewButton" type="button" data-action="flip-board-view" disabled data-i18n="flip">Flip</button>
+        </div>
+      </details>
+      <details class="menu">
+        <summary data-i18n="menu_misc">Misc</summary>
+        <div class="menu-items">
+          <details class="menu-submenu">
+            <summary data-i18n="settings">Settings</summary>
+            <div class="menu-subitems">
+              <label>
+                <span data-i18n="curve_segments_setting">Curve segments</span>
+                <input id="miscCurveSegments" type="number" min="4" max="80" step="1">
+              </label>
+              <label>
+                <span data-i18n="model_length_segments_setting">3D length segments</span>
+                <input id="miscModelLengthSegments" type="number" min="6" max="80" step="1">
+              </label>
+              <label>
+                <span data-i18n="model_width_points_setting">3D width points</span>
+                <input id="miscModelWidthPoints" type="number" min="3" max="40" step="1">
+              </label>
+              <label>
+                <span data-i18n="bridge_enabled_setting">3D mouse bridge</span>
+                <input id="miscBridgeEnabled" type="checkbox">
+              </label>
+              <label>
+                <span data-i18n="bridge_preset_setting">3D mouse preset</span>
+                <select id="miscBridgePreset">
+                  <option value="generic" data-i18n="bridge_preset_generic">Generic</option>
+                  <option value="blender" data-i18n="bridge_preset_blender">Blender</option>
+                  <option value="fusion" data-i18n="bridge_preset_fusion">Fusion</option>
+                </select>
+              </label>
+              <label>
+                <span data-i18n="bridge_deadzone_setting">3D mouse deadzone</span>
+                <input id="miscBridgeDeadzone" type="number" min="0" max="0.4" step="0.01">
+              </label>
+              <label>
+                <span data-i18n="bridge_rotation_speed_setting">3D mouse rotation speed</span>
+                <input id="miscBridgeRotationSpeed" type="number" min="0.1" max="8" step="0.1">
+              </label>
+              <label>
+                <span data-i18n="bridge_pan_speed_setting">3D mouse pan speed</span>
+                <input id="miscBridgePanSpeed" type="number" min="10" max="1200" step="10">
+              </label>
+              <label>
+                <span data-i18n="bridge_zoom_speed_setting">3D mouse zoom speed</span>
+                <input id="miscBridgeZoomSpeed" type="number" min="0.05" max="4" step="0.05">
+              </label>
+              <label>
+                <span data-i18n="bridge_dominant_axis_setting">Dominant axis only</span>
+                <input id="miscBridgeDominantAxis" type="checkbox">
+              </label>
+              <label>
+                <span data-i18n="bridge_invert_pitch_setting">Invert pitch</span>
+                <input id="miscBridgeInvertPitch" type="checkbox">
+              </label>
+              <label>
+                <span data-i18n="bridge_invert_pan_y_setting">Invert vertical pan</span>
+                <input id="miscBridgeInvertPanY" type="checkbox">
+              </label>
+              <label>
+                <span data-i18n="bridge_invert_zoom_setting">Invert zoom</span>
+                <input id="miscBridgeInvertZoom" type="checkbox">
+              </label>
+              <label>
+                <span data-i18n="bridge_button1_setting">3D mouse button 1</span>
+                <select id="miscBridgeButton1Action"></select>
+              </label>
+              <label>
+                <span data-i18n="bridge_button2_setting">3D mouse button 2</span>
+                <select id="miscBridgeButton2Action"></select>
+              </label>
+              <label>
+                <span data-i18n="bridge_button3_setting">3D mouse button 3</span>
+                <select id="miscBridgeButton3Action"></select>
+              </label>
+              <label>
+                <span data-i18n="bridge_button4_setting">3D mouse button 4</span>
+                <select id="miscBridgeButton4Action"></select>
+              </label>
+              <div class="button-row">
+                <button id="miscApplySettingsButton" type="button" data-action="set-settings" data-i18n="apply_settings">Apply</button>
+                <button id="settingsButton" type="button" data-action="settings" data-i18n="settings_prompt">Prompt</button>
+              </div>
+            </div>
+          </details>
+          <details class="menu-submenu">
+            <summary data-i18n="language">Language</summary>
+            <div class="menu-subitems">
+              <button id="languageJaButton" type="button" data-action="set-language" data-lang="ja" data-i18n="language_japanese">Japanese</button>
+              <button id="languageEnButton" type="button" data-action="set-language" data-lang="en" data-i18n="language_english">English</button>
+              <button id="languagePromptButton" type="button" data-action="language" data-i18n="language_prompt">Prompt</button>
+            </div>
+          </details>
+          <hr>
+          <label class="menu-check"><input id="controlPointInterpolation" type="radio" name="crossSectionInterpolation" data-interpolation="controlpoint"><span data-i18n="controlpoint_interpolation">ControlPoint interpolation</span></label>
+          <label class="menu-check"><input id="sBlendInterpolation" type="radio" name="crossSectionInterpolation" data-interpolation="sblend" checked><span data-i18n="sblend_interpolation">S-Blend interpolation</span></label>
+        </div>
+      </details>
+      <details class="menu">
+        <summary data-i18n="menu_3d_model">3D Model</summary>
+        <div class="menu-items">
+          <button id="bezierPatchButton" type="button" data-action="bezier-patch" disabled data-i18n="create_3d_bezier_patches">Create 3D model using Bezier patches</button>
+          <button id="approxClosedButton" type="button" data-action="approximate-closed" disabled data-i18n="approx_from_bezier_closed">Approximate from Bezier (closed model)</button>
+          <button id="approxOpenButton" type="button" data-action="approximate-open" disabled data-i18n="approx_from_bezier_open">Approximate from Bezier (open model)</button>
+          <button id="approxOutlineRockerButton" type="button" data-action="approximate-outline-rocker" disabled data-i18n="approx_outline_rocker">Approximate outline and rocker</button>
+          <button id="clearApproxButton" type="button" data-action="clear-approximation" disabled data-i18n="clear_approximation">Clear approximation</button>
+          <hr>
+          <button id="view3dButton" type="button" data-action="view-3d" disabled data-i18n="view_3d">View 3D</button>
+          <button id="editNurbsButton" type="button" data-action="edit-nurbs" disabled data-i18n="edit_nurbs_surface">Edit nurbs surface</button>
+        </div>
+      </details>
+      <details class="menu">
+        <summary data-i18n="menu_scan">Scan</summary>
+        <div class="menu-items">
+          <button id="setTailPointButton" type="button" data-action="scan-set-tail" data-i18n="set_tail_point">Set Tail Point</button>
+          <button id="setNosePointButton" type="button" data-action="scan-set-nose" data-i18n="set_nose_point">Set Nose Point</button>
+          <button id="returnTailButton" type="button" data-action="scan-return-tail" data-i18n="return_to_tail">Return to Tail</button>
+          <button id="requestPositionButton" type="button" data-action="request-position" data-i18n="read_current_position">Read Current Position</button>
+          <hr>
+          <button type="button" data-action="generate-probe-scan" data-i18n="generate_probe_gcode">Generate Probe G-Code</button>
+          <button id="fitProfileFromScanButton" type="button" data-action="fit-profile-from-scan" disabled data-i18n="fit_profile_from_scan">Fit Profile From Scan</button>
+          <button id="fitOutlineFromScanButton" type="button" data-action="fit-outline-from-scan" disabled data-i18n="fit_outline_from_scan">Fit Outline From Scan</button>
+          <button id="fitCrossSectionFromScanButton" type="button" data-action="fit-cross-section-from-scan" disabled data-i18n="fit_cross_section_from_scan">Fit Cross Section From Scan</button>
+        </div>
+      </details>
+      <details class="menu">
+        <summary data-i18n="menu_help">Help</summary>
+        <div class="menu-items">
+          <button type="button" data-action="help" data-i18n="online_help">Online help</button>
+          <button type="button" data-action="about" data-i18n="about_boardcad">About BoardCAD</button>
+        </div>
+      </details>
+    </nav>
+    <div class="toolbar" aria-label="BoardCAD tools" data-i18n-aria-label="boardcad_tools">
+      <button type="button" data-tool="edit" class="tool active" title="Edit control and guide points" data-i18n="tool_edit" data-i18n-title="status_tool_edit">Edit</button>
+      <button type="button" data-tool="zoom" class="tool" title="Click to zoom in; Shift/Option-click to zoom out" data-i18n="tool_zoom" data-i18n-title="status_tool_zoom">Zoom</button>
+      <button type="button" data-tool="pan" class="tool" title="Drag the drawing to pan" data-i18n="tool_pan" data-i18n-title="status_tool_pan">Pan</button>
+      <button type="button" data-action="fit" class="tool" title="Fit the drawing to the viewport" data-i18n="fit" data-i18n-title="help_fit">Fit</button>
+      <button type="button" data-tool="spot" class="tool" title="Read dimensions at a point" data-i18n="tool_spot_check" data-i18n-title="status_tool_spot">Spot check</button>
+      <span class="toolbar-separator"></span>
+      <select id="sampleSelect" aria-label="サンプル" data-i18n-aria-label="sample_select_aria">
+        <option value="./Shortboard.brd" data-i18n="sample_shortboard">Shortboard</option>
+        <option value="./Funboard.brd" data-i18n="sample_funboard">Funboard</option>
+        <option value="./Longboard.brd" data-i18n="sample_longboard">Longboard</option>
+      </select>
+      <button id="sampleButton" type="button" data-action="sample" data-i18n="menu_sample">サンプル</button>
+      <span class="toolbar-separator"></span>
+      <div class="tabs toolbar-tabs" role="tablist">
+        <button class="tab active" data-view="outline" type="button" data-i18n="outline">Outline</button>
+        <button class="tab" data-view="profile" type="button" data-i18n="profile">Profile</button>
+        <button class="tab" data-view="sections" type="button" data-i18n="menu_cross_sections">Cross sections</button>
+        <button class="tab" data-view="quad" type="button" data-i18n="quad">Quad</button>
+        <button class="tab" data-view="toolpath" type="button" data-i18n="toolpath">Toolpath</button>
+        <button class="tab" data-view="model3d" type="button" data-i18n="menu_3d_model">3D Model</button>
+        <button class="tab" data-view="scan" type="button" data-i18n="menu_scan">Scan</button>
+      </div>
+    </div>
+    <aside class="shortcut-help top-shortcuts" aria-label="Keyboard shortcuts" data-i18n-aria-label="keyboard_shortcuts">
+      <strong data-i18n="shortcuts">Shortcuts</strong>
+      <span data-i18n="shortcut_view">1-7 View</span>
+      <span data-i18n="shortcut_tool">E/Z/P Tool</span>
+      <span data-i18n="shortcut_fit">F/0 Fit</span>
+      <span data-i18n="shortcut_zoom">+/- Zoom</span>
+      <span data-i18n="shortcut_move">Arrows Move/Pan</span>
+      <span data-i18n="shortcut_ghost">Hold G + Arrows/Q/W Ghost</span>
+      <span data-i18n="shortcut_fine">Alt fine</span>
+      <span data-i18n="shortcut_remove">Del Remove</span>
+      <span data-i18n="shortcut_context">Right click menu</span>
+      <span data-i18n="shortcut_3d">3D I/T/O/R, WASD</span>
+    </aside>
+  </header>
+
+  <main class="workspace">
+    <section class="viewer">
+      <div class="viewer-head">
+        <div>
+          <strong id="boardName" data-i18n="board_unloaded">未読み込み</strong>
+          <span id="boardMeta"></span>
+        </div>
+      </div>
+      <canvas id="canvas" width="1400" height="760"></canvas>
+      <div id="canvasContextMenu" class="context-menu" hidden>
+        <button type="button" data-context-action="fit" data-i18n="fit">Fit</button>
+        <hr>
+        <label class="context-check"><input id="contextLockX" type="checkbox" data-context-lock="x"><span data-i18n="x_locked">X locked</span></label>
+        <label class="context-check"><input id="contextLockY" type="checkbox" data-context-lock="y"><span data-i18n="y_locked">Y locked</span></label>
+        <label class="context-check disabled"><input id="contextLockZ" type="checkbox" data-context-lock="z" disabled><span data-i18n="z_locked">Z locked</span></label>
+        <hr>
+        <label class="context-check"><input id="contextViewBlank" type="checkbox" data-context-view-option="viewBlank"><span data-i18n="view_blank">View blank</span></label>
+        <label class="context-check"><input id="contextViewDeckToolpath" type="checkbox" data-context-view-option="showDeckToolpath"><span data-i18n="view_deck_toolpath">View deck toolpath</span></label>
+        <label class="context-check"><input id="contextViewBottomToolpath" type="checkbox" data-context-view-option="showBottomToolpath"><span data-i18n="view_bottom_toolpath">View bottom toolpath</span></label>
+        <hr>
+        <button type="button" data-context-action="spot-check" data-i18n="tool_spot_check">Spot check</button>
+        <button type="button" data-context-action="toggle-deck-bottom" data-i18n="toggle_deck_bottom">Toggle Deck/Bottom</button>
+        <button id="contextAddGuidePoint" type="button" data-context-action="add-guidepoint" data-i18n="add_guide_point">Add Guide Point</button>
+        <button type="button" data-context-action="guide-points" data-i18n="guide_points">Guide points</button>
+        <button id="contextEditGuidePoint" type="button" data-context-action="edit-guidepoint" data-i18n="edit_guide_point">Edit Guide Point</button>
+        <button id="contextDeleteGuidePoint" type="button" data-context-action="delete-guidepoint" data-i18n="delete_guide_point">Delete Guide Point</button>
+        <button id="contextAddControlPoint" type="button" data-context-action="add-controlpoint" data-i18n="add_controlpoint">Add ControlPoint</button>
+        <button id="contextDeleteControlPoint" type="button" data-context-action="delete-controlpoint" data-i18n="delete_controlpoints">Delete controlpoints</button>
+        <button id="contextMakeContinuous" type="button" data-context-action="make-continuous" data-i18n="make_continuous">Toggle Smooth/Corner</button>
+        <button type="button" data-context-action="cross-sections" data-i18n="menu_cross_sections">Cross sections ›</button>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <details id="tailPanel" class="panel-group panel-stack-item tail-panel" aria-label="Tail" data-i18n-aria-label="tail">
+        <summary data-i18n="tail">Tail</summary>
+        <div class="section-readout" id="boardPanelSummary" data-i18n="panel_unloaded">未読み込み</div>
+        <label>
+          <span data-i18n="tail_shape">Tail shape</span>
+          <select id="tailMode" disabled>
+            <option value="" data-i18n="bezier_native">Bezier native</option>
+            <option value="square" data-i18n="tail_mode_square">Square</option>
+            <option value="squash" data-i18n="tail_mode_squash">Squash</option>
+            <option value="round" data-i18n="tail_mode_round">Round</option>
+            <option value="rounded-square" data-i18n="tail_mode_rounded_square">Round square</option>
+            <option value="gun" data-i18n="tail_mode_gun">Gun</option>
+            <option value="pin" data-i18n="tail_mode_pin">Pin</option>
+            <option value="round-pin" data-i18n="tail_mode_round_pin">Round pin</option>
+            <option value="diamond" data-i18n="tail_mode_diamond">Diamond</option>
+            <option value="rounded-diamond" data-i18n="tail_mode_rounded_diamond">Round diamond</option>
+            <option value="rocket" data-i18n="tail_mode_rocket">Rocket</option>
+            <option value="half-moon" data-i18n="tail_mode_half_moon">Half moon</option>
+            <option value="swallow" data-i18n="tail_mode_swallow">Swallow</option>
+            <option value="fish" data-i18n="tail_mode_fish">Fish</option>
+            <option value="split" data-i18n="tail_mode_split">Split</option>
+            <option value="star" data-i18n="tail_mode_star">Star</option>
+            <option value="bat" data-i18n="tail_mode_bat">Bat</option>
+          </select>
+        </label>
+        <label>
+          <span data-i18n="tail_length">Tail length</span>
+          <input id="tailLength" type="number" step="0.001" disabled>
+        </label>
+        <label>
+          <span data-i18n="tail_depth">Tail depth</span>
+          <input id="tailDepth" type="number" step="0.001" disabled>
+        </label>
+        <label>
+          <span data-i18n="shoulder_pos">Shoulder pos</span>
+          <input id="tailShoulderPos" type="number" step="0.01" disabled>
+        </label>
+        <label>
+          <span data-i18n="shoulder_width">Shoulder width</span>
+          <input id="tailShoulderScale" type="number" step="0.01" disabled>
+        </label>
+        <label>
+          <span data-i18n="join_blend">Join blend</span>
+          <input id="tailRailBlend" type="number" step="0.01" disabled>
+        </label>
+        <label>
+          <span data-i18n="tail_width">Tail width</span>
+          <input id="tailWidthAdjust" type="range" min="-1" max="1" step="0.01" value="0" disabled>
+        </label>
+        <div id="tailWidthAdjustReadout" class="section-readout">100%</div>
+        <div class="button-row">
+          <button id="setTailButton" type="button" data-action="set-tail" disabled data-i18n="set_tail">Set tail</button>
+        </div>
+      </details>
+      <details id="nosePanel" class="panel-group panel-stack-item nose-panel" aria-label="Nose" data-i18n-aria-label="nose">
+        <summary data-i18n="nose">Nose</summary>
+        <label>
+          <span data-i18n="nose_shape">Nose shape</span>
+          <select id="noseMode" disabled>
+            <option value="" data-i18n="bezier_native">Bezier native</option>
+            <option value="gun" data-i18n="nose_mode_gun">Gun / point</option>
+            <option value="pin" data-i18n="nose_mode_pin">Pin nose</option>
+            <option value="round-point" data-i18n="nose_mode_round_point">Round pointed nose</option>
+            <option value="wide" data-i18n="nose_mode_wide">Wide nose</option>
+            <option value="round" data-i18n="nose_mode_round">Round nose</option>
+            <option value="diamond" data-i18n="nose_mode_diamond">Diamond nose</option>
+            <option value="snub" data-i18n="nose_mode_snub">Snub nose</option>
+            <option value="square" data-i18n="nose_mode_square">Square nose</option>
+          </select>
+        </label>
+        <label>
+          <span data-i18n="nose_length">Nose length</span>
+          <input id="noseLength" type="number" step="0.001" disabled>
+        </label>
+        <label>
+          <span data-i18n="shoulder_pos">Shoulder pos</span>
+          <input id="noseShoulderPos" type="number" step="0.01" disabled>
+        </label>
+        <label>
+          <span data-i18n="shoulder_width">Shoulder width</span>
+          <input id="noseShoulderScale" type="number" step="0.01" disabled>
+        </label>
+        <label>
+          <span data-i18n="join_blend">Join blend</span>
+          <input id="noseRailBlend" type="number" step="0.01" disabled>
+        </label>
+        <label>
+          <span data-i18n="nose_width">Nose width</span>
+          <input id="noseWidthAdjust" type="range" min="-1" max="1" step="0.01" value="0" disabled>
+        </label>
+        <div id="noseWidthAdjustReadout" class="section-readout">100%</div>
+        <div class="button-row">
+          <button id="setNoseButton" type="button" data-action="set-nose" disabled data-i18n="set_nose">Set nose</button>
+        </div>
+      </details>
+      <details id="wingPanel" class="panel-group panel-stack-item wing-panel" aria-label="Wing" data-i18n-aria-label="wing">
+        <summary data-i18n="wing">Wing</summary>
+        <label>
+          <span data-i18n="wing_preset">Wing preset</span>
+          <select id="wingPreset" disabled>
+            <option value="" data-i18n="none">None</option>
+            <option value="custom" data-i18n="custom">Custom</option>
+            <option value="stinger" data-i18n="wing_preset_stinger">Stinger</option>
+            <option value="wing" data-i18n="wing_preset_wing">Wing</option>
+            <option value="wing-pin" data-i18n="wing_preset_wing_pin">Wing pin tail</option>
+          </select>
+        </label>
+        <label>
+          <span data-i18n="distance_from_tail">Distance from tail</span>
+          <input id="wingPosition" type="number" step="0.01" disabled>
+        </label>
+        <label>
+          <span data-i18n="wing_width">Wing width</span>
+          <input id="wingWidth" type="number" step="0.01" disabled>
+        </label>
+        <label>
+          <span data-i18n="wing_shape">Wing shape</span>
+          <select id="wingShape" disabled>
+            <option value="bump" data-i18n="wing_shape_bump">Bump</option>
+            <option value="step" data-i18n="wing_shape_step">Step</option>
+          </select>
+        </label>
+        <label>
+          <span data-i18n="shoulder_coeff">Shoulder coeff</span>
+          <input id="wingShoulder" type="number" step="0.1" disabled>
+        </label>
+        <label>
+          <span data-i18n="transition_coeff">Transition coeff</span>
+          <input id="wingTransition" type="number" step="0.1" disabled>
+        </label>
+        <div class="button-row">
+          <button id="setWingButton" type="button" data-action="set-wing" disabled data-i18n="set_wing">Set wing</button>
+        </div>
+      </details>
+      <details id="rockerPanel" class="panel-group panel-stack-item rocker-panel" aria-label="Rocker" data-i18n-aria-label="rocker">
+        <summary data-i18n="rocker">Rocker</summary>
+        <div class="section-readout" id="rockerSummary" data-i18n="rocker_summary_empty">Rocker: -</div>
+        <label>
+          <span data-i18n="rocker_preset">Rocker preset</span>
+          <select id="rockerPreset" disabled>
+            <option value="custom" data-i18n="custom">Custom</option>
+            <option value="continuous-neutral" data-i18n="rocker_preset_continuous_neutral">Continuous neutral</option>
+            <option value="relaxed-drive" data-i18n="rocker_preset_relaxed_drive">Relaxed drive</option>
+            <option value="performance-curve" data-i18n="rocker_preset_performance_curve">Performance curve</option>
+            <option value="staged-speed" data-i18n="rocker_preset_staged_speed">Staged speed</option>
+            <option value="fish-retro-flat" data-i18n="rocker_preset_fish_retro_flat">Fish / retro flat</option>
+            <option value="gun-continuous" data-i18n="rocker_preset_gun_continuous">Gun continuous</option>
+            <option value="longboard-glide" data-i18n="rocker_preset_longboard_glide">Longboard glide</option>
+          </select>
+        </label>
+        <div class="button-row">
+          <button id="setRockerButton" type="button" data-action="set-rocker" disabled data-i18n="set_rocker">Set rocker</button>
+        </div>
+        <div class="button-row">
+          <button id="resetRockerButton" type="button" data-action="reset-rocker" disabled data-i18n="reset">Reset</button>
+        </div>
+        <label class="menu-check">
+          <input id="rockerEnabled" type="checkbox" disabled>
+          <span data-i18n="rocker_preview_enabled">Show target line</span>
+        </label>
+        <label>
+          <span data-i18n="rocker_nose">Nose rocker</span>
+          <input id="rockerNose" type="number" step="0.01" disabled>
+        </label>
+        <label>
+          <span data-i18n="rocker_tail">Tail rocker</span>
+          <input id="rockerTail" type="number" step="0.01" disabled>
+        </label>
+        <label>
+          <span data-i18n="rocker_entry_length">Entry length ratio</span>
+          <input id="rockerEntryLength" type="number" min="0.05" max="0.5" step="0.01" disabled>
+        </label>
+        <label>
+          <span data-i18n="rocker_entry_lift">Entry lift</span>
+          <input id="rockerEntryLift" type="number" step="0.01" disabled>
+        </label>
+        <label>
+          <span data-i18n="rocker_middle_flatness">Middle flatness</span>
+          <input id="rockerMiddleFlatness" type="number" min="-1" max="1" step="0.01" disabled>
+        </label>
+        <label>
+          <span data-i18n="rocker_tail_kick_length">Tail kick length ratio</span>
+          <input id="rockerTailKickLength" type="number" min="0.05" max="0.5" step="0.01" disabled>
+        </label>
+        <label>
+          <span data-i18n="rocker_tail_kick">Tail kick</span>
+          <input id="rockerTailKick" type="number" step="0.01" disabled>
+        </label>
+        <label>
+          <span data-i18n="rocker_apex_shift">Apex shift</span>
+          <input id="rockerApexShift" type="number" min="-1" max="1" step="0.01" disabled>
+        </label>
+        <label>
+          <span data-i18n="rocker_blend">Blend</span>
+          <input id="rockerBlend" type="number" min="0.1" max="4" step="0.05" disabled>
+        </label>
+        <label class="menu-check">
+          <input id="rockerPreserveFoil" type="checkbox" disabled>
+          <span data-i18n="rocker_preserve_foil">Preserve foil</span>
+        </label>
+        <label class="menu-check">
+          <input id="rockerPreserveDeck" type="checkbox" disabled>
+          <span data-i18n="rocker_preserve_deck">Preserve deck</span>
+        </label>
+        <div class="guide-list" id="rockerStationList" data-i18n="rocker_station_empty">Rocker stations: -</div>
+      </details>
+      <details id="bottomPanel" class="panel-group panel-stack-item bottom-panel" aria-label="Bottom" data-i18n-aria-label="bottom">
+        <summary data-i18n="bottom">Bottom</summary>
+        <div class="section-readout" id="bottomFeatureSummary" data-i18n="bottom_feature_none">Bottom features: 0</div>
+        <div class="guide-list" id="bottomFeatureList" data-i18n="bottom_feature_none">Bottom features: 0</div>
+        <label>
+          <span data-i18n="bottom_preset">Preset</span>
+          <select id="bottomFeaturePreset" disabled>
+            <option value="custom" data-i18n="custom">Custom</option>
+            <option value="displacement-hull" data-i18n="bottom_preset_displacement_hull">Displacement hull</option>
+            <option value="longboard-rolled-vee" data-i18n="bottom_preset_longboard_rolled_vee">Longboard rolled to vee</option>
+            <option value="shortboard-single-to-double" data-i18n="bottom_preset_shortboard_single_to_double">Shortboard single to double</option>
+            <option value="shortboard-single-to-vee" data-i18n="bottom_preset_shortboard_single_to_vee">Shortboard single to vee</option>
+            <option value="performance-channel-quad" data-i18n="bottom_preset_performance_channel_quad">Performance channel quad</option>
+          </select>
+        </label>
+        <div class="button-row">
+          <button id="applyBottomPresetButton" type="button" data-action="apply-bottom-preset" disabled data-i18n="apply_preset">Apply preset</button>
+        </div>
+        <label>
+          <span data-i18n="bottom_feature_index">Feature</span>
+          <select id="bottomFeatureIndex" disabled>
+            <option value="-1" data-i18n="none">None</option>
+          </select>
+        </label>
+        <label class="inline-check">
+          <input id="bottomFeatureEnabled" type="checkbox" disabled>
+          <span data-i18n="enabled">Enabled</span>
+        </label>
+        <label>
+          <span data-i18n="bottom_feature_type">Feature type</span>
+          <select id="bottomFeatureType" disabled>
+            <option value="single-concave" data-i18n="bottom_type_single_concave">Single concave</option>
+            <option value="double-concave" data-i18n="bottom_type_double_concave">Double concave</option>
+            <option value="vee" data-i18n="bottom_type_vee">Vee</option>
+            <option value="spiral-vee" data-i18n="bottom_type_spiral_vee">Spiral vee</option>
+            <option value="hull" data-i18n="bottom_type_hull">Hull</option>
+            <option value="displacement-hull" data-i18n="bottom_type_displacement_hull">Displacement hull</option>
+            <option value="channel" data-i18n="bottom_type_channel">Channel</option>
+          </select>
+        </label>
+        <div class="button-row">
+          <button id="setBottomFeatureButton" type="button" data-action="set-bottom-feature" disabled data-i18n="set">Set</button>
+          <button id="addBottomFeatureButton" type="button" data-action="add-bottom-feature" disabled data-i18n="add">Add</button>
+          <button id="duplicateBottomFeatureButton" type="button" data-action="duplicate-bottom-feature" disabled data-i18n="duplicate">Duplicate</button>
+          <button id="removeBottomFeatureButton" type="button" data-action="remove-bottom-feature" disabled data-i18n="remove">Remove</button>
+        </div>
+        <div class="button-row">
+          <button id="fillBottomFeatureSectionsButton" type="button" data-action="fill-bottom-feature-sections" disabled data-i18n="fill_feature_sections">Fill feature sections</button>
+        </div>
+        <div class="button-row">
+          <button id="resetBottomFeatureButton" type="button" data-action="reset-bottom-feature" disabled data-i18n="reset">Reset</button>
+          <button id="clearBottomFeaturesButton" type="button" data-action="clear-bottom-features" disabled data-i18n="clear">Clear</button>
+          <button id="moveBottomFeatureUpButton" type="button" data-action="move-bottom-feature-up" disabled data-i18n="move_up">Up</button>
+          <button id="moveBottomFeatureDownButton" type="button" data-action="move-bottom-feature-down" disabled data-i18n="move_down">Down</button>
+        </div>
+        <label>
+          <span data-i18n="bottom_feature_start">Start from tail</span>
+          <input id="bottomFeatureStart" type="number" step="0.01" disabled>
+        </label>
+        <label>
+          <span data-i18n="bottom_feature_peak">Peak from tail</span>
+          <input id="bottomFeaturePeak" type="number" step="0.01" disabled>
+        </label>
+        <label>
+          <span data-i18n="bottom_feature_end">End from tail</span>
+          <input id="bottomFeatureEnd" type="number" step="0.01" disabled>
+        </label>
+        <label>
+          <span data-i18n="bottom_feature_depth">Depth</span>
+          <input id="bottomFeatureDepth" type="number" step="0.01" disabled>
+        </label>
+        <label>
+          <span data-i18n="bottom_feature_center_depth">Center depth</span>
+          <input id="bottomFeatureCenterDepth" type="number" step="0.01" disabled>
+        </label>
+        <label>
+          <span data-i18n="bottom_feature_rail_depth">Rail depth</span>
+          <input id="bottomFeatureRailDepth" type="number" step="0.01" disabled>
+        </label>
+        <label>
+          <span data-i18n="bottom_feature_rail_lock_cm">Rail protection (cm)</span>
+          <input id="bottomFeatureRailLockCm" type="number" min="0" max="15" step="0.5" disabled>
+        </label>
+        <label>
+          <span data-i18n="bottom_feature_width">Width ratio</span>
+          <input id="bottomFeatureWidth" type="number" min="0.05" max="1" step="0.01" disabled>
+        </label>
+        <label>
+          <span data-i18n="bottom_feature_blend">Blend</span>
+          <input id="bottomFeatureBlend" type="number" min="0.1" max="4" step="0.05" disabled>
+        </label>
+        <label>
+          <span data-i18n="bottom_feature_power">Curve power</span>
+          <input id="bottomFeaturePower" type="number" min="0.4" max="4" step="0.05" disabled>
+        </label>
+        <label>
+          <span data-i18n="bottom_feature_edge">Edge strength</span>
+          <input id="bottomFeatureEdge" type="number" min="0" max="1" step="0.05" disabled>
+        </label>
+        <label>
+          <span data-i18n="bottom_feature_offset">Offset ratio</span>
+          <input id="bottomFeatureOffset" type="number" min="0" max="0.95" step="0.01" disabled>
+        </label>
+        <label>
+          <span data-i18n="bottom_feature_spacing">Spacing ratio</span>
+          <input id="bottomFeatureSpacing" type="number" min="0" max="0.5" step="0.01" disabled>
+        </label>
+        <label>
+          <span data-i18n="bottom_feature_count">Count</span>
+          <input id="bottomFeatureCount" type="number" min="1" max="10" step="1" disabled>
+        </label>
+        <label>
+          <span data-i18n="bottom_feature_longitudinal_flat">Longitudinal flatness</span>
+          <input id="bottomFeatureLongitudinalFlat" type="number" min="0" max="1" step="0.05" disabled>
+        </label>
+      </details>
+      <details id="finsPanel" class="panel-group panel-stack-item fins-panel" aria-label="Fins" data-i18n-aria-label="fins">
+        <summary data-i18n="fins">Fins</summary>
+        <label>
+          <span data-i18n="type">Type</span>
+          <input id="finType" type="text" disabled>
+        </label>
+        <label>
+          <span data-i18n="template">Template</span>
+          <select id="finTemplate" disabled>
+            <option value="" data-i18n="line_only">Line only</option>
+            <option value="FCS" data-i18n="fcs_plugs">FCS plugs</option>
+            <option value="FCSII" data-i18n="fcsii_box">FCS II box</option>
+            <option value="FINBOX" data-i18n="single_fin_box">Single fin box</option>
+          </select>
+        </label>
+        <label>
+          <span data-i18n="fin_setup">Fin Setup</span>
+          <select id="finSetup" disabled>
+            <option value="" data-i18n="custom">Custom</option>
+            <option value="single" data-i18n="single_fin">Single fin</option>
+            <option value="2plus1">2+1</option>
+            <option value="twin-fish" data-i18n="twin_fish">Twin fish</option>
+            <option value="twin-performance" data-i18n="twin_performance">Twin performance</option>
+            <option value="thruster" data-i18n="thruster">Thruster</option>
+            <option value="quad" data-i18n="quad_fin">Quad</option>
+            <option value="5fin" data-i18n="five_fin">5 fin</option>
+            <option value="bonzer" data-i18n="bonzer">Bonzer</option>
+          </select>
+        </label>
+        <div class="fin-grid">
+          <span></span><span>X</span><span>Y / Depth</span>
+          <span data-i18n="side_rear">Side rear</span>
+          <input id="finSideRearX" type="number" step="0.001" disabled>
+          <input id="finSideRearY" type="number" step="0.001" disabled>
+          <span data-i18n="side_front">Side front</span>
+          <input id="finSideFrontX" type="number" step="0.001" disabled>
+          <input id="finSideFrontY" type="number" step="0.001" disabled>
+          <span data-i18n="center_rear_front">Center rear/front</span>
+          <input id="finCenterRear" type="number" step="0.001" disabled>
+          <input id="finCenterFront" type="number" step="0.001" disabled>
+          <span data-i18n="depth_splay">Depth / Splay</span>
+          <input id="finCenterDepth" type="number" step="0.001" disabled>
+          <input id="finSideDepth" type="number" step="0.001" disabled>
+          <span data-i18n="side_splay">Side splay</span>
+          <input id="finSideSplay" type="number" step="0.001" disabled>
+          <span></span>
+          <span data-i18n="toe_in_cant">Toe-in / Cant</span>
+          <input id="finToeIn" type="number" step="0.1" disabled>
+          <input id="finCant" type="number" step="0.1" disabled>
+        </div>
+        <div class="button-row">
+          <button id="setFinsButton" type="button" data-action="set-fins" disabled data-i18n="set_fins">Set fins</button>
+        </div>
+      </details>
+      <details id="weightPanel" class="panel-group panel-stack-item weight-panel" aria-label="Weight" data-i18n-aria-label="weight_calculator">
+        <summary data-i18n="weight">Weight</summary>
+        <div class="weight-grid">
+          <label><span data-i18n="stringer_width">Stringer width</span><input id="weightStringerWidth" type="number" step="0.001" disabled></label>
+          <label><span data-i18n="stringer_density">Stringer density</span><input id="weightStringerDensity" type="number" step="0.001" disabled></label>
+          <label><span data-i18n="foam_density">Foam density</span><input id="weightFoamDensity" type="number" step="0.001" disabled></label>
+          <label><span data-i18n="deck_glass">Deck glass</span><input id="weightDeckGlass" type="number" step="0.001" disabled></label>
+          <label><span data-i18n="deck_lap_width">Deck lap width</span><input id="weightDeckLapWidth" type="number" step="0.001" disabled></label>
+          <label><span data-i18n="bottom_glass">Bottom glass</span><input id="weightBottomGlass" type="number" step="0.001" disabled></label>
+          <label><span data-i18n="bottom_lap_width">Bottom lap width</span><input id="weightBottomLapWidth" type="number" step="0.001" disabled></label>
+          <label><span data-i18n="resin_ratio">Resin ratio</span><input id="weightResinRatio" type="number" step="0.001" disabled></label>
+          <label><span data-i18n="hotcoat">Hotcoat</span><input id="weightHotcoat" type="number" step="0.001" disabled></label>
+          <label><span data-i18n="plugs_plus_fins">Plugs + fins</span><input id="weightPlugsFins" type="number" step="0.001" disabled></label>
+        </div>
+        <div class="section-readout weight-output" id="weightOutput" data-i18n="weight_placeholder">Weight: -</div>
+        <div class="button-row">
+          <button id="weightDefaultsButton" type="button" data-action="weight-defaults" disabled data-i18n="defaults">Defaults</button>
+          <button id="weightCalcPanelButton" type="button" data-action="weight-calc" disabled data-i18n="calc">Calc</button>
+        </div>
+      </details>
+      <details id="tracePanel" class="trace-panel panel-group panel-stack-item" aria-label="Trace image" data-i18n-aria-label="trace_image">
+        <summary data-i18n="trace_image">Trace Image</summary>
+        <label>
+          <span data-i18n="target_view">Target view</span>
+          <select id="traceTarget">
+            <option value="outline" data-i18n="outline">Outline</option>
+            <option value="profile" data-i18n="profile">Profile</option>
+          </select>
+        </label>
+        <label class="menu-file trace-file">
+          <span data-i18n="load_image">Load image</span>
+          <input id="traceImageInput" type="file" accept="image/*">
+        </label>
+        <label class="inline-check">
+          <input id="traceVisible" type="checkbox" checked>
+          <span data-i18n="show_image">Show image</span>
+        </label>
+        <label>
+          <span data-i18n="opacity">Opacity</span>
+          <input id="traceOpacity" type="range" min="0" max="1" step="0.01" value="0.45">
+        </label>
+        <label>
+          <span data-i18n="scale">Scale</span>
+          <input id="traceScale" type="number" min="0.0001" step="0.001" value="1">
+        </label>
+        <label>
+          <span data-i18n="rotation_deg">Rotation deg</span>
+          <input id="traceRotation" type="number" step="0.1" value="0">
+        </label>
+        <div class="point-grid">
+          <span data-i18n="center_button">Center</span>
+          <input id="traceX" type="number" step="0.001" aria-label="Trace image center X" data-i18n-aria-label="trace_image_center_x">
+          <input id="traceY" type="number" step="0.001" aria-label="Trace image center Y" data-i18n-aria-label="trace_image_center_y">
+        </div>
+        <label>
+          <span data-i18n="move_step">Move step</span>
+          <input id="traceMoveStep" type="number" min="0.001" step="0.1" value="1">
+        </label>
+        <div class="trace-move-grid" aria-label="Trace image move controls" data-i18n-aria-label="trace_move_controls">
+          <span></span>
+          <button id="traceMoveUpButton" type="button" data-action="trace-move" data-trace-dx="0" data-trace-dy="1" data-i18n="up">Up</button>
+          <span></span>
+          <button id="traceMoveLeftButton" type="button" data-action="trace-move" data-trace-dx="-1" data-trace-dy="0" data-i18n="left">Left</button>
+          <button id="traceCenterButton" type="button" data-action="trace-center" data-i18n="center_button">Center</button>
+          <button id="traceMoveRightButton" type="button" data-action="trace-move" data-trace-dx="1" data-trace-dy="0" data-i18n="right">Right</button>
+          <span></span>
+          <button id="traceMoveDownButton" type="button" data-action="trace-move" data-trace-dx="0" data-trace-dy="-1" data-i18n="down">Down</button>
+          <span></span>
+        </div>
+        <div class="button-row">
+          <button id="traceFitButton" type="button" data-action="trace-fit" data-i18n="fit_to_board">Fit to board</button>
+          <button id="traceClearButton" type="button" data-action="trace-clear" data-i18n="clear">Clear</button>
+        </div>
+        <div class="section-readout" id="traceInfo" data-i18n="no_image_loaded">No image loaded</div>
+      </details>
+      <details id="controlPointPanel" class="control-point-panel panel-group panel-stack-item" aria-label="ControlPoint Info" data-i18n-aria-label="controlpoint_info">
+        <summary data-i18n="controlpoint">ControlPoint</summary>
+        <div class="point-grid">
+          <span data-i18n="endpoint">EndPoint</span>
+          <input id="cpEndX" type="number" step="0.001" disabled aria-label="EndPoint X">
+          <input id="cpEndY" type="number" step="0.001" disabled aria-label="EndPoint Y">
+          <span data-i18n="tangent_prev">TangentPrev</span>
+          <input id="cpPrevX" type="number" step="0.001" disabled aria-label="Tangent previous X" data-i18n-aria-label="tangent_previous_x">
+          <input id="cpPrevY" type="number" step="0.001" disabled aria-label="Tangent previous Y" data-i18n-aria-label="tangent_previous_y">
+          <span data-i18n="tangent_next">TangentNext</span>
+          <input id="cpNextX" type="number" step="0.001" disabled aria-label="Tangent next X" data-i18n-aria-label="tangent_next_x">
+          <input id="cpNextY" type="number" step="0.001" disabled aria-label="Tangent next Y" data-i18n-aria-label="tangent_next_y">
+        </div>
+        <label class="inline-check">
+          <input id="cpContinuous" type="checkbox" disabled>
+          <span data-i18n="continuous">Continuous</span>
+        </label>
+        <div class="button-row">
+          <button id="cpSetButton" type="button" data-action="set-controlpoint" disabled data-i18n="set">Set</button>
+          <button id="cpHorizontalButton" type="button" data-action="controlpoint-horizontal" disabled>__</button>
+          <button id="cpVerticalButton" type="button" data-action="controlpoint-vertical" disabled>|</button>
+        </div>
+      </details>
+      <details id="guidePointPanel" class="guide-point-panel panel-group panel-stack-item" aria-label="Guide points" data-i18n-aria-label="guide_points">
+        <summary data-i18n="guide_points">Guide points</summary>
+        <label>
+          <span data-i18n="target">Target</span>
+          <select id="guideTarget" disabled>
+            <option value="outline" data-i18n="outline">Outline</option>
+            <option value="bottom" data-i18n="summary_bottom">Bottom</option>
+            <option value="deck" data-i18n="summary_deck">Deck</option>
+            <option value="section" data-i18n="current_cross_section_short">Current cross section</option>
+          </select>
+        </label>
+        <div class="guide-list" id="guideList" data-i18n="guide_list_empty">Guide points: 0</div>
+        <div class="button-row">
+          <button id="addGuidePointButton" type="button" data-action="add-guidepoint" disabled data-i18n="add">Add</button>
+          <button id="editGuidePointButton" type="button" data-action="edit-guidepoint" disabled data-i18n="edit">Edit</button>
+          <button id="removeGuidePointButton" type="button" data-action="remove-guidepoint" disabled data-i18n="remove">Remove</button>
+        </div>
+      </details>
+      <details id="probePanel" class="probe-panel panel-group panel-stack-item" aria-label="CNC probe scan" data-i18n-aria-label="cnc_probe_scan_aria">
+        <summary data-i18n="cnc_probe_scan">CNC Probe Scan</summary>
+        <div class="section-readout" id="scanPositionReadout" data-i18n="position_not_connected">Position: not connected</div>
+        <div class="jog-panel" aria-label="Jog controller" data-i18n-aria-label="jog_controller">
+          <h3 data-i18n="jog_controller">JOG Controller</h3>
+          <label>
+            <span data-i18n="jog_step_mm">Jog step mm</span>
+            <input id="jogStep" type="number" min="0.01" max="100" step="0.01" value="10">
+          </label>
+          <label>
+            <span data-i18n="jog_feed_mm_min">Jog feed mm/min</span>
+            <input id="jogFeed" type="number" min="1" max="5000" value="800">
+          </label>
+          <div class="jog-grid">
+            <span></span>
+            <button type="button" data-action="jog" data-jog-axis="Y" data-jog-dir="1">Y+</button>
+            <span></span>
+            <button type="button" data-action="jog" data-jog-axis="X" data-jog-dir="-1">X-</button>
+            <button type="button" data-action="request-position" data-i18n="pos">POS</button>
+            <button type="button" data-action="jog" data-jog-axis="X" data-jog-dir="1">X+</button>
+            <button type="button" data-action="jog" data-jog-axis="Z" data-jog-dir="1">Z+</button>
+            <button type="button" data-action="jog" data-jog-axis="Y" data-jog-dir="-1">Y-</button>
+            <button type="button" data-action="jog" data-jog-axis="Z" data-jog-dir="-1">Z-</button>
+          </div>
+        </div>
+        <label>
+          <span data-i18n="serial_port_ja">シリアルポート</span>
+          <select id="serialPortSelect">
+            <option value="" data-i18n="no_port_selected_connect">未選択 / Connectで選択</option>
+          </select>
+        </label>
+        <div class="button-row">
+          <button id="refreshSerialPortsButton" type="button" data-action="refresh-serial-ports" data-i18n="refresh_ports">Refresh Ports</button>
+          <button id="selectSerialPortButton" type="button" data-action="select-serial-port" data-i18n="choose_port">Choose Port</button>
+        </div>
+        <div class="button-row">
+          <button id="connectSerialButton" type="button" data-action="connect-serial" data-i18n="connect">Connect</button>
+          <button id="sendScanButton" type="button" data-action="send-probe-scan" disabled data-i18n="send">Send</button>
+        </div>
+        <details class="panel-group panel-subgroup">
+          <summary data-i18n="scan_setup">Scan setup</summary>
+          <label>
+            <span data-i18n="scan_method">スキャン方式</span>
+            <select id="scanMode">
+              <option value="ribs" data-i18n="stringer_ribs">Stringer + ribs</option>
+              <option value="mesh" data-i18n="mesh_grid">Mesh grid</option>
+              <option value="outline" data-i18n="outline_side_probe">Outline side probe</option>
+              <option value="cross-half" data-i18n="half_cross_section">Half cross-section</option>
+            </select>
+          </label>
+          <label>
+            <span data-i18n="scan_surface">スキャン面</span>
+            <select id="scanSurface">
+              <option value="bottom" data-i18n="hull">ハル</option>
+              <option value="deck" data-i18n="deck_label">デッキ</option>
+              <option value="both" data-i18n="hull_deck">ハル + デッキ</option>
+            </select>
+          </label>
+          <label>
+            <span data-i18n="x_step_mm">X間隔 mm</span>
+            <input id="scanXStep" type="number" min="5" max="300" value="100">
+          </label>
+          <label>
+            <span data-i18n="y_step_mm">Y間隔 mm</span>
+            <input id="scanYStep" type="number" min="5" max="200" value="50">
+          </label>
+          <label>
+            <span data-i18n="measured_board_length_mm">実測ボード長 mm</span>
+            <input id="scanMeasuredLength" type="number" min="1" max="3000" placeholder="テールからノーズまでのジョグ距離">
+          </label>
+          <label>
+            <span data-i18n="machine_x_travel_mm">機械X可動範囲 mm</span>
+            <input id="scanMachineTravelX" type="number" min="1" max="3000" value="2900">
+          </label>
+          <label>
+            <span data-i18n="machine_y_center_mm">機械Yセンター mm</span>
+            <input id="scanMachineCenterY" type="number" min="0" max="750" value="375">
+          </label>
+        </details>
+        <details class="panel-group panel-subgroup">
+          <summary data-i18n="probe_serial_settings">Probe / serial settings</summary>
+          <label>
+            <span data-i18n="probe_travel_mm">プローブ下降量 mm</span>
+            <input id="probeTravel" type="number" min="1" max="300" value="120">
+          </label>
+          <label>
+            <span data-i18n="probe_feed_mm_min">プローブ送り mm/分</span>
+            <input id="probeFeed" type="number" min="1" max="1000" value="80">
+          </label>
+          <label>
+            <span data-i18n="serial_baud">シリアルbaud</span>
+            <input id="serialBaud" type="number" min="9600" max="921600" value="115200">
+          </label>
+        </details>
+        <div class="button-row">
+          <button id="generateScanButton" type="button" data-action="generate-probe-scan" disabled data-i18n="generate_button">Generate</button>
+          <button id="downloadScanButton" type="button" data-action="download-probe-scan" disabled data-i18n="save_button">Save</button>
+        </div>
+        <div class="button-row">
+          <button id="simulateScanButton" type="button" data-action="simulate-probe-scan" disabled data-i18n="simulate_button">Simulate</button>
+          <button id="pauseSimulationButton" type="button" data-action="pause-probe-simulation" disabled data-i18n="pause_button">Pause</button>
+          <button id="stepSimulationButton" type="button" data-action="step-probe-simulation" disabled data-i18n="step_button">Step</button>
+          <button id="resetSimulationButton" type="button" data-action="reset-probe-simulation" disabled data-i18n="reset_button">Reset</button>
+        </div>
+        <div class="button-row">
+          <button id="sendCncButton" type="button" data-action="send-cnc-gcode" disabled data-i18n="send_cnc_button">Send CNC</button>
+          <button id="buildBrdFromScanButton" type="button" data-action="build-brd-from-scan" disabled data-i18n="build_brd_button">Build BRD</button>
+        </div>
+        <div class="button-row">
+          <button id="downloadMeasurementsButton" type="button" data-action="download-probe-measurements" disabled data-i18n="save_csv_button">Save CSV</button>
+          <button id="clearMeasurementsButton" type="button" data-action="clear-probe-measurements" disabled data-i18n="clear">Clear</button>
+        </div>
+        <textarea id="scanLog" readonly spellcheck="false" aria-label="CNC sender log" data-i18n-aria-label="cnc_sender_log"></textarea>
+      </details>
+      <details id="outputPanel" class="panel-group panel-stack-item" aria-label="Output settings" data-i18n-aria-label="output_settings">
+        <summary data-i18n="output_settings">出力設定</summary>
+        <label>
+          <span data-i18n="unit_label">単位</span>
+          <select id="unitSelect">
+            <option value="10" data-i18n="cm_to_mm">cm → mm</option>
+            <option value="25.4" data-i18n="inch_to_mm">inch → mm</option>
+            <option value="1" data-i18n="input_as_mm">入力値をmm扱い</option>
+          </select>
+        </label>
+        <label>
+          <span data-i18n="gcode_feed_rate_label">Gコード送り速度</span>
+          <input id="feedRate" type="number" min="1" value="1200">
+        </label>
+        <label>
+          <span data-i18n="laser_power_label">レーザー出力 S</span>
+          <input id="laserPower" type="number" min="0" max="1000" value="300">
+        </label>
+        <label>
+          <span data-i18n="cnc_axes_label">CNC軸数</span>
+          <select id="cncAxes">
+            <option value="4" data-i18n="axis4_xyz_a">4軸 X/Y/Z/A</option>
+            <option value="5" data-i18n="axis5_xyz_ab">5軸 X/Y/Z/A/B</option>
+          </select>
+        </label>
+        <label>
+          <span data-i18n="cnc_surface_label">CNC面</span>
+          <select id="cncSurface">
+            <option value="bottom" data-i18n="hull">ハル</option>
+            <option value="deck" data-i18n="deck_label">デッキ</option>
+            <option value="both" data-i18n="hull_deck">ハル + デッキ</option>
+          </select>
+        </label>
+        <label>
+          <span data-i18n="cnc_length_steps_label">CNC長手分割</span>
+          <input id="cncLengthSteps" type="number" min="8" max="240" value="48">
+        </label>
+        <label>
+          <span data-i18n="cnc_width_steps_label">CNC幅分割</span>
+          <input id="cncWidthSteps" type="number" min="2" max="80" value="8">
+        </label>
+        <label>
+          <span data-i18n="safe_z_label">安全Z</span>
+          <input id="safeZ" type="number" value="80">
+        </label>
+        <label>
+          <span data-i18n="curve_segments_label">曲線分割</span>
+          <input id="segments" type="number" min="4" max="80" value="24">
+        </label>
+      </details>
+      <details id="crossSectionPanel" class="section-panel panel-group panel-stack-item" aria-label="Cross section" data-i18n-aria-label="cross_section">
+        <summary data-i18n="cross_section">Cross section</summary>
+        <div class="section-readout" id="sectionSummary" data-i18n="section_unselected">未選択</div>
+        <label>
+          <span data-i18n="rail_shape">Rail shape</span>
+          <select id="railMode" disabled>
+            <option value="" data-i18n="bezier_native">Bezier native</option>
+            <option value="5050" data-i18n="rail_mode_5050">50/50</option>
+            <option value="6040" data-i18n="rail_mode_6040">60/40</option>
+            <option value="7030" data-i18n="rail_mode_7030">70/30</option>
+            <option value="8020" data-i18n="rail_mode_8020">80/20</option>
+            <option value="egg" data-i18n="rail_mode_egg">Egg rail</option>
+            <option value="full-soft" data-i18n="rail_mode_full_soft">Full soft rail</option>
+            <option value="boxy" data-i18n="rail_mode_boxy">Boxy rail</option>
+            <option value="down" data-i18n="rail_mode_down">Down rail</option>
+            <option value="pinched" data-i18n="rail_mode_pinched">Pinched rail</option>
+            <option value="knifey" data-i18n="rail_mode_knifey">Knifey rail</option>
+            <option value="chine" data-i18n="rail_mode_chine">Chined / beveled rail</option>
+          </select>
+        </label>
+        <label>
+          <span data-i18n="rail_strength">Rail strength</span>
+          <input id="railStrength" type="number" min="0" max="1" step="0.05" disabled>
+        </label>
+        <div class="button-row">
+          <button id="setRailButton" type="button" data-action="set-rail" disabled data-i18n="set_rail">Set rail</button>
+        </div>
+        <label>
+          <span data-i18n="edge_type">Edge type</span>
+          <select id="edgeType" disabled>
+            <option value="" data-i18n="none">None</option>
+            <option value="soft" data-i18n="edge_type_soft">Soft edge</option>
+            <option value="tucked" data-i18n="edge_type_tucked">Tucked edge</option>
+            <option value="hard" data-i18n="edge_type_hard">Hard edge</option>
+          </select>
+        </label>
+        <label>
+          <span data-i18n="edge_strength">Edge strength</span>
+          <input id="edgeStrength" type="number" min="0" max="1" step="0.05" disabled>
+        </label>
+        <label>
+          <span data-i18n="edge_length_from_tail">Edge length from tail</span>
+          <input id="edgeLength" type="number" min="0" step="any" disabled>
+        </label>
+        <label>
+          <span data-i18n="edge_fade_length">Edge fade length</span>
+          <input id="edgeFade" type="number" min="0" step="any" disabled>
+        </label>
+        <div class="button-row">
+          <button id="setEdgeButton" type="button" data-action="set-edge" disabled data-i18n="set_edge">Set edge</button>
+        </div>
+        <label>
+          <span data-i18n="position_from_tail">Position from tail</span>
+          <input id="sectionPosition" type="number" min="0.001" step="any" disabled>
+        </label>
+        <label>
+          <span data-i18n="section_interval">Section interval</span>
+          <input id="sectionInterval" type="number" min="0.001" step="any" disabled>
+        </label>
+        <div class="button-row">
+          <button id="previousSectionPanelButton" type="button" data-action="previous-section" disabled data-i18n="previous_short">Previous</button>
+          <button id="nextSectionPanelButton" type="button" data-action="next-section" disabled data-i18n="next_short">Next</button>
+        </div>
+        <div class="button-row">
+          <button id="addSectionPanelButton" type="button" data-action="add-section-panel" disabled data-i18n="add">Add</button>
+          <button id="moveSectionPanelButton" type="button" data-action="move-section-panel" disabled data-i18n="move">Move</button>
+          <button id="removeSectionPanelButton" type="button" data-action="remove-section" disabled data-i18n="remove">Remove</button>
+          <button id="fillSectionsPanelButton" type="button" data-action="fill-sections-panel" disabled data-i18n="fill_sections">Fill</button>
+        </div>
+        <div class="button-row">
+          <button id="copySectionPanelButton" type="button" data-action="copy-section" disabled data-i18n="copy">Copy</button>
+          <button id="pasteSectionPanelButton" type="button" data-action="paste-section" disabled data-i18n="paste">Paste</button>
+        </div>
+        <div class="button-row">
+          <button id="importSectionPanelButton" type="button" data-action="import-crosssection" disabled data-i18n="import">Import</button>
+          <button id="exportSectionPanelButton" type="button" data-action="export-crosssection" disabled data-i18n="export">Export</button>
+        </div>
+        <div class="button-row">
+          <button id="addSectionGuidePointButton" type="button" data-action="add-section-guidepoint" disabled data-i18n="add_guide">Add guide</button>
+          <button id="editSectionGuidePointButton" type="button" data-action="edit-section-guidepoint" disabled data-i18n="edit_guide">Edit guide</button>
+          <button id="removeSectionGuidePointButton" type="button" data-action="remove-section-guidepoint" disabled data-i18n="remove_guide">Remove guide</button>
+        </div>
+      </details>
+      <div class="panel-status-block">
+        <div class="summary" id="summary">
+          <span data-i18n="summary_outline_initial">アウトライン: 0点</span>
+          <span data-i18n="summary_bottom_initial">ロッカー: 0点</span>
+          <span data-i18n="summary_deck_initial">デッキ: 0点</span>
+          <span data-i18n="summary_sections_initial">断面: 0</span>
+        </div>
+        <div class="summary edit-summary" id="editSummary">
+          <span data-i18n="edit_summary_initial">Edit: 未選択</span>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <div id="appDialog" class="app-dialog" hidden aria-hidden="true">
+    <div class="app-dialog-backdrop" data-action="close-dialog"></div>
+    <section class="app-dialog-card" role="dialog" aria-modal="true" aria-labelledby="appDialogTitle">
+      <header class="app-dialog-head">
+        <h2 id="appDialogTitle"></h2>
+        <button id="appDialogCloseButton" type="button" data-action="close-dialog" data-i18n="close">Close</button>
+      </header>
+      <div id="appDialogBody" class="app-dialog-body"></div>
+    </section>
+  </div>
+
+  <script src="./sample-data.js?v=20260628-samples1"></script>
+  <script src="./app-downloads.js?v=20260626-ui13"></script>
+  <script src="./app.js?v=20260813-rocker-apex-fix"></script>
+</body>
+</html>

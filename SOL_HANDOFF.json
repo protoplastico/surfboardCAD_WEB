@@ -1,0 +1,44 @@
+{
+  "title": "GPT-5.6-Sol handoff",
+  "project": "/home/protoplastico/ドキュメント/Projects/BoardCAD-Web-Linux",
+  "next_command": "codex -m gpt-5.6-sol",
+  "local_url": "http://localhost:8788/",
+  "source_board": "/home/protoplastico/デスクトップ/ラウンドピンテール.brd",
+  "symptoms": [
+    "ロッカー補正後に中央接合部が逆への字に見える",
+    "中央付近に制御点が集中する",
+    "デッキとボトムの接合部で厚みが合わない",
+    "ボード両端が実際より薄く見える"
+  ],
+  "temporary_changes_reverted": [
+    "デッキ／ボトム端点の自動接合",
+    "平坦ロッカーの頂点中央化",
+    "ベジェ x→t 二分法",
+    "中央フラット区間の接線補正",
+    "ロッカー差分による厚み補正",
+    "平坦ボード診断テスト",
+    "ローカルサンプル一覧へのラウンドピンテール追加"
+  ],
+  "current_state": {
+    "app_changes_from_this_session_reverted": true,
+    "diagnostic_tests_removed": true,
+    "copied_board_removed": true,
+    "source_board_preserved": true,
+    "app_version": "20260710-rail-fix"
+  },
+  "tests_run": [
+    "node --check app.js",
+    "node --check test-core.js",
+    "node test-core.js --section=rocker",
+    "node test-core.js"
+  ],
+  "test_result": "復元後も構文チェックと全体テストに成功",
+  "next_steps": [
+    "真平らなボトム／デッキの最小 brd サンプルを作る",
+    "中央接合の制御点と prev/next ハンドル角度を比較する",
+    "同一 x 位置で補正前後のデッキ、ボトム、厚みを比較する",
+    "ベジェ評価値を直接サンプル値と比較する",
+    "原因を特定してから最小限の修正を行う"
+  ],
+  "constraint": "見た目合わせの補正を重ねず、元の曲線・変位・厚みの定義を整理してから修正する"
+}

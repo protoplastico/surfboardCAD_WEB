@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=BoardCAD Web
+Comment=BoardCAD Web for Linux
+Terminal=true
+Categories=Graphics;Engineering;
+StartupNotify=true
+Exec=sh -c 'd="$(dirname "$1")"; cd "$d" && exec ./start.sh' _ %k
