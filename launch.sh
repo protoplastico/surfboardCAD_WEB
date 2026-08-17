@@ -70,7 +70,7 @@ if command -v ss >/dev/null 2>&1 && ss -ltn 2>/dev/null | awk '{print $4}' | gre
   exit 1
 fi
 
-nohup python3 -m http.server "$PORT" --bind 127.0.0.1 --directory "$ROOT" >"$LOGFILE" 2>&1 < /dev/null &
+nohup env BOARDCAD_PORT="$PORT" python3 "$ROOT/boardcad_server.py" >"$LOGFILE" 2>&1 < /dev/null &
 SERVER_PID=$!
 printf '%s\n' "$SERVER_PID" > "$PIDFILE"
 

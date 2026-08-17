@@ -61,14 +61,17 @@ const state = {
   wingHandles: [],
   bottomFeatureHandles: [],
   bottomFeatureSectionHandles: [],
+  railProfileHandles: [],
   selection: null,
   guidePointSelection: null,
   wingSelection: null,
   bottomFeatureSelection: null,
+  bottomFeatureOverlayVisible: true,
   lastEditPoint: null,
   contextEditPoint: null,
   cursorPoint: null,
   cursorScreen: null,
+  slidingCrossSectionX: null,
   pointerTransforms: {},
   navigationGuardInstalled: false,
   drag: null,
@@ -300,6 +303,9 @@ const I18N = {
     add_control_point: "コントロールポイントを追加",
     delete_control_points: "コントロールポイントを削除",
     simplify_outline: "アウトラインを自動整理",
+    simplify_profile: "プロファイルを自動整理",
+    status_profile_simplified: "プロファイルのCPを {before} 個から {after} 個に整理しました（最大誤差 {error} mm）。",
+    status_profile_already_simple: "許容誤差内で削除できるプロファイルCPはありません。",
     outline: "アウトライン",
     profile: "プロファイル",
     hydrodynamic_simulation: "流体シミュレーション",
@@ -458,7 +464,9 @@ const I18N = {
   bottom_feature_meta_longitudinal: "長手 {value}",
   bottom_preset: "プリセット",
   apply_preset: "プリセット適用",
-  bottom_preset_displacement_hull: "ディスプレイスメントハル",
+    bottom_preset_displacement_hull: "ディスプレイスメントハル",
+    bottom_preset_tri_plane_hull: "トライプレーンハル",
+    bottom_preset_hydro_hull: "ハイドロハル",
   bottom_preset_longboard_rolled_vee: "ロングボード ロールドVee",
   bottom_preset_shortboard_single_to_double: "ショートボード シングル→ダブル",
   bottom_preset_shortboard_single_to_vee: "ショートボード シングル→Vee",
@@ -475,8 +483,12 @@ const I18N = {
     bottom_feature_index: "フィーチャー",
     enabled: "有効",
     bottom_feature_type: "形状タイプ",
+    bottom_nose_shape: "ノーズ側ボトム",
+    bottom_tail_shape: "テール側ボトム",
+    bottom_third_shape: "ボトム形状を選択",
+    select_to_add: "選択して追加",
     bottom_feature_start: "テールから開始位置",
-    bottom_feature_peak: "テールから最大効果位置",
+    bottom_feature_peak: "テールから形状基準位置",
     bottom_feature_end: "テールから終了位置",
     bottom_feature_depth: "深さ (max 5mm)",
     bottom_feature_center_depth: "センター深さ (max 5mm)",
@@ -495,6 +507,9 @@ const I18N = {
     move_up: "上へ",
     move_down: "下へ",
     bottom_type_single_concave: "シングルコンケーブ",
+    bottom_type_flat: "フラット",
+    bottom_type_concave_vee: "コンケーブドVee",
+    bottom_type_chine: "チャイン",
     bottom_type_double_concave: "ダブルコンケーブ",
     bottom_type_vee: "Vee",
     bottom_type_spiral_vee: "スパイラルVee",
@@ -980,6 +995,10 @@ const I18N = {
     rail_mode_chine: "チャイン / ベベルレール",
     rail_mode_tucked_edge: "タックドエッジ",
     rail_shape_blend: "レール形状ブレンド",
+    rail_third_shape: "レール形状を選択",
+    rail_nose_shape: "ノーズレール",
+    rail_mid_shape: "中央レール",
+    rail_tail_shape: "テールレール",
     rail_mode_hard_edge: "ハードエッジ",
     set_rail: "レールを設定",
     edge_type: "エッジ種別",
@@ -1106,6 +1125,9 @@ I18N.en = {
   add_control_point: "Add ControlPoint",
   delete_control_points: "Delete ControlPoints",
   simplify_outline: "Simplify outline",
+  simplify_profile: "Auto-organize profile",
+  status_profile_simplified: "Profile CPs reduced from {before} to {after} (max error {error} mm).",
+  status_profile_already_simple: "No profile CP can be removed within tolerance.",
   outline: "Outline",
   profile: "Profile",
   hydrodynamic_simulation: "Hydrodynamic simulation",
@@ -1310,6 +1332,8 @@ I18N.en = {
   bottom_preset: "Preset",
   apply_preset: "Apply preset",
   bottom_preset_displacement_hull: "Displacement hull",
+  bottom_preset_tri_plane_hull: "Tri Plane Hull",
+  bottom_preset_hydro_hull: "Hydro Hull",
   bottom_preset_longboard_rolled_vee: "Longboard rolled to vee",
   bottom_preset_shortboard_single_to_double: "Shortboard single to double",
   bottom_preset_shortboard_single_to_vee: "Shortboard single to vee",
@@ -1326,8 +1350,12 @@ I18N.en = {
   bottom_feature_index: "Feature",
   enabled: "Enabled",
   bottom_feature_type: "Feature type",
+  bottom_nose_shape: "Nose bottom",
+  bottom_tail_shape: "Tail bottom",
+  bottom_third_shape: "Select bottom shape",
+  select_to_add: "Select to add",
   bottom_feature_start: "Start from tail",
-  bottom_feature_peak: "Max effect from tail",
+  bottom_feature_peak: "Shape position from tail",
   bottom_feature_end: "End from tail",
   bottom_feature_depth: "Depth (max 5mm)",
   bottom_feature_center_depth: "Center depth (max 5mm)",
@@ -1346,6 +1374,9 @@ I18N.en = {
   move_up: "Up",
   move_down: "Down",
   bottom_type_single_concave: "Single concave",
+  bottom_type_flat: "Flat",
+  bottom_type_concave_vee: "Concaved vee",
+  bottom_type_chine: "Chine",
   bottom_type_double_concave: "Double concave",
   bottom_type_vee: "Vee",
   bottom_type_spiral_vee: "Spiral vee",
@@ -1416,6 +1447,10 @@ I18N.en = {
   rail_mode_chine: "Chined / beveled rail",
   rail_mode_tucked_edge: "Tucked edge",
   rail_shape_blend: "Rail shape blend",
+  rail_third_shape: "Select rail shape",
+  rail_nose_shape: "Nose rail",
+  rail_mid_shape: "Mid rail",
+  rail_tail_shape: "Tail rail",
   rail_mode_hard_edge: "Hard edge",
   set_rail: "Set rail",
   edge_type: "Edge type",
@@ -1951,6 +1986,7 @@ const els = {
   addControlPointButton: document.getElementById("addControlPointButton"),
   deleteControlPointButton: document.getElementById("deleteControlPointButton"),
   simplifyOutlineButton: document.getElementById("simplifyOutlineButton"),
+  simplifyProfileButton: document.getElementById("simplifyProfileButton"),
   nextSectionButton: document.getElementById("nextSectionButton"),
   previousSectionButton: document.getElementById("previousSectionButton"),
   addSectionButton: document.getElementById("addSectionButton"),
@@ -2037,6 +2073,15 @@ const els = {
   rockerSummary: document.getElementById("rockerSummary"),
   rockerStationList: document.getElementById("rockerStationList"),
   railMode: document.getElementById("railMode"),
+  railNoseMode: document.getElementById("railNoseMode"),
+  railTailMode: document.getElementById("railTailMode"),
+  railExtraType: document.getElementById("railExtraType"),
+  railProfileList: document.getElementById("railProfileList"),
+  railProfileIndex: document.getElementById("railProfileIndex"),
+  resetRailProfileButton: document.getElementById("resetRailProfileButton"),
+  removeRailProfileButton: document.getElementById("removeRailProfileButton"),
+  moveRailProfileUpButton: document.getElementById("moveRailProfileUpButton"),
+  moveRailProfileDownButton: document.getElementById("moveRailProfileDownButton"),
   railStrength: document.getElementById("railStrength"),
   setRailButton: document.getElementById("setRailButton"),
   edgeType: document.getElementById("edgeType"),
@@ -2047,6 +2092,7 @@ const els = {
   bottomFeatureSummary: document.getElementById("bottomFeatureSummary"),
   bottomFeatureList: document.getElementById("bottomFeatureList"),
   bottomFeaturePreset: document.getElementById("bottomFeaturePreset"),
+  bottomExtraType: document.getElementById("bottomExtraType"),
   applyBottomPresetButton: document.getElementById("applyBottomPresetButton"),
   bottomFeatureIndex: document.getElementById("bottomFeatureIndex"),
   bottomFeatureEnabled: document.getElementById("bottomFeatureEnabled"),
@@ -2214,6 +2260,7 @@ const RAIL_MODE_FIELD_ID = 94;
 const RAIL_STRENGTH_FIELD_ID = 95;
 const NOSE_TIP_SHAPE_FIELD_ID = 96;
 const SHAPER_COMMENT_FIELD_ID = 97;
+const RAIL_PROFILE_FIELD_ID = 98;
 const ROCKER_PRESET_KEYS = Object.freeze(["custom", "continuous-neutral", "relaxed-drive", "performance-curve", "staged-speed", "fish-retro-flat", "gun-continuous", "longboard-glide"]);
 const ROCKER_STATION_12_INCH_CM = 30.48;
 const ROCKER_STATION_24_INCH_CM = 60.96;
@@ -2256,10 +2303,11 @@ const ROCKER_NUMERIC_REFERENCES = Object.freeze({
   "gun-continuous": { boardType: "Gun", lengthCm: 90 * 2.54, noseCm: 6.75 * 2.54, tailCm: 2.75 * 2.54 },
   "longboard-glide": { boardType: "HP longboard", lengthCm: 108 * 2.54, noseCm: 5.25 * 2.54, tailCm: 3.25 * 2.54 }
 });
-const BOTTOM_FEATURE_TYPES = Object.freeze(["single-concave", "double-concave", "vee", "spiral-vee", "hull", "displacement-hull", "channel"]);
-const BOTTOM_PRESET_KEYS = Object.freeze(["custom", "displacement-hull", "longboard-rolled-vee", "shortboard-single-to-double", "shortboard-single-to-vee", "performance-channel-quad", "rider-paddle-glide", "rider-balanced-control", "rider-speed-drive", "rider-loose-turn"]);
+const BOTTOM_FEATURE_TYPES = Object.freeze(["flat", "single-concave", "concave-vee", "double-concave", "vee", "spiral-vee", "hull", "displacement-hull", "channel", "chine"]);
+const BOTTOM_PRESET_KEYS = Object.freeze(["custom", "displacement-hull", "tri-plane-hull", "hydro-hull", "longboard-rolled-vee", "shortboard-single-to-double", "shortboard-single-to-vee", "performance-channel-quad", "rider-paddle-glide", "rider-balanced-control", "rider-speed-drive", "rider-loose-turn"]);
 const DOUBLE_CONCAVE_TROUGH_GAIN = 1.3;
-const BOTTOM_FEATURE_DEPTH_MAX = 0.5;
+const BOTTOM_FEATURE_DEPTH_MAX = 0.3;
+const BOTTOM_FEATURE_DEPTH_STEP = 0.005;
 const BOTTOM_FEATURE_RAIL_LOCK_CM = 5;
 const BOTTOM_FEATURE_RAIL_LOCK_CM_MAX = 15;
 const CIRCULAR_ARC_HANDLE = 0.5522847498;
@@ -2268,46 +2316,62 @@ const BOTTOM_FEATURE_ANCHOR_INSET_STANDARD_CM = 7.5;
 const BOTTOM_FEATURE_ANCHOR_INSET_NARROW_CM = 12.5;
 const BOTTOM_FEATURE_ANCHOR_TRANSITION_CM = 1.5;
 const BOTTOM_FEATURE_TYPE_SPECS = Object.freeze({
+  flat: {
+    defaults: { depth: 0, width: 1, blend: 1, power: 1, edge: 0, offset: 0, spacing: 0.12, count: 1, centerDepth: 0, railDepth: 0, startRatio: 0, peakRatio: 0.5, endRatio: 1 },
+    visibleFields: { depth: false, centerDepth: false, railDepth: false, width: false, blend: false, power: false, edge: false, offset: false, spacing: false, count: false },
+    limits: {}
+  },
   "single-concave": {
     defaults: { depth: 0.16, width: 0.67, blend: 1, power: 1.8, edge: 0.78, offset: 0, spacing: 0.12, count: 1, centerDepth: 0, railDepth: 0, startRatio: 0.15, peakRatio: 0.5, endRatio: 0.84 },
     visibleFields: { depth: true, centerDepth: false, railDepth: false, width: true, blend: true, power: true, edge: true, offset: false, spacing: false, count: false },
-    limits: { depth: [0, BOTTOM_FEATURE_DEPTH_MAX, 0.01], width: [0.2, 1, 0.01], blend: [0.1, 4, 0.05], power: [0.6, 4, 0.05], edge: [0, 1, 0.05] }
+    limits: { depth: [0, BOTTOM_FEATURE_DEPTH_MAX, BOTTOM_FEATURE_DEPTH_STEP], width: [0.2, 1, 0.01], blend: [0.1, 4, 0.05], power: [0.6, 4, 0.05], edge: [0, 1, 0.05] }
+  },
+  "concave-vee": {
+    defaults: { depth: 0.14, width: 0.72, blend: 1, power: 1.5, edge: 0.72, offset: 0.35, spacing: 0.12, count: 1, centerDepth: 0.1, railDepth: 0.08, startRatio: 0.28, peakRatio: 0.64, endRatio: 0.94 },
+    visibleFields: { depth: true, centerDepth: true, railDepth: true, width: true, blend: true, power: true, edge: true, offset: true, spacing: false, count: false },
+    limits: { depth: [0, BOTTOM_FEATURE_DEPTH_MAX, BOTTOM_FEATURE_DEPTH_STEP], width: [0.25, 0.95, 0.01], blend: [0.1, 4, 0.05], power: [0.4, 3.2, 0.05], edge: [0, 1, 0.05], offset: [0.15, 0.8, 0.01], centerDepth: [0, BOTTOM_FEATURE_DEPTH_MAX, BOTTOM_FEATURE_DEPTH_STEP], railDepth: [0, BOTTOM_FEATURE_DEPTH_MAX, BOTTOM_FEATURE_DEPTH_STEP] }
   },
   "double-concave": {
-    defaults: { depth: 0, width: 0.7, blend: 1, power: 1.7, edge: 0.28, offset: 0.42, spacing: 0.12, count: 2, centerDepth: 0.07, railDepth: 0.18, startRatio: 0.42, peakRatio: 0.7, endRatio: 0.96 },
+    defaults: { depth: 0, width: 0.72, blend: 1, power: 1.35, edge: 0.28, offset: 0.4, spacing: 0.12, count: 2, centerDepth: 0.03, railDepth: 0.09, startRatio: 0.42, peakRatio: 0.7, endRatio: 0.96 },
     visibleFields: { depth: false, centerDepth: true, railDepth: true, width: true, blend: true, power: true, edge: true, offset: true, spacing: false, count: false },
-    limits: { width: [0.2, 0.95, 0.01], blend: [0.1, 4, 0.05], power: [0.6, 4, 0.05], edge: [0, 1, 0.05], offset: [0.15, 0.8, 0.01], centerDepth: [0, BOTTOM_FEATURE_DEPTH_MAX, 0.01], railDepth: [0, BOTTOM_FEATURE_DEPTH_MAX, 0.01] }
+    limits: { width: [0.2, 0.95, 0.01], blend: [0.1, 4, 0.05], power: [0.6, 4, 0.05], edge: [0, 1, 0.05], offset: [0.15, 0.8, 0.01], centerDepth: [0, BOTTOM_FEATURE_DEPTH_MAX, BOTTOM_FEATURE_DEPTH_STEP], railDepth: [0, BOTTOM_FEATURE_DEPTH_MAX, BOTTOM_FEATURE_DEPTH_STEP] }
   },
   vee: {
-    defaults: { depth: 0.14, width: 0.55, blend: 1, power: 1.3, edge: 0.68, offset: 0, spacing: 0.12, count: 1, centerDepth: 0, railDepth: 0, railLockCm: 0.75, startRatio: 0.5, peakRatio: 0.82, endRatio: 1 },
+    defaults: { depth: 0.08, width: 0.55, blend: 1, power: 1.3, edge: 0.68, offset: 0, spacing: 0.12, count: 1, centerDepth: 0, railDepth: 0, railLockCm: 0.75, startRatio: 0.5, peakRatio: 0.82, endRatio: 1 },
     visibleFields: { depth: true, centerDepth: false, railDepth: false, width: true, blend: true, power: true, edge: true, offset: false, spacing: false, count: false },
-    limits: { depth: [0, BOTTOM_FEATURE_DEPTH_MAX, 0.01], width: [0.25, 0.8, 0.01], blend: [0.1, 4, 0.05], power: [0.4, 3.2, 0.05], edge: [0, 1, 0.05] }
+    limits: { depth: [0, BOTTOM_FEATURE_DEPTH_MAX, BOTTOM_FEATURE_DEPTH_STEP], width: [0.25, 0.8, 0.01], blend: [0.1, 4, 0.05], power: [0.4, 3.2, 0.05], edge: [0, 1, 0.05] }
   },
   "spiral-vee": {
     defaults: { depth: 0.14, width: 0.58, blend: 1.2, power: 1.45, edge: 0.58, offset: 0.18, spacing: 0.12, count: 1, centerDepth: 0, railDepth: 0, railLockCm: 0.75, startRatio: 0.38, peakRatio: 0.94, endRatio: 1 },
     visibleFields: { depth: true, centerDepth: false, railDepth: false, width: true, blend: true, power: true, edge: true, offset: true, spacing: false, count: false },
-    limits: { depth: [0, BOTTOM_FEATURE_DEPTH_MAX, 0.01], width: [0.25, 0.8, 0.01], blend: [0.1, 4, 0.05], power: [0.4, 3.4, 0.05], edge: [0, 1, 0.05], offset: [0, 0.45, 0.01] }
+    limits: { depth: [0, BOTTOM_FEATURE_DEPTH_MAX, BOTTOM_FEATURE_DEPTH_STEP], width: [0.25, 0.8, 0.01], blend: [0.1, 4, 0.05], power: [0.4, 3.4, 0.05], edge: [0, 1, 0.05], offset: [0, 0.45, 0.01] }
   },
   hull: {
     defaults: { depth: 0.12, width: 0.92, blend: 1, power: 2.2, edge: 0, offset: 0, spacing: 0.12, count: 1, centerDepth: 0, railDepth: 0, startRatio: 0.1, peakRatio: 0.35, endRatio: 0.62 },
     visibleFields: { depth: true, centerDepth: false, railDepth: false, width: true, blend: true, power: true, edge: false, offset: false, spacing: false, count: false },
-    limits: { depth: [0, BOTTOM_FEATURE_DEPTH_MAX, 0.01], width: [0.45, 1, 0.01], blend: [0.1, 4, 0.05], power: [0.8, 4, 0.05], edge: [0, 1, 0.05] }
+    limits: { depth: [0, BOTTOM_FEATURE_DEPTH_MAX, BOTTOM_FEATURE_DEPTH_STEP], width: [0.45, 1, 0.01], blend: [0.1, 4, 0.05], power: [0.8, 4, 0.05], edge: [0, 1, 0.05] }
   },
   "displacement-hull": {
     defaults: { depth: 0.14, width: 0.9, blend: 1.12, power: 2.25, edge: 0, offset: 0, spacing: 0.12, count: 1, centerDepth: 0, railDepth: 0.12, startRatio: 0, peakRatio: 0.72, endRatio: 0.96 },
     visibleFields: { depth: true, centerDepth: false, railDepth: false, width: true, blend: true, power: true, edge: false, offset: false, spacing: false, count: false },
-    limits: { depth: [0, BOTTOM_FEATURE_DEPTH_MAX, 0.01], width: [0.45, 1, 0.01], blend: [0.1, 4, 0.05], power: [0.8, 4, 0.05], edge: [0, 1, 0.05], railDepth: [0, BOTTOM_FEATURE_DEPTH_MAX, 0.01] }
+    limits: { depth: [0, BOTTOM_FEATURE_DEPTH_MAX, BOTTOM_FEATURE_DEPTH_STEP], width: [0.45, 1, 0.01], blend: [0.1, 4, 0.05], power: [0.8, 4, 0.05], edge: [0, 1, 0.05], railDepth: [0, BOTTOM_FEATURE_DEPTH_MAX, BOTTOM_FEATURE_DEPTH_STEP] }
   },
   channel: {
-    defaults: { depth: 0, width: 0.18, blend: 1, power: 1.4, edge: 0.9, offset: 0.62, spacing: 0.1, count: 2, centerDepth: 0, railDepth: 0.12, longitudinalFlat: 0.55, startRatio: 0.72, peakRatio: 0.9, endRatio: 1 },
+    defaults: { depth: 0, width: 0.16, blend: 1, power: 1.4, edge: 0.9, offset: 0.62, spacing: 0.1, count: 4, centerDepth: 0, railDepth: 0.12, longitudinalFlat: 0.55, startRatio: 0.72, peakRatio: 0.9, endRatio: 1 },
     visibleFields: { depth: false, centerDepth: false, railDepth: true, width: true, blend: true, power: true, edge: true, offset: true, spacing: true, count: true, longitudinalFlat: true },
-    limits: { width: [0.05, 0.35, 0.01], blend: [0.1, 4, 0.05], power: [0.4, 4, 0.05], edge: [0, 1, 0.05], offset: [0.3, 1, 0.01], spacing: [0, 0.25, 0.01], count: [1, 10, 1], railDepth: [0, BOTTOM_FEATURE_DEPTH_MAX, 0.01], longitudinalFlat: [0, 1, 0.05] }
+    limits: { width: [0.05, 0.35, 0.01], blend: [0.1, 4, 0.05], power: [0.4, 4, 0.05], edge: [0, 1, 0.05], offset: [0.3, 1, 0.01], spacing: [0, 0.25, 0.01], count: [1, 10, 1], railDepth: [0, BOTTOM_FEATURE_DEPTH_MAX, BOTTOM_FEATURE_DEPTH_STEP], longitudinalFlat: [0, 1, 0.05] }
+  },
+  chine: {
+    defaults: { depth: 0.1, width: 0.22, blend: 1, power: 1.2, edge: 0.85, offset: 0, spacing: 0.12, count: 1, centerDepth: 0, railDepth: 0, startRatio: 0.62, peakRatio: 0.86, endRatio: 1 },
+    visibleFields: { depth: true, centerDepth: false, railDepth: false, width: true, blend: true, power: true, edge: true, offset: false, spacing: false, count: false },
+    limits: { depth: [0, BOTTOM_FEATURE_DEPTH_MAX, BOTTOM_FEATURE_DEPTH_STEP], width: [0.08, 0.45, 0.01], blend: [0.1, 4, 0.05], power: [0.4, 3.2, 0.05], edge: [0, 1, 0.05] }
   }
 });
 const ACTION_KEEP_MENU_OPEN = new Set(["open", "open-ghost"]);
 const ACTION_HANDLERS = Object.freeze({
   "new": () => createNewBoard(),
   "open": () => openBoardFilePicker(),
+  "open-pdf-curve-import": () => window.open("./pdf-curve-import.html?v=20260817-2", "_blank", "noopener,noreferrer"),
   "open-ghost": () => openGhostBoardFilePicker(),
   "sample": () => loadSelectedSample(),
   "sample-current": () => loadSelectedSample(),
@@ -2365,6 +2429,7 @@ const ACTION_HANDLERS = Object.freeze({
   "add-controlpoint": () => addControlPoint(),
   "delete-controlpoint": () => deleteSelectedControlPoint(),
   "simplify-outline": () => simplifyOutline(),
+  "simplify-profile": () => simplifyProfile(),
   "next-section": () => nextCrossSection(),
   "previous-section": () => previousCrossSection(),
   "add-section": () => promptAddCrossSection(),
@@ -2780,6 +2845,13 @@ if (els.edgeType) els.edgeType.addEventListener("change", () => {
   updateEdgePanelFields();
 });
 
+if (els.railExtraType) els.railExtraType.addEventListener("change", addRailShapeFromPanel);
+if (els.railProfileIndex) els.railProfileIndex.addEventListener("change", syncRailProfilePanel);
+if (els.removeRailProfileButton) els.removeRailProfileButton.addEventListener("click", removeRailProfileFromPanel);
+if (els.resetRailProfileButton) els.resetRailProfileButton.addEventListener("click", resetRailProfileFromPanel);
+if (els.moveRailProfileUpButton) els.moveRailProfileUpButton.addEventListener("click", () => moveRailProfileFromPanel(-1));
+if (els.moveRailProfileDownButton) els.moveRailProfileDownButton.addEventListener("click", () => moveRailProfileFromPanel(1));
+
 if (els.bottomFeatureIndex) els.bottomFeatureIndex.addEventListener("change", () => {
   const previousIndex = Number(els.bottomFeatureIndex.dataset.previousIndex);
   if (Number.isInteger(previousIndex) && previousIndex >= 0) {
@@ -2800,6 +2872,15 @@ if (els.bottomFeatureType) els.bottomFeatureType.addEventListener("change", () =
   draw();
 });
 
+if (els.bottomExtraType) els.bottomExtraType.addEventListener("change", () => {
+  const type = normalizeBottomFeatureType(els.bottomExtraType.value);
+  if (!type || !state.board) return;
+  if (els.bottomFeatureType) els.bottomFeatureType.value = type;
+  applyBottomFeatureTypeDefaults(type, true);
+  addBottomFeatureFromPanel();
+  els.bottomExtraType.value = "";
+});
+
 if (els.bottomFeatureEnabled) els.bottomFeatureEnabled.addEventListener("change", () => {
   updateBottomPanelFields();
   updateBottomFeatureSummary(selectedBottomFeaturePreview(state.board));
@@ -2818,7 +2899,7 @@ function sanitizeBottomFeaturePanelValues() {
   const visible = spec?.visibleFields || {};
   const defaults = bottomFeatureDefault(type, Math.max(0, bottomFeatureSelectionIndex()), state.board?.length, state.board?.width);
   const length = Math.max(1, state.board?.length || defaults.end);
-  const [depthMin, depthMax] = bottomFeatureLimit(type, "depth", 0, BOTTOM_FEATURE_DEPTH_MAX, 0.01);
+  const [depthMin, depthMax] = bottomFeatureLimit(type, "depth", 0, BOTTOM_FEATURE_DEPTH_MAX, BOTTOM_FEATURE_DEPTH_STEP);
   const [widthMin, widthMax] = bottomFeatureLimit(type, "width", 0.05, 1, 0.01);
   const [blendMin, blendMax] = bottomFeatureLimit(type, "blend", 0.1, 4, 0.05);
   const [powerMin, powerMax] = bottomFeatureLimit(type, "power", 0.4, 4, 0.05);
@@ -2827,8 +2908,8 @@ function sanitizeBottomFeaturePanelValues() {
   const [spacingMin, spacingMax] = bottomFeatureLimit(type, "spacing", 0, 0.5, 0.01);
   const [countMin, countMax] = bottomFeatureLimit(type, "count", 1, 10, 1);
   const [longitudinalFlatMin, longitudinalFlatMax] = bottomFeatureLimit(type, "longitudinalFlat", 0, 1, 0.05);
-  const [centerMin, centerMax] = bottomFeatureLimit(type, "centerDepth", 0, BOTTOM_FEATURE_DEPTH_MAX, 0.01);
-  const [railMin, railMax] = bottomFeatureLimit(type, "railDepth", 0, BOTTOM_FEATURE_DEPTH_MAX, 0.01);
+  const [centerMin, centerMax] = bottomFeatureLimit(type, "centerDepth", 0, BOTTOM_FEATURE_DEPTH_MAX, BOTTOM_FEATURE_DEPTH_STEP);
+  const [railMin, railMax] = bottomFeatureLimit(type, "railDepth", 0, BOTTOM_FEATURE_DEPTH_MAX, BOTTOM_FEATURE_DEPTH_STEP);
   const railLockMin = 0;
   const railLockMax = BOTTOM_FEATURE_RAIL_LOCK_CM_MAX;
   const normalized = normalizeBottomFeature({
@@ -5831,6 +5912,7 @@ function parseBrd(text, filename) {
     if (id.id === NOSE_GUN_CURVE_FIELD_ID) board.noseGunCurve = parseTailGunCurve(valueAfterColon(line));
     if (id.id === RAIL_MODE_FIELD_ID) board.railMode = normalizeRailModeKey(valueAfterColon(line));
     if (id.id === RAIL_STRENGTH_FIELD_ID) board.railStrength = numberAfterColon(line);
+    if (id.id === RAIL_PROFILE_FIELD_ID) board.railProfile = normalizeRailProfile(valueAfterColon(line), board.railMode);
     if (id.id === TAIL_GUN_CURVE_FIELD_ID) board.tailGunCurve = parseTailGunCurve(valueAfterColon(line));
     if (id.id === EDGE_TYPE_FIELD_ID) board.edgeType = normalizeEdgeTypeKey(valueAfterColon(line));
     if (id.id === EDGE_STRENGTH_FIELD_ID) board.edgeStrength = numberAfterColon(line);
@@ -6107,7 +6189,7 @@ function bottomFeatureDefault(type, index = 0, boardLength = null, boardWidth = 
     empirical.width = clampNumber(empirical.width - (0.06 * shortBias) + (0.05 * wideBias), 0.2, 0.95, empirical.width);
     empirical.offset = clampNumber(empirical.offset + (0.05 * shortBias), 0.15, 0.8, empirical.offset);
   } else if (key === "vee") {
-    empirical.depth = clampNumber(empirical.depth + (0.03 * longBias) - (0.02 * shortBias), 0, BOTTOM_FEATURE_DEPTH_MAX, empirical.depth);
+    empirical.depth = clampNumber(empirical.depth + (0.02 * longBias) - (0.01 * shortBias), 0, BOTTOM_FEATURE_DEPTH_MAX, empirical.depth);
     empirical.width = clampNumber(empirical.width - (0.08 * shortBias), 0.4, 1, empirical.width);
     empirical.start = clampNumber(empirical.start - (resolvedLength * 0.05 * longBias), 0, empirical.peak, empirical.start);
   } else if (key === "spiral-vee") {
@@ -6159,11 +6241,11 @@ function normalizeBottomFeature(feature, index = 0) {
     const parsed = Number(value);
     return Number.isFinite(parsed) ? parsed : fallback;
   };
-  const start = Math.max(0, readNumber(feature?.start, defaults.start));
-  const peak = Math.max(start, readNumber(feature?.peak, defaults.peak));
+  const peak = Math.max(0, readNumber(feature?.peak, defaults.peak));
+  const start = clampNumber(feature?.start, 0, peak, Math.min(defaults.start, peak));
   const end = Math.max(peak, readNumber(feature?.end, defaults.end));
   const visible = spec?.visibleFields || {};
-  const [depthMin, depthMax] = bottomFeatureLimit(type, "depth", 0, BOTTOM_FEATURE_DEPTH_MAX, 0.01);
+  const [depthMin, depthMax] = bottomFeatureLimit(type, "depth", 0, BOTTOM_FEATURE_DEPTH_MAX, BOTTOM_FEATURE_DEPTH_STEP);
   const [widthMin, widthMax] = bottomFeatureLimit(type, "width", 0.05, 1, 0.01);
   const [blendMin, blendMax] = bottomFeatureLimit(type, "blend", 0.1, 4, 0.05);
   const [powerMin, powerMax] = bottomFeatureLimit(type, "power", 0.4, 4, 0.05);
@@ -6172,8 +6254,8 @@ function normalizeBottomFeature(feature, index = 0) {
   const [spacingMin, spacingMax] = bottomFeatureLimit(type, "spacing", 0, 0.5, 0.01);
   const [countMin, countMax] = bottomFeatureLimit(type, "count", 1, 10, 1);
   const [longitudinalFlatMin, longitudinalFlatMax] = bottomFeatureLimit(type, "longitudinalFlat", 0, 1, 0.05);
-  const [centerMin, centerMax] = bottomFeatureLimit(type, "centerDepth", 0, BOTTOM_FEATURE_DEPTH_MAX, 0.01);
-  const [railMin, railMax] = bottomFeatureLimit(type, "railDepth", 0, BOTTOM_FEATURE_DEPTH_MAX, 0.01);
+  const [centerMin, centerMax] = bottomFeatureLimit(type, "centerDepth", 0, BOTTOM_FEATURE_DEPTH_MAX, BOTTOM_FEATURE_DEPTH_STEP);
+  const [railMin, railMax] = bottomFeatureLimit(type, "railDepth", 0, BOTTOM_FEATURE_DEPTH_MAX, BOTTOM_FEATURE_DEPTH_STEP);
   const railLockCm = clampNumber(feature?.railLockCm, 0, BOTTOM_FEATURE_RAIL_LOCK_CM_MAX, defaults.railLockCm);
   return {
     id: String(feature?.id || defaults.id),
@@ -6490,11 +6572,44 @@ function bottomFeatureEnvelopeAt(feature, rawX) {
   return bottomFeatureBlendRamp01((end - rawX) / Math.max(1e-9, end - peak), blend);
 }
 
-function activeBottomFeaturesAt(board, rawX) {
-  return normalizeBottomFeatures(board?.bottomFeatures)
+function bottomFeatureAnchorWeightsAt(board, rawX) {
+  const sourceFeatures = Array.isArray(board?.bottomFeatures) ? board.bottomFeatures : [];
+  const features = normalizeBottomFeatures(sourceFeatures)
     .filter(feature => feature.enabled !== false)
-    .map(feature => ({ feature, envelope: bottomFeatureEnvelopeAt(feature, rawX) }))
-    .filter(item => item.envelope > 1e-3);
+    .sort((a, b) => a.peak - b.peak);
+  if (!features.length) return [];
+
+  // Legacy records may contain only peak anchors. Keep their old interpolation
+  // behavior until they are explicitly given start/end bounds.
+  const hasExplicitRanges = sourceFeatures.length === features.length && sourceFeatures.every(feature =>
+    Number.isFinite(Number(feature?.start)) && Number.isFinite(Number(feature?.end))
+  );
+  if (hasExplicitRanges) {
+    const envelopes = features.map(feature => bottomFeatureEnvelopeAt(feature, rawX));
+    const total = envelopes.reduce((sum, value) => sum + Math.max(0, value), 0);
+    if (total <= 1e-9) return features.map(feature => ({ feature, envelope: 0 }));
+    return features.map((feature, index) => ({
+      feature,
+      envelope: Math.max(0, envelopes[index]) / total
+    }));
+  }
+  const anchors = [...new Set(features.map(feature => feature.peak))];
+  if (anchors.length === 1 || rawX <= anchors[0]) return features.map(feature => ({ feature, envelope: feature.peak === anchors[0] ? 1 : 0 }));
+  const lastAnchor = anchors.at(-1);
+  if (rawX >= lastAnchor) return features.map(feature => ({ feature, envelope: feature.peak === lastAnchor ? 1 : 0 }));
+  const rightIndex = anchors.findIndex(anchor => rawX < anchor);
+  const leftAnchor = anchors[rightIndex - 1];
+  const rightAnchor = anchors[rightIndex];
+  const mix = smootherstep01((rawX - leftAnchor) / Math.max(1e-9, rightAnchor - leftAnchor));
+  return features.map(feature => ({ feature, envelope: feature.peak === leftAnchor ? 1 - mix : feature.peak === rightAnchor ? mix : 0 }));
+}
+
+function bottomFeatureAnchorWeightAt(board, feature, rawX) {
+  return bottomFeatureAnchorWeightsAt(board, rawX).find(item => item.feature.id === feature?.id)?.envelope || 0;
+}
+
+function activeBottomFeaturesAt(board, rawX) {
+  return bottomFeatureAnchorWeightsAt(board, rawX).filter(item => item.envelope > 1e-3);
 }
 
 function gaussian01(distance, radius, power = 2) {
@@ -6650,11 +6765,20 @@ function bottomFeatureLateralProfile(feature, lateralRatio, pointX = 0, halfWidt
     if (absX >= grooveX) return 0;
     return anchoredSmoothDelta(absX, grooveX, feature.depth, 0);
   }
+  if (type === "concave-vee") {
+    const absX = Math.abs(pointX);
+    const veeX = bottomFeatureRailAnchorX(feature, halfWidth, board);
+    const panelVee = absX <= veeX ? anchoredSmoothDelta(absX, veeX, 0, feature.depth) : anchoredTransitionToRail(absX, veeX, feature.depth, halfWidth);
+    const concavePair = feature.centerDepth * gaussian01(u - feature.offset, Math.max(0.04, feature.width * 0.26), feature.power);
+    const railBlend = feature.railDepth * gaussian01(u - Math.min(0.92, feature.offset + feature.width * 0.34), Math.max(0.04, feature.width * 0.18), feature.power);
+    return panelVee + concavePair + railBlend;
+  }
   if (type === "vee") {
     const anchorX = bottomFeatureRailAnchorX(feature, halfWidth, board);
     const absX = Math.abs(pointX);
-    if (absX <= anchorX) return anchoredSmoothDelta(absX, anchorX, 0, feature.depth);
-    return anchoredTransitionToRail(absX, anchorX, feature.depth, halfWidth);
+    const veeDepth = feature.depth * 0.65;
+    if (absX <= anchorX) return anchoredSmoothDelta(absX, anchorX, 0, veeDepth);
+    return anchoredTransitionToRail(absX, anchorX, veeDepth, halfWidth);
   }
   if (type === "spiral-vee") {
     const anchorX = bottomFeatureRailAnchorX(feature, halfWidth, board);
@@ -6679,21 +6803,28 @@ function bottomFeatureLateralProfile(feature, lateralRatio, pointX = 0, halfWidt
     return -feature.depth * gain * Math.pow(profile, exponent);
   }
   if (type === "double-concave") {
-    const center = feature.centerDepth * Math.pow(Math.max(0, 1 - Math.pow(u / Math.max(0.05, feature.width), 2)), Math.max(0.4, feature.power * 0.8));
-    const lobe = feature.railDepth * gaussian01(u - feature.offset, Math.max(0.04, feature.width * 0.26), feature.power);
-    return blendPositiveProfiles(center, lobe);
+    const grooveRadius = Math.max(0.06, feature.width * 0.38);
+    const lobe = feature.railDepth * gaussian01(u - feature.offset, grooveRadius, Math.max(0.6, feature.power * 0.7));
+    const bridge = feature.centerDepth * gaussian01(u - (feature.offset * 0.52), Math.max(0.08, feature.width * 0.42), 0.9);
+    return lobe + bridge;
   }
   if (type === "channel") {
     let total = 0;
     const grooveHalfWidth = Math.max(0.012, feature.width * 0.5);
     const powerT = clamp01((clampNumber(feature.power, 0.4, 4, 1.4) - 0.4) / 3.6);
-    const flatRatio = lerp(0.22, 0.42, powerT);
-    const shoulderPower = lerp(1.55, 0.72, powerT);
+    const flatRatio = lerp(0.08, 0.2, powerT);
+    const shoulderPower = lerp(2.2, 1.35, powerT);
     const channelOffsets = bottomFeatureChannelCenterRatios(feature);
     for (const channelOffset of channelOffsets) {
       total += -feature.railDepth * plateauGroove01(u - channelOffset, grooveHalfWidth, flatRatio, shoulderPower);
     }
     return total;
+  }
+  if (type === "chine") {
+    const bandStart = clamp01(1 - feature.width);
+    if (u <= bandStart) return 0;
+    const ramp = Math.pow(clamp01((u - bandStart) / Math.max(1e-9, 1 - bandStart)), Math.max(0.35, feature.power * (1.5 - feature.edge)));
+    return feature.depth * smoothStep01(ramp);
   }
   return 0;
 }
@@ -6815,14 +6946,13 @@ function finalizeBottomFeatureSection(knots, referenceKnots, lockCm = BOTTOM_FEA
 
 function applyBottomFeaturesToSectionKnots(knots, board, rawX) {
   const features = normalizeBottomFeatures(board?.bottomFeatures).filter(feature => feature.enabled !== false);
+  const weights = new Map(bottomFeatureAnchorWeightsAt(board, rawX).map(item => [item.feature.id, item.envelope]));
+  const envelopeAt = feature => weights.get(feature.id) || 0;
   const base = boardCadCloneKnots(knots || []);
   if (!base.length || !features.length) return base;
   const shapedBase = features.reduce((acc, feature) => {
-    const start = Number(feature?.start) || 0;
-    const end = Math.max(start, Number(feature?.end) || start);
-    if (rawX < start - 1e-6 || rawX > end + 1e-6) return acc;
-    const envelope = bottomFeatureEnvelopeAt(feature, rawX);
-    if (envelope <= 1e-9) return insertBottomFeatureAnchorKnots(acc, board, feature);
+    const envelope = envelopeAt(feature);
+    if (envelope <= 1e-9) return acc;
     const type = normalizeBottomFeatureType(feature?.type);
     if (usesExplicitBottomFeatureControlPoints(type)) {
       return applyExplicitBottomFeatureControlPoints(acc, board, feature, envelope, rawX);
@@ -6830,24 +6960,15 @@ function applyBottomFeaturesToSectionKnots(knots, board, rawX) {
     return insertBottomFeatureAnchorKnots(acc, board, feature);
   }, base);
   const residualFeatures = features.filter(feature => {
-    const start = Number(feature?.start) || 0;
-    const end = Math.max(start, Number(feature?.end) || start);
-    if (rawX < start - 1e-6 || rawX > end + 1e-6) return false;
-    if (bottomFeatureEnvelopeAt(feature, rawX) <= 1e-9) return false;
+    if (envelopeAt(feature) <= 1e-9) return false;
     return !usesExplicitBottomFeatureControlPoints(normalizeBottomFeatureType(feature?.type));
   });
   const activeFeatures = features.filter(feature => {
-    const start = Number(feature?.start) || 0;
-    const end = Math.max(start, Number(feature?.end) || start);
-    if (rawX < start - 1e-6 || rawX > end + 1e-6) return false;
-    return bottomFeatureEnvelopeAt(feature, rawX) > 1e-9;
+    return envelopeAt(feature) > 1e-9;
   });
   const sectionUsesRailBandLock = activeFeatures.some(bottomFeatureUsesRailBandLock);
   const activeLockCm = features.reduce((maxLock, feature) => {
-    const start = Number(feature?.start) || 0;
-    const end = Math.max(start, Number(feature?.end) || start);
-    if (rawX < start - 1e-6 || rawX > end + 1e-6) return maxLock;
-    if (bottomFeatureEnvelopeAt(feature, rawX) <= 1e-9) return maxLock;
+    if (envelopeAt(feature) <= 1e-9) return maxLock;
     if (!bottomFeatureUsesRailBandLock(feature)) return maxLock;
     return Math.max(maxLock, clampNumber(feature?.railLockCm, 0, BOTTOM_FEATURE_RAIL_LOCK_CM_MAX, BOTTOM_FEATURE_RAIL_LOCK_CM));
   }, 0);
@@ -6868,7 +6989,7 @@ function applyBottomFeaturesToSectionKnots(knots, board, rawX) {
     const lateralRatio = point.x / halfWidth;
     let delta = 0;
     for (const feature of residualFeatures) {
-      const envelope = bottomFeatureEnvelopeAt(feature, rawX);
+      const envelope = envelopeAt(feature);
       if (envelope <= 1e-9) continue;
       const railInsetFade = bottomFeatureRailInsetFade(feature, point.x, halfWidth, board);
       if (railInsetFade <= 1e-9) continue;
@@ -6935,9 +7056,12 @@ function drawBottomFeatureDeltaOverlay(baseSpline, displaySpline, transform, boa
 
 function bottomFeatureDisplayColor(type) {
   const key = normalizeBottomFeatureType(type);
+  if (key === "flat") return "#a1a1aa";
+  if (key === "concave-vee") return "#30d158";
   if (key === "vee" || key === "spiral-vee") return "#ff9f0a";
   if (key === "hull" || key === "displacement-hull") return "#bf5af2";
   if (key === "channel") return "#64d2ff";
+  if (key === "chine") return "#ff9f0a";
   return "#5ac8fa";
 }
 
@@ -6945,7 +7069,7 @@ function bottomFeatureOutlineBandLayout(rect, transform = null) {
   const rectTop = Number.isFinite(rect?.top) ? rect.top : 0;
   const rectHeight = Number(rect?.height) || 0;
   const bandHeight = Math.max(12, Math.min(18, rectHeight * 0.06));
-  const centerY = transform?.y ? transform.y(0) : rectTop + (rectHeight * 0.5);
+  const centerY = rectTop + rectHeight - 22;
   const bandTop = centerY - (bandHeight * 0.5);
   const bandBottom = centerY + (bandHeight * 0.5);
   const laneTop = bandTop + 2;
@@ -7015,6 +7139,7 @@ function drawOutlineBottomFeatureRanges(board, transform, rect) {
   const selectedIndex = bottomFeatureSelectionIndex();
   const outlineHalf = rawOutlineHalfPoints(board, getSegments());
   const orderedFeatures = orderedBottomFeatureOutlineFeatures(board, features);
+  const numericFeatures = [...orderedFeatures].sort((a, b) => Number(a.feature.peak) - Number(b.feature.peak));
   ctx.save();
   if (!features.length) {
     ctx.restore();
@@ -7031,24 +7156,35 @@ function drawOutlineBottomFeatureRanges(board, transform, rect) {
     const { feature, actualIndex } = item;
     const selected = (actualIndex >= 0 && actualIndex === selectedIndex) || !!feature.previewOnly;
     const boardLength = Math.max(1, Number(board.length) || 1);
-    const startRaw = clampNumber(feature.start, 0, boardLength, 0);
-    const endRaw = clampNumber(feature.end, startRaw, boardLength, boardLength);
+    const numericIndex = numericFeatures.findIndex(candidate => candidate === item);
+    const previousPeak = numericIndex > 0
+      ? Number(numericFeatures[numericIndex - 1].feature.peak)
+      : 0;
+    const nextPeak = numericIndex >= 0 && numericIndex < numericFeatures.length - 1
+      ? Number(numericFeatures[numericIndex + 1].feature.peak)
+      : boardLength;
+    // Anchor regions are split at the midpoint between adjacent shape peaks.
+    // This keeps the visible color range tied to the actual P slider instead
+    // of the legacy start/end values, which are often the full board.
+    const boundaryA = (previousPeak + Number(feature.peak)) * 0.5;
+    const boundaryB = (Number(feature.peak) + nextPeak) * 0.5;
+    const startRaw = clampNumber(Math.min(boundaryA, boundaryB), 0, boardLength, 0);
+    const endRaw = clampNumber(Math.max(boundaryA, boundaryB), startRaw, boardLength, boardLength);
     const peakRaw = clampNumber(feature.peak, startRaw, endRaw, (startRaw + endRaw) * 0.5);
     const color = bottomFeatureDisplayColor(feature.type);
     const widthVisible = bottomFeatureTypeSpec(feature.type)?.visibleFields?.width === true;
     const depthField = bottomFeatureOutlineDepthField(feature.type);
     const [widthMin, widthMax] = bottomFeatureLimit(feature.type, "width", 0.05, 1, 0.01);
-    const widthNorm = widthVisible
-      ? clampNumber((feature.width - widthMin) / Math.max(1e-9, widthMax - widthMin), 0, 1, 1)
-      : 1;
+    const widthNorm = widthVisible ? clampNumber(feature.width, widthMin, widthMax, 1) : 1;
     const [depthMin, depthMax] = depthField
-      ? bottomFeatureLimit(feature.type, depthField, 0, BOTTOM_FEATURE_DEPTH_MAX, 0.01)
+      ? bottomFeatureLimit(feature.type, depthField, 0, BOTTOM_FEATURE_DEPTH_MAX, BOTTOM_FEATURE_DEPTH_STEP)
       : [0, 1];
     const depthNorm = depthField
       ? clampNumber((Number(feature[depthField]) - depthMin) / Math.max(1e-9, depthMax - depthMin), 0, 1, 0)
       : 0.35;
-    const fillAlpha = lerp(selected ? 0.22 : 0.14, selected ? 0.58 : 0.42, depthNorm);
+    const fillAlpha = lerp(selected ? 0.18 : 0.1, selected ? 0.78 : 0.62, depthNorm);
     const strokeAlpha = lerp(selected ? 0.7 : 0.55, 1, depthNorm);
+    const edgeNorm = clampNumber(Number(feature.edge), 0, 1, 0.35);
     const samples = Math.max(8, Math.ceil((endRaw - startRaw) / Math.max(1, (Number(board.length) || 1) / 36)));
     const centerPoints = [];
     const lowerPoints = [];
@@ -7060,8 +7196,19 @@ function drawOutlineBottomFeatureRanges(board, transform, rect) {
       centerPoints.push({ x: transform.x(displayX), y: transform.y(0) });
       lowerPoints.push({ x: transform.x(displayX), y: transform.y(lowerY) });
     }
+    const startX = transform.x(boardCadDisplayXFromRawX(board, startRaw));
+    const peakX = transform.x(boardCadDisplayXFromRawX(board, peakRaw));
+    const endX = transform.x(boardCadDisplayXFromRawX(board, endRaw));
+    const midRaw = (startRaw + endRaw) * 0.5;
+    const midHalf = Math.max(0, interpolatePolyline(outlineHalf, midRaw)) * widthNorm;
+    const centerY = transform.y(0);
+    const railY = transform.y(-midHalf);
+    const gradient = ctx.createLinearGradient(0, centerY, 0, railY);
+    gradient.addColorStop(0, "transparent");
+    gradient.addColorStop(0.72, color);
+    gradient.addColorStop(1, color);
     ctx.globalAlpha = fillAlpha;
-    ctx.fillStyle = color;
+    ctx.fillStyle = gradient;
     ctx.beginPath();
     centerPoints.forEach((point, index) => {
       if (index === 0) ctx.moveTo(point.x, point.y);
@@ -7074,11 +7221,8 @@ function drawOutlineBottomFeatureRanges(board, transform, rect) {
     ctx.fill();
     ctx.globalAlpha = strokeAlpha;
     ctx.strokeStyle = color;
-    ctx.lineWidth = selected ? 2.2 : 1.5;
+    ctx.lineWidth = (selected ? 2.2 : 1.2) + (edgeNorm * (selected ? 4.2 : 3.2));
     ctx.stroke();
-    const startX = transform.x(boardCadDisplayXFromRawX(board, startRaw));
-    const peakX = transform.x(boardCadDisplayXFromRawX(board, peakRaw));
-    const endX = transform.x(boardCadDisplayXFromRawX(board, endRaw));
     const startHalf = Math.max(0, interpolatePolyline(outlineHalf, startRaw)) * widthNorm;
     const peakHalf = Math.max(0, interpolatePolyline(outlineHalf, peakRaw)) * widthNorm;
     const endHalf = Math.max(0, interpolatePolyline(outlineHalf, endRaw)) * widthNorm;
@@ -7089,15 +7233,12 @@ function drawOutlineBottomFeatureRanges(board, transform, rect) {
     ctx.globalAlpha = selected ? 1 : 0.9;
     ctx.lineWidth = selected ? 2 : 1.35;
     line(peakX, transform.y(0), peakX, transform.y(-peakHalf));
-    if (selected) {
-      const labelX = clampNumber((startX + endX) * 0.5, rectLeft + 72, rectRight - 72, (startX + endX) * 0.5);
-      label(
-        `${bottomFeatureLabel(feature.type)}  S${fmt(feature.start)} M${fmt(feature.peak)} E${fmt(feature.end)}`,
-        labelX,
-        transform.y(-peakHalf) + 14,
-        "#dff4ff"
-      );
-    }
+    label(
+      bottomFeatureLabel(feature.type),
+      (startX + endX) * 0.5,
+      transform.y(-midHalf) + 14,
+      selected ? "#ffffff" : "#dff4ff"
+    );
   });
   ctx.restore();
 }
@@ -7154,12 +7295,15 @@ function setBottomFeatureHandles(board, transform, mode = "outline", rect = null
     ? (Number.isFinite(rect.bottom) ? rect.bottom : rectTop + (Number.isFinite(rect.height) ? rect.height : 0))
     : 0;
   const featureIndex = bottomFeatureSelectionIndex();
-  const features = mode === "outline"
-    ? normalizeBottomFeatures(board?.bottomFeatures).filter(feature => feature.enabled !== false)
-    : [currentBottomFeature()].filter(Boolean);
+  const allFeatures = normalizeBottomFeatures(board?.bottomFeatures);
+  const features = allFeatures.filter(feature => feature.enabled !== false).sort((a, b) => a.peak - b.peak);
   if (!board || !features.length) return;
   const outlineHalf = rawOutlineHalfPoints(board, getSegments());
   const profile = mode === "profile" ? tailAdjustedProfileGeometry(board) : null;
+  const profileBottomScreen = profile?.bottomRaw?.length
+    ? Math.max(...profile.bottomRaw.map(point => transform.y(point.y)))
+    : rectBottom - 140;
+  const profileSliderScreenY = Math.min(rectBottom - 92, profileBottomScreen + 42);
   const maxY = outlineHalf.reduce((best, point) => Math.max(best, Number(point?.y) || 0), 0);
   const offsetY = Math.max(0.8, maxY * 0.06);
   const outlineBand = rect ? bottomFeatureOutlineBandLayout(rect, transform) : null;
@@ -7175,15 +7319,15 @@ function setBottomFeatureHandles(board, transform, mode = "outline", rect = null
   const lineBottomY = rect && transform?.invY ? transform.invY(rectBottom - 12) : null;
   (mode === "outline" ? orderedOutlineFeatures : features.map((feature, index) => ({
     feature,
-    actualIndex: featureIndex,
-    originalIndex: index,
+    actualIndex: allFeatures.indexOf(feature),
+    originalIndex: allFeatures.indexOf(feature),
     trackIndex: index,
     trackCount: features.length
   }))).forEach(item => {
     const feature = item.feature;
     const actualFeatureIndex = mode === "outline" ? item.actualIndex : item.actualIndex;
     if (actualFeatureIndex < 0 && !feature.previewOnly) return;
-    const selectedFeature = !!feature.previewOnly || Number(item.originalIndex) === Number(featureIndex);
+    const selectedFeature = !!feature.previewOnly || Number(actualFeatureIndex) === Number(featureIndex);
     const track = mode === "outline" && outlineBand
       ? bottomFeatureOutlineTrackMetrics(outlineBand, item.trackCount, item.trackIndex)
       : null;
@@ -7198,6 +7342,37 @@ function setBottomFeatureHandles(board, transform, mode = "outline", rect = null
       : null;
     const bandLeftX = boardCadDisplayXFromRawX(board, feature.start);
     const bandRightX = boardCadDisplayXFromRawX(board, feature.end);
+    if (mode === "outline" && bandMidY !== null) {
+      const displayX = boardCadDisplayXFromRawX(board, feature.peak);
+      const nextHandle = {
+        kind: "peak", action: "position", field: "peak", label: bottomFeatureLabel(feature.type), mode,
+        x: displayX, rawX: feature.peak, y: bandMidY, baseY: 0,
+        screenX: transform.x(displayX), screenY: laneScreenMid, screenBaseY: transform.y(0),
+        screenRect: { left: transform.x(displayX) - 52, right: transform.x(displayX) + 52, top: laneScreenMid - 14, bottom: laneScreenMid + 14 },
+        visualIndex: item.trackIndex, featureIndex: actualFeatureIndex, listIndex: item.originalIndex,
+        feature: { ...feature }, transform,
+        boardStartX: boardCadDisplayXFromRawX(board, 0), boardEndX: boardCadDisplayXFromRawX(board, board.length)
+      };
+      nextHandle.handleKey = bottomFeatureHandleKey(nextHandle);
+      state.bottomFeatureHandles.push(nextHandle);
+      if (bottomFeatureTypeSpec(feature.type)?.visibleFields?.width === true) {
+        const halfWidth = Math.max(0.01, interpolatePolyline(outlineHalf, feature.peak));
+        const [widthMin, widthMax] = bottomFeatureLimit(feature.type, "width", 0.05, 1, 0.01);
+        const widthScreenY = transform.y(halfWidth * clampNumber(feature.width, widthMin, widthMax, widthMin));
+        const widthHandle = {
+          kind: "width", action: "set-width", field: "width", label: `${bottomFeatureLabel(feature.type)} W`, mode,
+          x: displayX, rawX: feature.peak, y: transform.invY(widthScreenY), baseY: 0,
+          screenX: transform.x(displayX), screenY: widthScreenY, screenBaseY: transform.y(0),
+          screenRect: { left: transform.x(displayX) - 38, right: transform.x(displayX) + 38, top: widthScreenY - 10, bottom: widthScreenY + 10 },
+          visualIndex: item.trackIndex, featureIndex: actualFeatureIndex, listIndex: item.originalIndex,
+          feature: { ...feature }, transform, minValue: widthMin, maxValue: widthMax,
+          dragRangeTop: transform.y(halfWidth * widthMax), dragRangeBottom: transform.y(halfWidth * widthMin), uiOnly: true
+        };
+        widthHandle.handleKey = bottomFeatureHandleKey(widthHandle);
+        state.bottomFeatureHandles.push(widthHandle);
+      }
+      return;
+    }
     if (mode === "outline" && bandMidY !== null) {
       const displayBandLeftX = bandLeftX;
       const displayBandRightX = bandRightX;
@@ -7276,6 +7451,8 @@ function setBottomFeatureHandles(board, transform, mode = "outline", rect = null
           hitBandRightX: bandRightX,
           hitLineTopY: lineTopY,
           hitLineBottomY: lineBottomY,
+          boardStartX: boardCadDisplayXFromRawX(board, 0),
+          boardEndX: boardCadDisplayXFromRawX(board, board.length),
           featureIndex: actualFeatureIndex,
           listIndex: item.originalIndex,
           feature: { ...feature },
@@ -7285,60 +7462,9 @@ function setBottomFeatureHandles(board, transform, mode = "outline", rect = null
         state.bottomFeatureHandles.push(nextEditHandle);
       });
 
-      const widthVisible = bottomFeatureTypeSpec(feature.type)?.visibleFields?.width === true;
-      if (widthVisible) {
-        const [widthMin, widthMax] = bottomFeatureLimit(feature.type, "width", 0.05, 1, 0.01);
-        const widthNorm = clampNumber(
-          (feature.width - widthMin) / Math.max(1e-9, widthMax - widthMin),
-          0,
-          1,
-          0
-        );
-        const widthScreenX = rect ? Math.max(rangeScreenRight + 12, rectRight - 74) : (rangeScreenRight + 12);
-        const widthTrackTop = rangeScreenTop + 8;
-        const widthTrackBottom = rangeScreenBottom - 8;
-        const widthScreenY = widthTrackBottom - ((widthTrackBottom - widthTrackTop) * widthNorm);
-        const widthDisplayX = transform.invX(widthScreenX);
-        const widthHandle = {
-          kind: "width",
-          action: "set-width",
-          field: "width",
-          label: "W",
-          mode,
-          x: widthDisplayX,
-          rawX: widthDisplayX,
-          y: transform.invY(widthScreenY),
-          baseY: transform.invY(widthScreenY),
-          screenX: widthScreenX,
-          screenY: widthScreenY,
-          screenBaseY: widthScreenY,
-          screenRect: {
-            left: widthScreenX - 18,
-            right: widthScreenX + 18,
-            top: widthScreenY - 14,
-            bottom: widthScreenY + 14
-          },
-          visualIndex: item.trackIndex,
-          hitBandLeftX: bandLeftX,
-          hitBandRightX: bandRightX,
-          hitLineTopY: null,
-          hitLineBottomY: null,
-          featureIndex: actualFeatureIndex,
-          listIndex: item.originalIndex,
-          feature: { ...feature },
-          transform,
-          minValue: widthMin,
-          maxValue: widthMax,
-          dragRangeTop: widthTrackTop,
-          dragRangeBottom: widthTrackBottom
-        };
-        widthHandle.handleKey = bottomFeatureHandleKey(widthHandle);
-        state.bottomFeatureHandles.push(widthHandle);
-      }
-
       const depthField = bottomFeatureOutlineDepthField(feature.type);
       if (depthField && selectedFeature) {
-        const [depthMin, depthMax] = bottomFeatureLimit(feature.type, depthField, 0, BOTTOM_FEATURE_DEPTH_MAX, 0.01);
+        const [depthMin, depthMax] = bottomFeatureLimit(feature.type, depthField, 0, BOTTOM_FEATURE_DEPTH_MAX, BOTTOM_FEATURE_DEPTH_STEP);
         const depthValue = clampNumber(feature[depthField], depthMin, depthMax, 0);
         const depthNorm = clampNumber(
           (depthValue - depthMin) / Math.max(1e-9, depthMax - depthMin),
@@ -7390,15 +7516,12 @@ function setBottomFeatureHandles(board, transform, mode = "outline", rect = null
       }
       return;
     }
-    if (!selectedFeature) return;
     [
-      { kind: "start", field: "start", label: "S", x: feature.start },
-      { kind: "peak", field: "peak", label: "M", x: feature.peak },
-      { kind: "end", field: "end", label: "E", x: feature.end }
+      { kind: "peak", field: "peak", label: bottomFeatureLabel(feature.type), x: feature.peak }
     ].forEach(handleSpec => {
       const displayX = boardCadDisplayXFromRawX(board, handleSpec.x);
       const baseY = profileYAt(profile?.bottom || [], displayX);
-      const handleY = baseY - Math.max(0.7, (board.thickness || 1) * 0.18);
+      const handleY = transform.invY(profileSliderScreenY);
       const nextHandle = {
         kind: handleSpec.kind,
         action: "position",
@@ -7418,6 +7541,10 @@ function setBottomFeatureHandles(board, transform, mode = "outline", rect = null
         hitBandRightX: null,
         hitLineTopY: null,
         hitLineBottomY: null,
+        startX: boardCadDisplayXFromRawX(board, feature.start),
+        endX: boardCadDisplayXFromRawX(board, feature.end),
+        boardStartX: boardCadDisplayXFromRawX(board, 0),
+        boardEndX: boardCadDisplayXFromRawX(board, board.length),
         featureIndex: actualFeatureIndex,
         listIndex: item.originalIndex,
         feature: { ...feature },
@@ -7442,23 +7569,17 @@ function bottomFeaturePositionHandleLabel(kind) {
 
 function drawBottomFeatureHandles(board, transform) {
   if (!state.bottomFeatureHandles.length) {
-    bottomFeatureOverlaySignature = "";
-    scheduleBottomFeatureDomOverlaySync();
+    removeBottomFeatureDomOverlay();
     return;
   }
-  const hasCanvasHandles = state.bottomFeatureHandles.some(handle => handle.mode !== "outline");
-  if (!hasCanvasHandles) {
-    scheduleBottomFeatureDomOverlaySync();
-    return;
-  }
-  const drawHandleTag = (text, x, y, selected) => {
+  const drawHandleTag = (text, x, y, selected, color = "#9fdcff") => {
     ctx.font = "11px sans-serif";
     const width = Math.max(18, ctx.measureText(text).width + 10);
     const height = 16;
     const left = x - (width / 2);
     const top = y - (height / 2);
     ctx.fillStyle = selected ? "#ff6b6b" : "#0b0f17";
-    ctx.strokeStyle = selected ? "#ff453a" : "#9fdcff";
+    ctx.strokeStyle = selected ? "#ff453a" : color;
     ctx.lineWidth = selected ? 2 : 1.4;
     ctx.beginPath();
     ctx.roundRect(left, top, width, height, 5);
@@ -7470,12 +7591,67 @@ function drawBottomFeatureHandles(board, transform) {
     ctx.fillText(text, x, y + 0.5);
   };
   ctx.save();
+  const anchors = state.bottomFeatureHandles.filter(handle => handle.kind === "peak").sort((a, b) => a.x - b.x);
+  if (anchors.length) {
+    const bandY = anchors[0].mode === "outline" ? anchors[0].screenY : anchors[0].transform.y(anchors[0].y);
+    const startX = anchors[0].transform.x(anchors[0].boardStartX);
+    const endX = anchors[0].transform.x(anchors[0].boardEndX);
+    const firstX = anchors[0].transform.x(anchors[0].x);
+    const lastX = anchors.at(-1).transform.x(anchors.at(-1).x);
+    ctx.globalAlpha = 0.22;
+    ctx.fillStyle = bottomFeatureDisplayColor(anchors[0].feature.type);
+    ctx.fillRect(startX, bandY - 9, firstX - startX, 18);
+    for (let i = 0; i < anchors.length - 1; i++) {
+      const left = anchors[i];
+      const right = anchors[i + 1];
+      const leftX = left.transform.x(left.x);
+      const rightX = right.transform.x(right.x);
+      const gradient = ctx.createLinearGradient(leftX, 0, rightX, 0);
+      gradient.addColorStop(0, bottomFeatureDisplayColor(left.feature.type));
+      gradient.addColorStop(1, bottomFeatureDisplayColor(right.feature.type));
+      ctx.fillStyle = gradient;
+      ctx.fillRect(leftX, bandY - 9, rightX - leftX, 18);
+    }
+    ctx.fillStyle = bottomFeatureDisplayColor(anchors.at(-1).feature.type);
+    ctx.fillRect(lastX, bandY - 9, endX - lastX, 18);
+    ctx.globalAlpha = 1;
+  }
   state.bottomFeatureHandles.forEach(handle => {
-    if (handle.mode === "outline") return;
+    if (handle.uiOnly) return;
     const sx = handle.mode === "outline" && Number.isFinite(handle.screenX) ? handle.screenX : handle.transform.x(handle.x);
     const sy = handle.mode === "outline" && Number.isFinite(handle.screenY) ? handle.screenY : handle.transform.y(handle.y);
     const baseSY = handle.mode === "outline" && Number.isFinite(handle.screenBaseY) ? handle.screenBaseY : handle.transform.y(handle.baseY);
     const selected = sameBottomFeatureHandle(handle, state.bottomFeatureSelection);
+    if (handle.mode === "profile" && handle.kind === "peak") {
+      const color = ["#5ac8fa", "#30d158", "#ff9f0a", "#bf5af2"][handle.visualIndex % 4];
+      ctx.strokeStyle = selected ? "#ff6b6b" : color;
+      ctx.fillStyle = selected ? "#ff6b6b" : color;
+      ctx.setLineDash([3, 4]);
+      line(sx, sy, sx, baseSY);
+      ctx.setLineDash([]);
+      drawHandleTag(handle.label, sx, sy, selected, color);
+      return;
+    }
+    if (handle.mode === "outline" && handle.kind === "peak") {
+      const color = bottomFeatureDisplayColor(handle.feature.type);
+      ctx.strokeStyle = selected ? "#ff6b6b" : color;
+      ctx.setLineDash([3, 4]);
+      line(sx, sy, sx, baseSY);
+      ctx.setLineDash([]);
+      return;
+    }
+    if (handle.mode === "outline" && handle.kind === "width") {
+      const color = bottomFeatureDisplayColor(handle.feature.type);
+      ctx.strokeStyle = selected ? "#ff6b6b" : color;
+      ctx.lineWidth = selected ? 2.2 : 1.4;
+      line(sx, handle.dragRangeTop, sx, handle.dragRangeBottom);
+      ctx.beginPath();
+      ctx.arc(sx, sy, 5.5, 0, Math.PI * 2);
+      ctx.fillStyle = selected ? "#ff6b6b" : color;
+      ctx.fill();
+      drawHandleTag(handle.label, sx, sy, selected, color);
+      return;
+    }
     if (handle.kind === "range") {
       const left = handle.screenRect ? handle.screenRect.left : handle.transform.x(handle.hitBandLeftX);
       const right = handle.screenRect ? handle.screenRect.right : handle.transform.x(handle.hitBandRightX);
@@ -7509,7 +7685,7 @@ function setBottomFeatureSectionHandles(board, transform, section) {
   const featureIndex = bottomFeatureSelectionIndex();
   const feature = currentBottomFeature();
   if (!board || !section?.spline?.length || featureIndex < 0 || !feature) return;
-  const envelope = bottomFeatureEnvelopeAt(feature, section.position);
+  const envelope = bottomFeatureAnchorWeightAt(board, feature, section.position);
   if (envelope <= 1e-4) return;
   const type = normalizeBottomFeatureType(feature.type);
   const displaySpline = applyBottomFeaturesToSectionKnots(section.spline, board, section.position);
@@ -7653,7 +7829,11 @@ function moveBottomFeatureDrag(handle, originalFeature, nextDisplayX, nextScreen
   if (action === "position" && field === "start") {
     feature.start = clampNumber(nextRawX, 0, Math.max(0, originalFeature.peak - epsilon), originalFeature.start);
   } else if (action === "position" && field === "peak") {
-    feature.peak = clampNumber(nextRawX, Math.min(originalFeature.start + epsilon, boardLength), Math.max(originalFeature.end - epsilon, 0), originalFeature.peak);
+    const ordered = features.map((item, itemIndex) => ({ item, itemIndex })).sort((a, b) => a.item.peak - b.item.peak);
+    const orderedIndex = ordered.findIndex(item => item.itemIndex === index);
+    const previousPeak = orderedIndex > 0 ? Number(ordered[orderedIndex - 1].item.peak) : 0;
+    const nextPeak = orderedIndex >= 0 && orderedIndex < ordered.length - 1 ? Number(ordered[orderedIndex + 1].item.peak) : boardLength;
+    feature.peak = clampNumber(nextRawX, previousPeak + (orderedIndex > 0 ? epsilon : 0), nextPeak - (orderedIndex < ordered.length - 1 ? epsilon : 0), originalFeature.peak);
   } else if (action === "position" && field === "end") {
     feature.end = clampNumber(nextRawX, Math.min(boardLength, originalFeature.peak + epsilon), boardLength, originalFeature.end);
   } else if (action === "translate-range") {
@@ -7707,8 +7887,8 @@ function moveBottomFeatureDrag(handle, originalFeature, nextDisplayX, nextScreen
     );
     const polarity = bottomFeatureDepthPolarity(feature.type, field);
     const depthRatio = polarity < 0 ? (1 - ratio) : ratio;
-    const minValue = Number.isFinite(handle.minValue) ? handle.minValue : bottomFeatureLimit(feature.type, field, 0, BOTTOM_FEATURE_DEPTH_MAX, 0.01)[0];
-    const maxValue = Number.isFinite(handle.maxValue) ? handle.maxValue : bottomFeatureLimit(feature.type, field, 0, BOTTOM_FEATURE_DEPTH_MAX, 0.01)[1];
+    const minValue = Number.isFinite(handle.minValue) ? handle.minValue : bottomFeatureLimit(feature.type, field, 0, BOTTOM_FEATURE_DEPTH_MAX, BOTTOM_FEATURE_DEPTH_STEP)[0];
+    const maxValue = Number.isFinite(handle.maxValue) ? handle.maxValue : bottomFeatureLimit(feature.type, field, 0, BOTTOM_FEATURE_DEPTH_MAX, BOTTOM_FEATURE_DEPTH_STEP)[1];
     feature[field] = clampNumber(minValue + ((maxValue - minValue) * depthRatio), minValue, maxValue, originalFeature[field]);
   }
   if (!Number.isInteger(index) || index < 0 || !features[index]) {
@@ -7734,7 +7914,7 @@ function moveBottomFeatureSectionDrag(handle, originalFeature, currentPoint) {
   const envelope = Math.max(1e-6, Number(handle.envelope) || 1);
   const halfWidth = Math.max(1e-6, Number(handle.halfWidth) || 1);
   const referenceHalfWidth = Math.max(1e-6, Number(handle.referenceHalfWidth) || bottomFeatureReferenceHalfWidth(originalFeature, state.board));
-  const limitDepth = (field, fallback) => bottomFeatureLimit(type, field, 0, BOTTOM_FEATURE_DEPTH_MAX, 0.01);
+  const limitDepth = (field, fallback) => bottomFeatureLimit(type, field, 0, BOTTOM_FEATURE_DEPTH_MAX, BOTTOM_FEATURE_DEPTH_STEP);
   const xRatio = clampNumber(Math.abs(currentPoint.x) / halfWidth, 0, 1, 0);
   if (handle.kind === "center-depth") {
     const baseY = boardCadCrossSectionBottomAt(sectionSpline, 0);
@@ -7762,7 +7942,7 @@ function moveBottomFeatureSectionDrag(handle, originalFeature, currentPoint) {
     feature.offset = clampNumber(nextOffsetRatio, offsetMin, offsetMax, originalFeature.offset);
     const baseY = boardCadCrossSectionBottomAt(sectionSpline, Math.abs(currentPoint.x));
     const delta = baseY - currentPoint.y;
-    const [min, max] = bottomFeatureLimit(type, "railDepth", 0, BOTTOM_FEATURE_DEPTH_MAX, 0.01);
+    const [min, max] = bottomFeatureLimit(type, "railDepth", 0, BOTTOM_FEATURE_DEPTH_MAX, BOTTOM_FEATURE_DEPTH_STEP);
     feature.railDepth = clampNumber(delta / envelope, min, max, originalFeature.railDepth);
   } else if (handle.kind === "spread") {
     if (type === "channel") {
@@ -9617,6 +9797,7 @@ function draw() {
   state.wingHandles = [];
   state.bottomFeatureHandles = [];
   state.bottomFeatureSectionHandles = [];
+  state.railProfileHandles = [];
   state.drawingCanvas = true;
   const rect = els.canvas.getBoundingClientRect();
   const canvasRect = { left: 0, top: 0, width: rect.width, height: rect.height };
@@ -11658,8 +11839,8 @@ function drawOutline(board, rect) {
   drawScanGhostOutline(ghost, transform);
   mark("ghost-and-toolpath");
   if (state.viewOptions.showCenterLine) drawCenterLine(boardCadTailDisplayLength(renderBoard), rect, points, transform);
-  drawOutlineBottomFeatureRanges(renderBoard, transform, rect);
   mark("bottom-ranges");
+  if (state.bottomFeatureOverlayVisible !== false) drawOutlineBottomFeatureRanges(renderBoard, transform, rect);
   if (state.viewOptions.showCrossSectionPositions) drawCrossSectionPositionMarkers(renderBoard, transform, "outline");
   mark("cross-sections");
   if (state.viewOptions.showFlowlines) drawSurfaceAngleLines(renderBoard, transform, "outline", [10, 27.5, 45], "#5ac8fa");
@@ -11700,6 +11881,7 @@ function drawOutline(board, rect) {
   }
   mark("edit-handles");
   drawBottomFeatureHandles(renderBoard, transform);
+  state.railProfileHandles = [];
   drawShaperComment(renderBoard, rect);
   mark("bottom-handles");
   flush();
@@ -11755,8 +11937,8 @@ function drawProfile(board, rect) {
     drawGuidePoints(visibleBottomGuides.points, rawTransform, "Bottom", renderBoard.bottomGuidePoints, visibleBottomGuides.indexMap);
     drawGuidePoints(visibleDeckGuides.points, rawTransform, "Deck", renderBoard.deckGuidePoints, visibleDeckGuides.indexMap);
   }
-  setBottomFeatureHandles(renderBoard, rawTransform, "profile");
-  drawBottomFeatureHandles(renderBoard, rawTransform);
+  state.bottomFeatureHandles = [];
+  drawRailProfileHandles(renderBoard, rawTransform, rect);
   if (state.viewOptions.showSlidingCrossSection) drawSlidingCrossSectionOnBoard(renderBoard, transform, "profile");
   label("Bottom", transform.x(8), transform.y(bottom[0]?.y || 0) - 12, "#d1d1d6");
   label("Deck", transform.x(8), transform.y((deck[0]?.y || 0) + 1), "#f0a35f");
@@ -11767,6 +11949,61 @@ function drawProfile(board, rect) {
     ], rawTransform);
     drawEditHandles();
   }
+}
+
+function drawRailProfileHandles(board, transform, rect, mode = "profile") {
+  const profile = normalizeRailProfile(board?.railProfile, board?.railMode);
+  if (!board?.length || !(profile.nose || profile.mid || profile.tail)) return;
+  const tailX = board.length * profile.tailAnchor;
+  const midX = board.length * profile.midAnchor;
+  const noseX = board.length * profile.noseAnchor;
+  const edgePoints = mode === "outline"
+    ? rawOutlineHalfPoints(board, 48)
+    : (board.deck || []).map(knot => knot.p);
+  const boardTop = edgePoints.length
+    ? Math.min(...edgePoints.map(point => transform.y(point.y)))
+    : rect.top + 52;
+  const bandTop = Math.max(rect.top + 4, boardTop - 54);
+  const y = bandTop + 13;
+  state.railProfileHandles = [
+    { kind: "tailAnchor", x: tailX, label: railModeLabel(profile.tail), color: "#bf5af2", transform },
+    { kind: "midAnchor", x: midX, label: railModeLabel(profile.mid), color: "#30d158", transform },
+    { kind: "noseAnchor", x: noseX, label: railModeLabel(profile.nose), color: "#ff9f0a", transform }
+  ];
+  ctx.save();
+  ctx.font = "11px sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillStyle = "rgba(191,90,242,.18)";
+  ctx.fillRect(transform.x(0), bandTop, transform.x(tailX) - transform.x(0), 32);
+  [[tailX, midX, "#bf5af2", "#30d158"], [midX, noseX, "#30d158", "#ff9f0a"]].forEach(([from, to, fromColor, toColor]) => {
+    const gradient = ctx.createLinearGradient(transform.x(from), 0, transform.x(to), 0);
+    gradient.addColorStop(0, fromColor);
+    gradient.addColorStop(1, toColor);
+    ctx.globalAlpha = 0.18;
+    ctx.fillStyle = gradient;
+    ctx.fillRect(transform.x(from), bandTop, transform.x(to) - transform.x(from), 32);
+    ctx.globalAlpha = 1;
+  });
+  ctx.fillStyle = "rgba(255,159,10,.18)";
+  ctx.fillRect(transform.x(noseX), bandTop, transform.x(board.length) - transform.x(noseX), 32);
+  state.railProfileHandles.forEach(handle => {
+    const x = transform.x(handle.x);
+    ctx.strokeStyle = handle.color;
+    ctx.setLineDash([5, 4]);
+    ctx.beginPath();
+    ctx.moveTo(x, bandTop);
+    ctx.lineTo(x, boardTop);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = handle.color;
+    ctx.beginPath();
+    ctx.arc(x, y, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#f2f2f7";
+    ctx.fillText(handle.label, x, y + 14);
+  });
+  ctx.restore();
 }
 
 function drawRockerTargetPreview(board, transform, profile, points = null, config = null) {
@@ -12080,7 +12317,10 @@ function drawCurrentCrossSectionPane(board, rect) {
     });
   }
 
-  if (!state.viewOptions.viewBlank) drawPath(currentFull, transform, "#ff6b6b", 2);
+  if (!state.viewOptions.viewBlank) {
+    fillPath(currentFull, transform, "#fcfaf5");
+    drawPath(currentFull, transform, "#ff6b6b", 2);
+  }
   if (normalizeRailModeKey(renderBoard.railMode)) drawRailBandGuides(displaySpline, transform, renderBoard.railMode);
   if (ghostBoardFull.length) drawGhostPath(ghostBoardFull, transform, "#b8c7d9", 1.25, true);
   drawScanGhostCrossSection(ghostFull, transform);
@@ -12153,10 +12393,23 @@ function drawCrossSectionPositionPane(board, rect) {
   const profile = bottom.concat(deck).map(p => ({ x: p.x, y: p.y - profileOffset }));
   const points = outline.concat(profile);
   const transform = fitTransform(points, insetRect(rect, 22, 30, 18, 18), 6);
+  registerPointerTransform("section-position", transform, rect, "profile");
 
   drawPath(outline, transform, "#5ac8fa", 1.2);
   drawPath(bottom.map(p => ({ x: p.x, y: p.y - profileOffset })), transform, "#d1d1d6", 1.1);
   drawPath(deck.map(p => ({ x: p.x, y: p.y - profileOffset })), transform, "#f0a35f", 1.1);
+
+  if (state.viewOptions.showSlidingCrossSection) {
+    const x = slidingBoardX(board);
+    ctx.save();
+    ctx.strokeStyle = "#64b5ff";
+    ctx.lineWidth = 1.4;
+    ctx.setLineDash([4, 4]);
+    line(transform.x(x), rect.top + 8, transform.x(x), rect.top + rect.height - 8);
+    ctx.setLineDash([]);
+    label(`Sliding CS ${fmt(boardCadDisplayXFromRawX(board, x))}`, transform.x(x) + 6, rect.top + 18, "#64b5ff");
+    ctx.restore();
+  }
 
   if (!state.viewOptions.showCrossSectionPositions) return;
 
@@ -12640,9 +12893,10 @@ function railApexLineSamples(board, count = 40) {
     const x = Math.max(0.01, Math.min(length - 0.01, length * i / count));
     const knots = boardCadInterpolatedDisplayCrossSectionKnots(board, x);
     if (!knots.length) continue;
-    const apex = knots.reduce((best, knot) => knot.p.x > best.p.x ? knot : best, knots[0]);
+    const apex = boardCadSectionAngleLandmark(knots, BOARD_CAD_APEX_DEFINITION_ANGLE)?.point;
+    if (!apex) continue;
     const thickness = Math.max(0.01, boardCadCrossSectionCenterThickness(knots));
-    samples.push({ x, lateral: apex.p.x, heightRatio: apex.p.y / thickness });
+    samples.push({ x, lateral: apex.x, heightRatio: apex.y / thickness });
   }
   return samples;
 }
@@ -12681,9 +12935,8 @@ function polygonAreaCentroid(points) {
 function railGeometryLineSamples(board, count = 40) {
   return railApexLineSamples(board, count).map(sample => {
     const knots = boardCadInterpolatedDisplayCrossSectionKnots(board, sample.x);
-    const railIndex = knots.reduce((best, knot, index) => knot.p.x > knots[best].p.x ? index : best, 0);
-    const halfWidth = Math.max(0.01, knots[railIndex].p.x);
-    const tuck = knots[Math.max(0, railIndex - 1)]?.p || { x: 0 };
+    const halfWidth = Math.max(0.01, sample.lateral);
+    const tuck = boardCadSectionAngleLandmark(knots, BOARD_CAD_TUCK_UNDER_DEFINITION_ANGLE)?.point || { x: 0 };
     const full = fullCrossSectionPoints(knots);
     const rightRail = clipPolygonByAxis(full, "x", halfWidth * 0.75, false);
     const leftRail = clipPolygonByAxis(full, "x", -halfWidth * 0.75, true);
@@ -12760,11 +13013,18 @@ function simulationSelectedComparisons(board) {
 function hydrodynamicSimulationMetrics(board) {
   const volumeLiters = boardCadVolume(board) / 1000;
   const buoyancySamples = boardCadVolumeDistributionSamples(board, 40);
+  const volumeM3 = volumeLiters / 1000;
+  const lengthM = boardCadTailDisplayLength(board) / 100;
+  const maxAreaM2 = Math.max(0, ...buoyancySamples.map(sample => sample.area)) / 10000;
+  const speed = 5;
   return {
     volumeLiters,
     seawaterSupportKg: volumeLiters * 1.025,
     freshwaterSupportKg: volumeLiters,
     centerOfBuoyancy: boardCadCenterOfMass(board),
+    prismaticCoefficient: lengthM > 0 && maxAreaM2 > 0 ? volumeM3 / (lengthM * maxAreaM2) : 0,
+    lengthDisplacementRatio: volumeM3 > 0 ? lengthM / Math.cbrt(volumeM3) : 0,
+    froudeNumber: lengthM > 0 ? speed / Math.sqrt(9.80665 * lengthM) : 0,
     buoyancySamples,
     apexSamples: railApexLineSamples(board, 40),
     fins: finYawEstimate(board),
@@ -12778,7 +13038,7 @@ function drawHydrodynamicSimulation(board, rect) {
   const metrics = hydrodynamicSimulationMetrics(board);
   const ja = state.language === "ja";
   const pad = 18;
-  const headerH = 112;
+  const headerH = 176;
   ctx.fillStyle = "rgba(20,21,24,.94)";
   ctx.fillRect(rect.left, rect.top, rect.width, rect.height);
   label(ja ? "流体シミュレーション（準静的・比較モデル）" : "Hydrodynamic simulation (quasi-static comparison model)", pad, 26, "#f2f2f7");
@@ -12786,16 +13046,21 @@ function drawHydrodynamicSimulation(board, rect) {
     [ja ? "体積" : "Volume", `${fmt(metrics.volumeLiters)} L`],
     [ja ? "海水中の最大支持質量" : "Max seawater support", `${fmt(metrics.seawaterSupportKg)} kg`],
     [ja ? "浮力中心 X" : "Center of buoyancy X", `${fmt(metrics.centerOfBuoyancy)} cm`],
+    [ja ? "プリズマティック係数 Cp" : "Prismatic coefficient Cp", fmt(metrics.prismaticCoefficient)],
+    [ja ? "長さ–排水容積比" : "Length–displacement ratio", fmt(metrics.lengthDisplacementRatio)],
+    [ja ? "Froude数（5 m/s）" : "Froude number (5 m/s)", fmt(metrics.froudeNumber)],
     [ja ? "フィン / 5°横力" : "Fins / force at 5°", `${metrics.fins.count} / ${fmt(metrics.fins.force)} N`],
     [ja ? "Yaw復原モーメント" : "Yaw restoring moment", `${fmt(metrics.fins.moment)} N·m`]
   ];
-  const cardW = (rect.width - pad * 2 - 8 * (cards.length - 1)) / cards.length;
+  const columns = 4;
+  const cardW = (rect.width - pad * 2 - 8 * (columns - 1)) / columns;
   cards.forEach((card, i) => {
-    const x = pad + i * (cardW + 8);
+    const x = pad + (i % columns) * (cardW + 8);
+    const y = 40 + Math.floor(i / columns) * 62;
     ctx.fillStyle = "rgba(46,48,54,.94)";
-    ctx.fillRect(x, 40, cardW, 54);
-    label(card[0], x + 9, 58, "#aeb4bf");
-    label(card[1], x + 9, 81, "#64d2ff");
+    ctx.fillRect(x, y, cardW, 54);
+    label(card[0], x + 9, y + 18, "#aeb4bf");
+    label(card[1], x + 9, y + 41, "#64d2ff");
   });
   const gap = 12;
   const comparisonY = headerH;
@@ -12933,7 +13198,6 @@ function drawQuadOutline(board, rect) {
   if (ghostPoints.length) drawGhostPath(ghostPoints, transform, "#b8c7d9", 1.15, true);
   drawContextToolpaths(renderBoard, transform, "outline");
   if (state.viewOptions.showCenterLine) drawCenterLine(boardCadTailDisplayLength(renderBoard), rect, points, transform);
-  drawOutlineBottomFeatureRanges(renderBoard, transform, rect);
   if (state.viewOptions.showCrossSectionPositions) drawCrossSectionPositionMarkers(renderBoard, transform, "outline");
   if (state.viewOptions.showFlowlines) drawSurfaceAngleLines(renderBoard, transform, "outline", [10, 27.5, 45], "#5ac8fa");
   if (state.viewOptions.showApexLine) drawSurfaceAngleLines(renderBoard, transform, "outline", [90], "#30d158");
@@ -12949,10 +13213,12 @@ function drawQuadOutline(board, rect) {
   if (state.quadActivePane === "outline") {
     setWingHandles(renderBoard, rawTransform);
     setBottomFeatureHandles(renderBoard, transform, "outline", rect);
+    if (state.bottomFeatureOverlayVisible !== false) drawOutlineBottomFeatureRanges(renderBoard, transform, rect);
   }
   drawFins(renderBoard, rawTransform);
   if (state.quadActivePane === "outline") drawWingHandles();
   if (state.quadActivePane === "outline") drawBottomFeatureHandles(renderBoard, transform);
+  if (state.quadActivePane === "outline") state.railProfileHandles = [];
   if (state.viewOptions.showSlidingCrossSection) drawSlidingCrossSectionOnBoard(renderBoard, transform, "outline");
 }
 
@@ -12996,8 +13262,8 @@ function drawQuadProfile(board, rect) {
     drawGuidePoints(visibleBottomGuides.points, rawTransform, "Bottom", renderBoard.bottomGuidePoints, visibleBottomGuides.indexMap);
     drawGuidePoints(visibleDeckGuides.points, rawTransform, "Deck", renderBoard.deckGuidePoints, visibleDeckGuides.indexMap);
   }
-  if (state.quadActivePane === "profile") setBottomFeatureHandles(renderBoard, rawTransform, "profile");
-  if (state.quadActivePane === "profile") drawBottomFeatureHandles(renderBoard, rawTransform);
+  if (state.quadActivePane === "profile") state.bottomFeatureHandles = [];
+  if (state.quadActivePane === "profile") drawRailProfileHandles(renderBoard, rawTransform, rect);
   if (state.viewOptions.showSlidingCrossSection) drawSlidingCrossSectionOnBoard(renderBoard, transform, "profile");
 }
 
@@ -13059,7 +13325,10 @@ function drawQuadCurrentSection(board, rect) {
   const ghostFull = ghostSection?.spline?.length ? transformGhostPoints(fullCrossSectionPoints(ghostSection.spline)) : [];
   const transform = fitTransform(full.concat(ghostFull), rect, 18);
   if (state.quadActivePane === "cross-section") registerPointerTransform("quad", transform, rect);
-  if (!state.viewOptions.viewBlank) drawPath(full, transform, "#d1d1d6", 1.4);
+  if (!state.viewOptions.viewBlank) {
+    fillPath(full, transform, "#fcfaf5");
+    drawPath(full, transform, "#d1d1d6", 1.4);
+  }
   if (normalizeRailModeKey(renderBoard.railMode)) drawRailBandGuides(displaySpline, transform, renderBoard.railMode);
   if (ghostFull.length) drawGhostPath(ghostFull, transform, "#b8c7d9", 1.2, true);
   if (state.viewOptions.showSlidingCrossSection) drawSlidingCrossSectionShape(renderBoard, transform, rect);
@@ -14163,17 +14432,24 @@ function hitWingHandle(screenPoint) {
   return best;
 }
 
+function hitRailProfileHandle(screenPoint) {
+  if (state.tool !== "edit" || !(state.view === "profile" || state.view === "outline" || (state.view === "quad" && (state.quadActivePane === "profile" || state.quadActivePane === "outline")))) return null;
+  if (state.view === "outline" || (state.view === "quad" && state.quadActivePane === "outline")) return null;
+  return state.railProfileHandles.find(handle => Math.abs(screenPoint.x - handle.transform.x(handle.x)) < 10) || null;
+}
+
 function hitBottomFeatureHandle(screenPoint) {
   if (state.tool !== "edit") return null;
   const bottomFeatureEditable =
     state.view === "outline" ||
+    state.view === "profile" ||
     state.view === "sections" ||
-    (state.view === "quad" && (state.quadActivePane === "outline" || state.quadActivePane === "cross-section"));
+    (state.view === "quad" && (state.quadActivePane === "outline" || state.quadActivePane === "profile" || state.quadActivePane === "cross-section"));
   if (!bottomFeatureEditable) return null;
   const handles = state.bottomFeatureHandles.concat(state.bottomFeatureSectionHandles);
 
   for (const handle of handles) {
-    if (handle.mode === "outline") continue;
+    if (handle.uiOnly) continue;
     if (!(handle.mode === "outline" && (handle.kind === "depth" || handle.kind === "width"))) continue;
     const sx = Number.isFinite(handle.screenX) ? handle.screenX : handle.transform.x(handle.x);
     const top = Number.isFinite(handle.dragRangeTop) ? handle.dragRangeTop - 10 : (handle.screenRect?.top ?? 0);
@@ -14190,10 +14466,18 @@ function hitBottomFeatureHandle(screenPoint) {
     }
   }
 
+  // Longitudinal anchors behave like rail anchors: grab by the vertical guide,
+  // not only by the small label glyph.
+  for (const handle of handles) {
+    if (handle.mode !== "outline" || handle.kind !== "peak") continue;
+    const sx = Number.isFinite(handle.screenX) ? handle.screenX : handle.transform.x(handle.x);
+    if (Math.abs(screenPoint.x - sx) <= 24) return handle;
+  }
+
   let best = null;
   let bestDistance = 14;
   for (const handle of handles) {
-    if (handle.mode === "outline") continue;
+    if (handle.uiOnly) continue;
     const sx = handle.mode === "outline" && Number.isFinite(handle.screenX) ? handle.screenX : handle.transform.x(handle.x);
     const sy = handle.mode === "outline" && Number.isFinite(handle.screenY) ? handle.screenY : handle.transform.y(handle.y);
     let distance = Math.hypot(screenPoint.x - sx, screenPoint.y - sy);
@@ -14249,15 +14533,19 @@ function canvasPoint(event) {
   };
 }
 
-function registerPointerTransform(key, transform, rect) {
-  state.pointerTransforms[key] = { transform, rect };
+function registerPointerTransform(key, transform, rect, mode = key) {
+  state.pointerTransforms[key] = { transform, rect, mode };
 }
 
 function activePointerTransform(screenPoint) {
   if (state.view === "quad") {
     return state.pointerTransforms.quad || null;
   }
-  if (state.view === "sections") return state.pointerTransforms.section || null;
+  if (state.view === "sections") {
+    const position = state.pointerTransforms["section-position"];
+    if (position && pointInRect(screenPoint, position.rect)) return position;
+    return state.pointerTransforms.section || null;
+  }
   return state.pointerTransforms[state.view] || null;
 }
 
@@ -14271,6 +14559,10 @@ function updateCursorPoint(event) {
     x: entry.transform.invX(screen.x),
     y: entry.transform.invY(screen.y)
   };
+  const mode = entry.mode || (state.view === "quad" ? state.quadActivePane : state.view);
+  if (mode === "outline" || mode === "profile") {
+    state.slidingCrossSectionX = clampNumber(state.cursorPoint.x, 0.1, Math.max(0.1, state.board.length - 0.1), state.board.length * 0.5);
+  }
 }
 
 function onCanvasPointerDown(event) {
@@ -14303,8 +14595,15 @@ function onCanvasPointerDown(event) {
     return;
   }
   if (state.tool !== "edit") return;
-  const hit = hitEditHandle(screenPoint);
   const bottomFeatureHit = hitBottomFeatureHandle(screenPoint);
+  const railProfileHit = bottomFeatureHit ? null : hitRailProfileHandle(screenPoint);
+  if (railProfileHit) {
+    event.preventDefault();
+    state.drag = { type: "rail-profile", handle: railProfileHit, before: cloneBoard(state.board), moved: false };
+    els.canvas.setPointerCapture?.(event.pointerId);
+    return;
+  }
+  const hit = hitEditHandle(screenPoint);
   if (bottomFeatureHit) {
     event.preventDefault();
     state.selection = null;
@@ -14318,6 +14617,8 @@ function onCanvasPointerDown(event) {
       handle: bottomFeatureHit,
       before: cloneBoard(state.board),
       start: boardPointFromHandleEvent(bottomFeatureHit, event),
+      startScreenX: screenPoint.x,
+      startScreenY: screenPoint.y,
       originalFeature: { ...bottomFeatureHit.feature },
       moved: false
     };
@@ -14763,6 +15064,19 @@ function onCanvasPointerMove(event) {
     return;
   }
   event.preventDefault();
+  if (state.drag.type === "rail-profile") {
+    const profile = normalizeRailProfile(state.board.railProfile, state.board.railMode);
+    const ratio = clampNumber(state.drag.handle.transform.invX(canvasPoint(event).x) / Math.max(0.01, state.board.length), 0.02, 0.98, 0.5);
+    if (state.drag.handle.kind === "tailAnchor") profile.tailAnchor = Math.min(ratio, profile.midAnchor - 0.04, 0.44);
+    if (state.drag.handle.kind === "midAnchor") profile.midAnchor = clampNumber(ratio, profile.tailAnchor + 0.04, profile.noseAnchor - 0.04, profile.midAnchor);
+    if (state.drag.handle.kind === "noseAnchor") profile.noseAnchor = Math.max(ratio, profile.midAnchor + 0.04);
+    state.drag.moved = true;
+    state.board.railProfile = profile;
+    state.board.sections.forEach(section => applyBoardRailAndEdgeToSection(state.board, section));
+    updateBoardPanel();
+    draw();
+    return;
+  }
   if (state.drag.type === "guidepoint") {
     const current = boardPointFromHandleEvent(state.drag.handle, event);
     state.lastEditPoint = current;
@@ -14804,9 +15118,7 @@ function onCanvasPointerMove(event) {
   }
   if (state.drag.type === "bottom-feature") {
     if (state.drag.handle?.action === "set-depth" || state.drag.handle?.action === "set-width") {
-      const overlayScreenY = Number.isFinite(event?.clientY)
-        ? Number(event.clientY)
-        : canvasPoint(event).y;
+      const overlayScreenY = canvasPoint(event).y;
       state.lastEditPoint = boardPointFromHandleEvent(state.drag.handle, event);
       if (Math.abs(overlayScreenY - (state.drag.startScreenY ?? overlayScreenY)) > 1e-6) state.drag.moved = true;
       moveBottomFeatureDrag(
@@ -14829,7 +15141,10 @@ function onCanvasPointerMove(event) {
     const nextDisplayX = Number.isFinite(state.drag.handleBoardX)
       ? state.drag.handleBoardX + dx
       : state.drag.start.x + dx;
-    moveBottomFeatureDrag(state.drag.handle, state.drag.originalFeature, nextDisplayX, canvasPoint(event).y);
+    const directDisplayX = state.drag.handle?.mode === "outline" && state.drag.handle?.kind === "peak"
+      ? state.drag.handle.transform.invX(canvasPoint(event).x)
+      : nextDisplayX;
+    moveBottomFeatureDrag(state.drag.handle, state.drag.originalFeature, directDisplayX, canvasPoint(event).y);
     updateBottomFeatureDragUI(Number.isFinite(state.drag.handle?.listIndex) ? state.drag.handle.listIndex : state.drag.handle?.featureIndex, { includeEditInfo: true, liveDrag: true });
     draw();
     return;
@@ -14997,6 +15312,8 @@ function onCanvasPointerUp() {
       handledSummaryUpdate = true;
     } else if (state.drag.type === "fin") {
       updateBoardPanel();
+    } else if (state.drag.type === "rail-profile") {
+      updateBoardPanel();
     }
     if (!handledSummaryUpdate) {
       updateInfo();
@@ -15086,6 +15403,20 @@ function drawPath(points, transform, color, width) {
   ctx.strokeStyle = color;
   ctx.lineWidth = width;
   ctx.stroke();
+}
+
+function fillPath(points, transform, color) {
+  if (!points.length) return;
+  ctx.beginPath();
+  points.forEach((p, i) => {
+    const x = transform.x(p.x);
+    const y = transform.y(p.y);
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+  ctx.closePath();
+  ctx.fillStyle = color;
+  ctx.fill();
 }
 
 function drawTailTransomLine(planform, transform, color = "#5ac8fa", width = 1.4) {
@@ -15824,9 +16155,7 @@ function drawSlidingCrossSectionShape(board, transform, rect) {
   if (!knots.length) return;
   const full = fullCrossSectionPoints(knots);
   ctx.save();
-  ctx.setLineDash([6, 4]);
   drawPath(full, transform, "#64b5ff", 1.4);
-  ctx.setLineDash([]);
   label(`Sliding cross section ${fmt(boardCadDisplayXFromRawX(board, pos))}`, rect.left + 16, rect.top + 42, "#64b5ff");
   ctx.restore();
 }
@@ -16170,7 +16499,7 @@ function drawSurfaceAngleLines(board, transform, mode, angles, color) {
 function drawCrossSectionAngleMarkers(knots, transform, angles, color) {
   if (!knots || knots.length < 2) return;
   angles.forEach((angle, index) => {
-    const p = boardCadPointByNormalReverse(knots, angle);
+    const p = boardCadSectionAngleLandmark(knots, angle)?.point;
     if (!p) return;
     ctx.fillStyle = color;
     ctx.globalAlpha = Math.max(0.52, 0.9 - index * 0.14);
@@ -16199,13 +16528,13 @@ function drawOutlineSlidingInfo(board, transform, rect) {
   if (state.viewOptions.showOverBottomCurveMeasurements) {
     const bottomLength = parameterScalarCacheGet("profile-bottom-length", () => boardCadSplineLength(profile.bottomKnots));
     const curvePos = parameterScalarCacheGet(`profile-bottom-oc:${rawPos.toFixed(4)}`, () => boardCadLengthByX(profile.bottomKnots, rawPos));
+    lines.push(`Bottom O.C.: ${fmt(bottomLength)} cm`);
     lines.push(`O.C. tail: ${fmt(curvePos)}`);
     lines.push(`O.C. nose: ${fmt(bottomLength - curvePos)}`);
   }
   if (state.viewOptions.showMomentOfInertia) {
-    const momentY = state.cursorPoint?.y ?? state.lastEditPoint?.y ?? 0;
-    const moment = parameterScalarCacheGet(`moment:${pos.toFixed(3)}:${Number(momentY).toFixed(3)}`, () => boardCadMomentOfInertia(board, pos, momentY));
-    lines.push(`Moment: ${fmt(moment)}`);
+    const moment = parameterScalarCacheGet(`moment:${pos.toFixed(3)}:0`, () => boardCadMomentOfInertia(board, pos, 0));
+    lines.push(`Longitudinal I (est.): ${fmt(moment)} kg·m²`);
   }
   drawSlidingLabel(lines, rect);
   ctx.strokeStyle = "#64b5ff";
@@ -16234,8 +16563,13 @@ function drawProfileSlidingInfo(board, transform, rect) {
   if (state.viewOptions.showOverBottomCurveMeasurements) {
     const bottomLength = parameterScalarCacheGet("profile-bottom-length", () => boardCadSplineLength(profile.bottomKnots));
     const curvePos = parameterScalarCacheGet(`profile-bottom-oc:${rawPos.toFixed(4)}`, () => boardCadLengthByX(profile.bottomKnots, rawPos));
+    lines.push(`Bottom O.C.: ${fmt(bottomLength)} cm`);
     lines.push(`O.C. tail: ${fmt(curvePos)}`);
     lines.push(`O.C. nose: ${fmt(bottomLength - curvePos)}`);
+  }
+  if (state.viewOptions.showMomentOfInertia) {
+    const moment = parameterScalarCacheGet(`moment:${pos.toFixed(3)}:0`, () => boardCadMomentOfInertia(board, pos, 0));
+    lines.push(`Longitudinal I (est.): ${fmt(moment)} kg·m²`);
   }
   drawSlidingLabel(lines, rect);
   ctx.strokeStyle = "#64b5ff";
@@ -16279,7 +16613,7 @@ function drawSlidingLabel(lines, rect) {
 }
 
 function slidingBoardX(board, mode = (state.view === "quad" ? state.quadActivePane : state.view)) {
-  const x = state.cursorPoint?.x ?? state.lastEditPoint?.x;
+  const x = state.slidingCrossSectionX;
   if (Number.isFinite(x)) {
     return clampNumber(x, 0.1, Math.max(0.1, board.length - 0.1), Math.max(0.1, board.length * 0.5));
   }
@@ -16347,80 +16681,28 @@ function boardCadSurfacePointAtAngle(board, x, angle) {
   let cached = angleCache.get(cacheKey);
   if (!cached) {
     cached = { rawX, displayX, interpolation: state.crossSectionInterpolation };
-    if (state.crossSectionInterpolation === "controlpoint") {
-      cached.knots = boardCadInterpolatedDisplayCrossSectionKnots(board, displayX);
-      cached.knotSamples = cached.knots.length ? boardCadSplineSamples(cached.knots, 24) : [];
-      cached.sByAngle = new Map();
-    } else {
-      const c1Index = boardCadPreviousCrossSectionIndex(board, rawX);
-      const c2Index = boardCadNextCrossSectionIndex(board, rawX);
-      if (c1Index >= 0 && c2Index >= 0) {
-        const c1 = board.sections[c1Index];
-        const c2 = board.sections[c2Index];
-        const targetWidth = Math.max(0.5, boardCadDisplayWidthAtPos(board, displayX));
-        const targetThickness = Math.max(0.5, boardCadThicknessAtPos(board, rawX));
-        cached.c1Knots = boardCadCrossSectionScaleTo(boardCadCloneKnots(c1.spline), targetThickness, targetWidth);
-        cached.c2Knots = boardCadCrossSectionScaleTo(boardCadCloneKnots(c2.spline), targetThickness, targetWidth);
-        cached.c1Samples = boardCadSplineSamples(cached.c1Knots, 24);
-        cached.c2Samples = boardCadSplineSamples(cached.c2Knots, 24);
-        cached.pos1 = boardCadPreviousCrossSectionPos(board, rawX);
-        cached.pos2 = boardCadNextCrossSectionPos(board, rawX);
-        cached.t = Math.abs(cached.pos2 - cached.pos1) > 1e-9 ? clamp01((rawX - cached.pos1) / (cached.pos2 - cached.pos1)) : 0;
-        cached.s1ByAngle = new Map();
-        cached.s2ByAngle = new Map();
-      }
-    }
+    cached.knots = boardCadInterpolatedDisplayCrossSectionKnots(board, displayX);
+    cached.knotSamples = cached.knots.length ? boardCadSplineSamples(cached.knots, 24) : [];
+    cached.sByAngle = new Map();
     angleCache.set(cacheKey, cached);
   }
-  if (state.crossSectionInterpolation === "controlpoint") {
-    const knots = cached.knots || boardCadInterpolatedDisplayCrossSectionKnots(board, displayX);
-    const samples = cached.knotSamples?.length ? cached.knotSamples : boardCadSplineSamples(knots, 24);
-    cached.knotSamples = samples;
-    if (!cached.sByAngle.has(angle)) {
-      const s = samples.length
-        ? boardCadSByNormalReverseFromSamples(samples, angle)
-        : boardCadSByNormalReverse(knots, angle, true);
-      cached.sByAngle.set(angle, s);
-    }
-    const point = samples.length
-      ? boardCadPointBySFromSamples(samples, cached.sByAngle.get(angle))
-      : boardCadPointByS(knots, cached.sByAngle.get(angle));
-    return point ? {
-      x: displayX,
-      y: point.x,
-      z: point.y + boardCadRockerAtPos(board, rawX)
-    } : null;
+  const knots = cached.knots || boardCadInterpolatedDisplayCrossSectionKnots(board, displayX);
+  const samples = cached.knotSamples?.length ? cached.knotSamples : boardCadSplineSamples(knots, 24);
+  cached.knotSamples = samples;
+  if (!cached.sByAngle.has(angle)) {
+    const s = samples.length
+      ? boardCadSByNormalReverseFromSamples(samples, angle)
+      : boardCadSByNormalReverse(knots, angle, true);
+    cached.sByAngle.set(angle, s);
   }
-  if (!cached.c1Knots || !cached.c2Knots) return null;
-  if (!cached.s1ByAngle.has(angle)) {
-    const s1 = cached.c1Samples?.length
-      ? boardCadSByNormalReverseFromSamples(cached.c1Samples, angle)
-      : boardCadSByNormalReverse(cached.c1Knots, angle, true);
-    cached.s1ByAngle.set(angle, s1);
-  }
-  if (!cached.s2ByAngle.has(angle)) {
-    const s2 = cached.c2Samples?.length
-      ? boardCadSByNormalReverseFromSamples(cached.c2Samples, angle)
-      : boardCadSByNormalReverse(cached.c2Knots, angle, true);
-    cached.s2ByAngle.set(angle, s2);
-  }
-  const s1 = cached.s1ByAngle.get(angle);
-  const s2 = cached.s2ByAngle.get(angle);
-  const p1 = cached.c1Samples?.length
-    ? boardCadPointBySFromSamples(cached.c1Samples, s1)
-    : boardCadPointByS(cached.c1Knots, s1);
-  const p2 = cached.c2Samples?.length
-    ? boardCadPointBySFromSamples(cached.c2Samples, s2)
-    : boardCadPointByS(cached.c2Knots, s2);
-  const point = {
-    x: lerp(p1.x, p2.x, cached.t),
-    y: lerp(p1.y, p2.y, cached.t)
-  };
-  return {
+  const point = samples.length
+    ? boardCadPointBySFromSamples(samples, cached.sByAngle.get(angle))
+    : boardCadPointByS(knots, cached.sByAngle.get(angle));
+  return point ? {
     x: displayX,
     y: point.x,
     z: point.y + boardCadRockerAtPos(board, rawX)
-  };
+  } : null;
 }
 
 function boardCadSurfaceSectionSampleAt(knots, surface, targetY) {
@@ -16569,19 +16851,32 @@ function boardCadTrackedAnglePoint(board, x, angle, preferredS = null) {
   const knots = boardCadInterpolatedDisplayCrossSectionKnots(board, displayX);
   const samples = knots.length ? boardCadSplineSamples(knots, 32) : [];
   if (!samples.length) return null;
+  const landmark = boardCadSectionAngleLandmark(knots, angle, preferredS, samples);
+  if (!landmark) return null;
+  return {
+    s: landmark.s,
+    point: { x: displayX, y: landmark.point.x, z: landmark.point.y + boardCadRockerAtPos(board, rawX) }
+  };
+}
+
+function boardCadSectionAngleLandmark(knots, angle, preferredS = null, preparedSamples = null) {
+  const samples = preparedSamples?.length ? preparedSamples : boardCadSplineSamples(knots, 32);
+  if (!samples.length) return null;
   const total = samples[samples.length - 1].length;
+  if (angle === BOARD_CAD_APEX_DEFINITION_ANGLE) {
+    const sample = samples.reduce((best, item) => item.x > best.x ? item : best, samples[0]);
+    return { s: total > 1e-9 ? sample.length / total : 0, point: { x: sample.x, y: sample.y } };
+  }
   const target = normalizeAngleRad((angle - 90) * Math.PI / 180);
   let best = null;
   for (const sample of samples) {
     const s = total > 1e-9 ? sample.length / total : 0;
+    if (preferredS !== null && Math.abs(s - preferredS) > 0.08) continue;
     const continuity = preferredS === null ? 0 : Math.abs(s - preferredS) * Math.PI;
     const score = angleDistance(sample.tangent, target) + continuity;
     if (!best || score < best.score) best = { sample, s, score };
   }
-  return best ? {
-    s: best.s,
-    point: { x: displayX, y: best.sample.x, z: best.sample.y + boardCadRockerAtPos(board, rawX) }
-  } : null;
+  return best ? { s: best.s, point: { x: best.sample.x, y: best.sample.y } } : null;
 }
 
 function boardCadSurfaceAngleLine(board, angle) {
@@ -16591,23 +16886,22 @@ function boardCadSurfaceAngleLine(board, angle) {
   }
   const key = `${state.crossSectionInterpolation}:${angle}:${board.sections.length}:${boardCadTailDisplayLength(board).toFixed(4)}:${boardCadTailDisplayShift(board).toFixed(4)}`;
   if (state.flowlineCache.lines.has(key)) return state.flowlineCache.lines.get(key);
-  const stations = board.sections.map(section => boardCadDisplayXFromRawX(board, section.position));
-  const anchors = Array(stations.length);
-  const middle = Math.floor(stations.length / 2);
-  anchors[middle] = boardCadTrackedAnglePoint(board, stations[middle], angle);
-  for (let i = middle - 1; i >= 0; i--) anchors[i] = boardCadTrackedAnglePoint(board, stations[i], angle, anchors[i + 1]?.s ?? null);
-  for (let i = middle + 1; i < stations.length; i++) anchors[i] = boardCadTrackedAnglePoint(board, stations[i], angle, anchors[i - 1]?.s ?? null);
-  const points = [];
   const segmentsPerSpan = angle === 175 ? 10 : 6;
-  for (let i = 1; i < anchors.length; i++) {
-    const left = anchors[i - 1]?.point;
-    const right = anchors[i]?.point;
-    if (!left || !right) continue;
-    for (let k = i === 1 ? 0 : 1; k <= segmentsPerSpan; k++) {
-      const t = k / segmentsPerSpan;
-      points.push({ x: lerp(left.x, right.x, t), y: lerp(left.y, right.y, t), z: lerp(left.z, right.z, t) });
+  const positions = [];
+  for (let i = 0; i < board.sections.length; i++) {
+    const previous = i === 0 ? 0 : boardCadDisplayXFromRawX(board, board.sections[i - 1].position);
+    const current = boardCadDisplayXFromRawX(board, board.sections[i].position);
+    const step = (current - previous) / segmentsPerSpan;
+    for (let k = i === 0 ? 0 : 1; k <= segmentsPerSpan; k++) {
+      positions.push(previous + k * step);
     }
   }
+  const anchors = Array(positions.length);
+  const middle = Math.floor(positions.length / 2);
+  anchors[middle] = boardCadTrackedAnglePoint(board, positions[middle], angle);
+  for (let i = middle - 1; i >= 0; i--) anchors[i] = boardCadTrackedAnglePoint(board, positions[i], angle, anchors[i + 1]?.s ?? null);
+  for (let i = middle + 1; i < positions.length; i++) anchors[i] = boardCadTrackedAnglePoint(board, positions[i], angle, anchors[i - 1]?.s ?? null);
+  const points = anchors.flatMap(anchor => anchor?.point ? [anchor.point] : []);
   state.flowlineCache.lines.set(key, points);
   return points;
 }
@@ -17030,6 +17324,8 @@ function updateSectionInfo() {
   if (normalizeRailModeKey(state.board.railMode)) {
     summaryText += ` / ${railModeLabel(state.board.railMode)} ${fmt(clampNumber(state.board.railStrength, 0, 1, 1))}`;
   }
+  const railOrder = normalizeRailProfile(state.board.railProfile, state.board.railMode).order;
+  if (railOrder.length) summaryText += ` / ${railOrder.map(railModeLabel).join(" → ")}`;
   const edge = normalizedEdgeConfig(state.board);
   const edgeStrength = edgeEffectAtSection(state.board, section, edge);
   if (edgeStrength > 1e-6) {
@@ -18037,7 +18333,7 @@ function applyExplicitBottomFeatureControlPoints(knots, board, feature, envelope
     const boundaryIndex = findKnotIndexNearX(explicit, anchorX, 0.1, railIndex);
     if (boundaryIndex < 0) return explicit;
     const simplified = simplifyExplicitVeeKnots(explicit, boundaryIndex, railIndex);
-    shiftKnotVertical(simplified.knots[simplified.boundaryIndex], feature.depth * clampedEnvelope);
+    shiftKnotVertical(simplified.knots[simplified.boundaryIndex], feature.depth * 0.65 * clampedEnvelope);
     shapeExplicitProtectedVeeSegment(simplified.knots, simplified.boundaryIndex, edgeStrength * clampedEnvelope);
     return simplified.knots;
   } else if (type === "hull" || type === "displacement-hull") {
@@ -19220,7 +19516,7 @@ function boardPanelInputs() {
     els.rockerPreset, els.rockerEnabled, els.rockerNose, els.rockerTail, els.rockerEntryLength, els.rockerEntryLift,
     els.rockerMiddleFlatness, els.rockerTailKickLength, els.rockerTailKick, els.rockerApexShift, els.rockerBlend,
     els.rockerPreserveFoil, els.rockerPreserveDeck, els.setRockerButton, els.resetRockerButton,
-    els.railMode, els.railStrength, els.setRailButton,
+    els.railMode, els.railNoseMode, els.railTailMode, els.railStrength, els.setRailButton,
     els.edgeType, els.edgeStrength, els.edgeLength, els.edgeFade, els.setEdgeButton,
     els.bottomFeaturePreset, els.applyBottomPresetButton,
     els.bottomFeatureIndex, els.bottomFeatureEnabled, els.bottomFeatureType, els.bottomFeatureStart, els.bottomFeaturePeak, els.bottomFeatureEnd,
@@ -19353,7 +19649,11 @@ function updateBoardPanel(options = {}) {
       : (wing.transition || 0);
     els.wingTransition.value = fmt(displayTransition);
   }
-  if (els.railMode) els.railMode.value = normalizeRailModeKey(board.railMode);
+  const railProfile = normalizeRailProfile(board.railProfile, board.railMode);
+  if (els.railMode) els.railMode.value = railProfile.mid;
+  if (els.railNoseMode) els.railNoseMode.value = railProfile.nose;
+  if (els.railTailMode) els.railTailMode.value = railProfile.tail;
+  if (els.railExtraType) els.railExtraType.value = "";
   if (els.railStrength) els.railStrength.value = fmt(clampNumber(board.railStrength, 0, 1, 1));
   const edge = normalizedEdgeConfig(board);
   if (els.edgeType) els.edgeType.value = edge.type;
@@ -19598,6 +19898,35 @@ function normalizeRailModeKey(value) {
   if (key === "tucked" || key === "tuck" || key === "tuckededge" || key === "tucked-edge" || key === "tucked-edge-rail") return "tucked-edge";
   if (key === "hard" || key === "hardedge" || key === "hard-edge" || key === "hard-edge-rail") return "hard-edge";
   return "";
+}
+
+function normalizeRailProfile(value, fallback = "") {
+  let source = value;
+  if (typeof source === "string") {
+    try { source = JSON.parse(source); } catch { source = {}; }
+  }
+  const mode = normalizeRailModeKey(fallback);
+  const tailAnchor = clampNumber(source?.tailAnchor ?? source?.tailPureEnd, 0.02, 0.44, 0.15);
+  const midAnchor = clampNumber(source?.midAnchor, tailAnchor + 0.04, 0.94, 0.5);
+  const noseAnchor = clampNumber(source?.noseAnchor ?? source?.nosePureStart, midAnchor + 0.04, 0.98, 0.85);
+  const legacyOrder = [source?.nose, source?.mid, source?.tail]
+    .map(normalizeRailModeKey)
+    .filter((item, index, list) => item && list.indexOf(item) === index);
+  const order = Array.isArray(source?.order)
+    ? source.order.map(normalizeRailModeKey).filter(Boolean).slice(0, 3)
+    : legacyOrder;
+  const nose = order[0] || normalizeRailModeKey(source?.nose) || mode;
+  const mid = order[1] || normalizeRailModeKey(source?.mid) || nose || mode;
+  const tail = order[2] || normalizeRailModeKey(source?.tail) || mid || mode;
+  return {
+    nose,
+    mid,
+    tail,
+    order: order.length ? order : [nose, mid, tail].filter(Boolean).slice(0, 3),
+    tailAnchor,
+    midAnchor,
+    noseAnchor
+  };
 }
 
 function normalizeEdgeTypeKey(value) {
@@ -21140,16 +21469,43 @@ function railLongitudinalStrengthFactor(board, section) {
   return Math.min(smootherstep01(u / 0.2), smootherstep01((1 - u) / 0.2));
 }
 
+function railProfileAtSection(board, section) {
+  const profile = normalizeRailProfile(board?.railProfile, board?.railMode);
+  const u = clampNumber((Number(section?.position) || 0) / Math.max(0.01, Number(board?.length) || 0.01), 0, 1, 0.5);
+  if (u <= profile.tailAnchor) return { from: profile.tail, to: profile.tail, mix: 0 };
+  if (u < profile.midAnchor) return { from: profile.tail, to: profile.mid, mix: smootherstep01((u - profile.tailAnchor) / (profile.midAnchor - profile.tailAnchor)) };
+  if (u < profile.noseAnchor) return { from: profile.mid, to: profile.nose, mix: smootherstep01((u - profile.midAnchor) / (profile.noseAnchor - profile.midAnchor)) };
+  return { from: profile.nose, to: profile.nose, mix: 0 };
+}
+
+function applyRailProfileToSection(board, section, strength) {
+  const base = boardCadCloneKnots(section.spline);
+  const profile = railProfileAtSection(board, section);
+  const shaped = mode => {
+    if (!mode) return base;
+    const candidate = { spline: boardCadCloneKnots(base) };
+    applyRailModeToSection(candidate, mode, strength);
+    return candidate.spline;
+  };
+  const from = shaped(profile.from);
+  const to = shaped(profile.to);
+  section.spline = from.length === to.length
+    ? sanitizeRailSectionHandles(from.map((knot, index) => boardCadLerpKnot(knot, to[index], profile.mix)))
+    : (profile.mix < 0.5 ? from : to);
+}
+
 function applyBoardRailAndEdgeToSection(board, section) {
   if (!board || !section?.spline?.length) return;
   const baseSpline = cloneSectionRailBaseSpline(section);
   if (baseSpline) section.spline = baseSpline;
-  const railMode = normalizeRailModeKey(board.railMode);
+  const railProfile = normalizeRailProfile(board.railProfile, board.railMode);
+  const hasRailProfile = !!(railProfile.nose || railProfile.mid || railProfile.tail);
   const railStrength = clampNumber(board.railStrength, 0, 1, 1) * railLongitudinalStrengthFactor(board, section);
   const edgeConfig = normalizedEdgeConfig(board);
   const edgeStrength = edgeEffectAtSection(board, section, edgeConfig);
-  if (railMode) {
-    applyRailModeToSection(section, railMode, railStrength);
+  if (hasRailProfile) {
+    stashSectionRailBaseSpline(section);
+    applyRailProfileToSection(board, section, railStrength);
   } else if (edgeStrength > 1e-6) {
     stashSectionRailBaseSpline(section);
   } else if (baseSpline) {
@@ -21213,8 +21569,12 @@ function updateWingPanelFields() {
 function updateRailPanelFields() {
   const boardActive = !!state.board;
   if (els.railMode) els.railMode.disabled = !boardActive;
+  if (els.railNoseMode) els.railNoseMode.disabled = !boardActive;
+  if (els.railTailMode) els.railTailMode.disabled = !boardActive;
+  if (els.railExtraType) els.railExtraType.disabled = !boardActive;
   if (els.railStrength) els.railStrength.disabled = !boardActive;
   if (els.setRailButton) els.setRailButton.disabled = !boardActive;
+  syncRailProfilePanel();
 }
 
 function updateEdgePanelFields() {
@@ -21346,21 +21706,141 @@ function setRailFromPanel() {
   if (!state.board || !Array.isArray(state.board.sections)) return;
   const before = cloneBoard(state.board);
   const mode = normalizeRailModeKey(els.railMode?.value || "");
+  const currentProfile = normalizeRailProfile(state.board.railProfile, state.board.railMode);
+  const order = currentProfile.order.slice(0, 3);
+  if (mode && !order.length) order.push(mode);
+  const profile = {
+    nose: order[0] || mode,
+    mid: order[1] || order[0] || mode,
+    tail: order[2] || order[1] || order[0] || mode,
+    order,
+    tailAnchor: currentProfile.tailAnchor,
+    midAnchor: currentProfile.midAnchor,
+    noseAnchor: currentProfile.noseAnchor
+  };
   const strength = clampNumber(els.railStrength?.value, 0, 1, Number(state.board.railStrength) || 1);
   state.board.railMode = mode;
+  state.board.railProfile = profile;
   state.board.railStrength = strength;
   state.board.sections.forEach(section => {
     applyBoardRailAndEdgeToSection(state.board, section);
   });
   commitBoardMutation(before);
-  if (mode) {
+  if (profile.nose || profile.mid || profile.tail) {
     setStatus("status_rail_applied", {
-      shape: railModeLabel(mode),
+      shape: `${railModeLabel(profile.nose)} → ${railModeLabel(profile.mid)} → ${railModeLabel(profile.tail)}`,
       strength: fmt(strength)
     });
   } else {
     setStatus("status_rail_reset");
   }
+}
+
+function addRailShapeFromPanel() {
+  if (!state.board || !els.railExtraType) return;
+  const mode = normalizeRailModeKey(els.railExtraType.value);
+  if (!mode) return;
+  const current = normalizeRailProfile(state.board.railProfile, state.board.railMode);
+  if (current.order.length >= 3) return;
+  const before = cloneBoard(state.board);
+  const order = [...current.order, mode];
+  state.board.railProfile = {
+    ...current,
+    order,
+    nose: order[0],
+    mid: order[1] || order[0],
+    tail: order[2] || order[1] || order[0]
+  };
+  state.board.railMode = state.board.railProfile.mid;
+  state.board.sections.forEach(section => applyBoardRailAndEdgeToSection(state.board, section));
+  els.railExtraType.value = "";
+  commitBoardMutation(before);
+  updateBoardPanel();
+  draw();
+}
+
+function selectedRailProfileIndex() {
+  const value = Number(els.railProfileIndex?.value);
+  return Number.isInteger(value) ? value : -1;
+}
+
+function setRailProfileOrder(order, before = cloneBoard(state.board)) {
+  const clean = order.map(normalizeRailModeKey).filter(Boolean).slice(0, 3);
+  const current = normalizeRailProfile(state.board.railProfile, state.board.railMode);
+  state.board.railProfile = {
+    ...current,
+    order: clean,
+    nose: clean[0] || "",
+    mid: clean[1] || clean[0] || "",
+    tail: clean[2] || clean[1] || clean[0] || ""
+  };
+  state.board.railMode = state.board.railProfile.mid;
+  state.board.sections.forEach(section => applyBoardRailAndEdgeToSection(state.board, section));
+  commitBoardMutation(before);
+  updateBoardPanel();
+  draw();
+}
+
+function syncRailProfilePanel() {
+  const order = state.board ? normalizeRailProfile(state.board.railProfile, state.board.railMode).order : [];
+  const selected = selectedRailProfileIndex();
+  if (els.railProfileIndex) {
+    els.railProfileIndex.innerHTML = '<option value="-1">None</option>';
+    order.forEach((mode, index) => {
+      const option = document.createElement("option");
+      option.value = String(index);
+      option.textContent = `${index + 1}. ${railModeLabel(mode)}`;
+      els.railProfileIndex.appendChild(option);
+    });
+    els.railProfileIndex.value = String(selected >= 0 && selected < order.length ? selected : (order.length ? order.length - 1 : -1));
+    els.railProfileIndex.dataset.previousIndex = els.railProfileIndex.value;
+  }
+  if (els.railProfileList) {
+    els.railProfileList.innerHTML = "";
+    if (!order.length) els.railProfileList.textContent = "レール形状: 0";
+    order.forEach((mode, index) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.dataset.railProfileIndex = String(index);
+      button.textContent = `${index + 1}. ${railModeLabel(mode)}`;
+      button.addEventListener("click", () => {
+        if (els.railProfileIndex) els.railProfileIndex.value = String(index);
+        syncRailProfilePanel();
+      });
+      els.railProfileList.appendChild(button);
+    });
+  }
+  const index = selectedRailProfileIndex();
+  const active = !!state.board && index >= 0 && index < order.length;
+  if (els.removeRailProfileButton) els.removeRailProfileButton.disabled = !active;
+  if (els.resetRailProfileButton) els.resetRailProfileButton.disabled = !state.board || !order.length;
+  if (els.moveRailProfileUpButton) els.moveRailProfileUpButton.disabled = !active || index <= 0;
+  if (els.moveRailProfileDownButton) els.moveRailProfileDownButton.disabled = !active || index >= order.length - 1;
+}
+
+function removeRailProfileFromPanel() {
+  const order = normalizeRailProfile(state.board?.railProfile, state.board?.railMode).order;
+  const index = selectedRailProfileIndex();
+  if (index < 0 || index >= order.length) return;
+  const before = cloneBoard(state.board);
+  order.splice(index, 1);
+  setRailProfileOrder(order, before);
+}
+
+function resetRailProfileFromPanel() {
+  if (!state.board) return;
+  setRailProfileOrder([]);
+}
+
+function moveRailProfileFromPanel(direction) {
+  const order = normalizeRailProfile(state.board?.railProfile, state.board?.railMode).order;
+  const index = selectedRailProfileIndex();
+  const target = index + direction;
+  if (index < 0 || target < 0 || target >= order.length) return;
+  const before = cloneBoard(state.board);
+  [order[index], order[target]] = [order[target], order[index]];
+  if (els.railProfileIndex) els.railProfileIndex.value = String(target);
+  setRailProfileOrder(order, before);
 }
 
 function setEdgeFromPanel() {
@@ -21393,18 +21873,23 @@ function setEdgeFromPanel() {
 
 function bottomFeatureLabel(type) {
   const key = normalizeBottomFeatureType(type);
+  if (key === "flat") return t("bottom_type_flat");
   if (key === "single-concave") return t("bottom_type_single_concave");
+  if (key === "concave-vee") return t("bottom_type_concave_vee");
   if (key === "double-concave") return t("bottom_type_double_concave");
   if (key === "vee") return t("bottom_type_vee");
   if (key === "spiral-vee") return t("bottom_type_spiral_vee");
   if (key === "hull") return t("bottom_type_hull");
   if (key === "displacement-hull") return t("bottom_type_displacement_hull");
   if (key === "channel") return t("bottom_type_channel");
+  if (key === "chine") return t("bottom_type_chine");
   return t("none");
 }
 
 function bottomPresetLabel(key) {
   if (key === "displacement-hull") return t("bottom_preset_displacement_hull");
+  if (key === "tri-plane-hull") return t("bottom_preset_tri_plane_hull");
+  if (key === "hydro-hull") return t("bottom_preset_hydro_hull");
   if (key === "longboard-rolled-vee") return t("bottom_preset_longboard_rolled_vee");
   if (key === "shortboard-single-to-double") return t("bottom_preset_shortboard_single_to_double");
   if (key === "shortboard-single-to-vee") return t("bottom_preset_shortboard_single_to_vee");
@@ -21485,6 +21970,19 @@ function bottomPresetFeatures(key, board = state.board) {
       depth: 0.11 + (shortness * 0.02), width: 1,
       blend: 1.18, power: 1.12
     }, 0)]);
+  }
+  if (preset === "tri-plane-hull") {
+    return presetFeatures([feature("double-concave", {
+      start: length * 0.3, peak: length * 0.56, end: length * 0.82,
+      centerDepth: 0.02, railDepth: 0.06, width: 0.66, offset: 0.38,
+      blend: 1.15, power: 1.25
+    }, 0)]);
+  }
+  if (preset === "hydro-hull") {
+    return presetFeatures([
+      feature("vee", { start: length * 0.28, peak: length * 0.68, end: length, depth: 0.06, width: 0.82, blend: 1.15, power: 1.2 }, 0),
+      feature("double-concave", { start: length * 0.48, peak: length * 0.7, end: length * 0.94, centerDepth: 0.02, railDepth: 0.055, width: 0.64, offset: 0.39, blend: 1.2, power: 1.25 }, 1)
+    ]);
   }
   if (preset === "displacement-hull") {
     return presetFeatures([
@@ -21598,7 +22096,7 @@ function bottomPresetFeatures(key, board = state.board) {
         width: 0.14 - (narrowness * 0.02),
         offset: 0.57 + (wideness * 0.02),
         spacing: 0.06 + (wideness * 0.015),
-        count: width < 50 ? 2 : 3,
+        count: width < 50 ? 4 : 5,
         blend: 1.02 + (longness * 0.05),
         power: 1.22 + (shortness * 0.08)
       }, 2)
@@ -21690,7 +22188,7 @@ function bottomFeatureAffectedSections(board, feature = selectedBottomFeaturePre
     .map((section, index) => ({
       section,
       index,
-      envelope: bottomFeatureEnvelopeAt(feature, section?.position)
+      envelope: bottomFeatureAnchorWeightAt(board, feature, section?.position)
     }))
     .filter(item => item.section?.spline?.length && item.envelope > 1e-3);
   const first = affected[0] || null;
@@ -21727,7 +22225,7 @@ function updateBottomFeatureSummary(feature = currentBottomFeature(), selectedIn
 
 function bottomFeatureListItemMarkup(feature, index) {
   const meta = [
-    `${fmt(feature.start)}-${fmt(feature.peak)}-${fmt(feature.end)}`,
+    `P ${fmt(feature.peak)}`,
     bottomFeatureMetaText(feature),
     feature.enabled === false ? "off" : "on"
   ].join(" / ");
@@ -21837,7 +22335,7 @@ function applyBottomPresetFromPanel() {
   if (!presetKey || presetKey === "custom") return;
   const before = cloneBoard(state.board);
   state.board.bottomPreset = presetKey;
-  state.board.bottomFeatures = bottomPresetFeatures(presetKey, state.board);
+  state.board.bottomFeatures = bottomPresetFeatures(presetKey, state.board).sort((a, b) => b.peak - a.peak);
   rebuildBoardBottomFeatureSections(state.board);
   commitBoardMutation(before, { redraw: false });
   syncBottomPresetPanel();
@@ -21892,6 +22390,7 @@ function updateBottomPanelFields() {
   };
   const fieldIsVisible = el => !!el && el.dataset.fieldVisible !== "0";
   if (els.bottomFeaturePreset) els.bottomFeaturePreset.disabled = !boardActive;
+  if (els.bottomExtraType) els.bottomExtraType.disabled = !boardActive;
   if (els.bottomFeatureIndex) els.bottomFeatureIndex.disabled = !boardActive;
   if (els.bottomFeatureEnabled) els.bottomFeatureEnabled.disabled = !boardActive || !hasSelection;
   [
@@ -21917,9 +22416,9 @@ function updateBottomPanelFields() {
   if (els.bottomFeatureCount) els.bottomFeatureCount.disabled = !boardActive || !fieldIsVisible(els.bottomFeatureCount);
   if (els.bottomFeatureLongitudinalFlat) els.bottomFeatureLongitudinalFlat.disabled = !boardActive || !fieldIsVisible(els.bottomFeatureLongitudinalFlat);
   if (els.bottomFeatureRailLockCm) els.bottomFeatureRailLockCm.disabled = !boardActive;
-  setNumericInputSpec(els.bottomFeatureDepth, "depth", 0, BOTTOM_FEATURE_DEPTH_MAX, 0.01);
-  setNumericInputSpec(els.bottomFeatureCenterDepth, "centerDepth", 0, BOTTOM_FEATURE_DEPTH_MAX, 0.01);
-  setNumericInputSpec(els.bottomFeatureRailDepth, "railDepth", 0, BOTTOM_FEATURE_DEPTH_MAX, 0.01);
+  setNumericInputSpec(els.bottomFeatureDepth, "depth", 0, BOTTOM_FEATURE_DEPTH_MAX, BOTTOM_FEATURE_DEPTH_STEP);
+  setNumericInputSpec(els.bottomFeatureCenterDepth, "centerDepth", 0, BOTTOM_FEATURE_DEPTH_MAX, BOTTOM_FEATURE_DEPTH_STEP);
+  setNumericInputSpec(els.bottomFeatureRailDepth, "railDepth", 0, BOTTOM_FEATURE_DEPTH_MAX, BOTTOM_FEATURE_DEPTH_STEP);
   setNumericInputSpec(els.bottomFeatureRailLockCm, "railLockCm", 0, BOTTOM_FEATURE_RAIL_LOCK_CM_MAX, 0.5);
   setNumericInputSpec(els.bottomFeatureWidth, "width", 0.05, 1, 0.01);
   setNumericInputSpec(els.bottomFeatureBlend, "blend", 0.1, 4, 0.05);
@@ -21930,7 +22429,7 @@ function updateBottomPanelFields() {
   setNumericInputSpec(els.bottomFeatureCount, "count", 1, 10, 1);
   setNumericInputSpec(els.bottomFeatureLongitudinalFlat, "longitudinalFlat", 0, 1, 0.05);
   if (els.setBottomFeatureButton) els.setBottomFeatureButton.disabled = !boardActive || !hasSelection;
-  if (els.addBottomFeatureButton) els.addBottomFeatureButton.disabled = !boardActive;
+  if (els.addBottomFeatureButton) els.addBottomFeatureButton.disabled = !boardActive || featureCount < 2;
   if (els.applyBottomPresetButton) els.applyBottomPresetButton.disabled = !boardActive || presetKey === "custom";
   if (els.duplicateBottomFeatureButton) els.duplicateBottomFeatureButton.disabled = !boardActive || !hasSelection;
   if (els.fillBottomFeatureSectionsButton) els.fillBottomFeatureSectionsButton.disabled = !boardActive || !hasSelection;
@@ -22100,7 +22599,10 @@ function resetBottomFeatureFromPanel() {
   features[index] = normalizeBottomFeature({
     ...defaults,
     id: current.id || defaults.id,
-    enabled: current.enabled !== false
+    enabled: current.enabled !== false,
+    start: 0,
+    peak: current.peak,
+    end: state.board.length
   }, index);
   state.board.bottomFeatures = normalizeBottomFeatures(features);
   rebuildBoardBottomFeatureSections(state.board);
@@ -22131,7 +22633,7 @@ function removeBottomFeatureFromPanel() {
   const features = normalizeBottomFeatures(state.board.bottomFeatures);
   markBottomPresetCustom(state.board);
   features.splice(index, 1);
-  state.board.bottomFeatures = normalizeBottomFeatures(features);
+  state.board.bottomFeatures = distributeBottomFeatureRangesEvenly(features, state.board);
   rebuildBoardBottomFeatureSections(state.board);
   commitBoardMutation(before);
   syncBottomFeaturePanel(Math.min(index, features.length - 1), { persistCurrent: false });
@@ -22149,7 +22651,7 @@ function moveBottomFeatureFromPanel(direction) {
   markBottomPresetCustom(state.board);
   const [feature] = features.splice(index, 1);
   features.splice(targetIndex, 0, feature);
-  state.board.bottomFeatures = normalizeBottomFeatures(features);
+  state.board.bottomFeatures = distributeBottomFeatureRangesEvenly(features, state.board);
   rebuildBoardBottomFeatureSections(state.board);
   commitBoardMutation(before);
   syncBottomFeaturePanel(targetIndex);
@@ -22846,6 +23348,55 @@ function simplifyOutline() {
   });
 }
 
+function simplifyProfileSpline(knots, maxErrorCm = 0.05) {
+  const reference = boardCadCloneKnots(knots || []);
+  let current = boardCadCloneKnots(reference);
+  const protectedEndRange = Math.min(30.48, Math.max(0, (reference.at(-1)?.p?.x - reference[0]?.p?.x) * 0.2));
+  let maxError = 0;
+  let changed = true;
+  while (changed && current.length > 3) {
+    changed = false;
+    let best = null;
+    for (let index = 1; index < current.length - 1; index++) {
+      const knot = current[index];
+      if (!knot.continuous || knot.p.x <= reference[0].p.x + protectedEndRange || knot.p.x >= reference.at(-1).p.x - protectedEndRange) continue;
+      const candidate = outlineWithoutKnot(current, index);
+      const error = outlineSimplificationError(current, candidate, 120);
+      if (error <= maxErrorCm && (!best || error < best.error)) best = { candidate, error };
+    }
+    if (best) {
+      current = best.candidate;
+      maxError = Math.max(maxError, best.error);
+      changed = true;
+    }
+  }
+  return { knots: current, before: reference.length, after: current.length, maxError };
+}
+
+function simplifyProfile() {
+  if (!state.board) return;
+  const before = cloneBoard(state.board);
+  const working = cloneBoard(state.board);
+  const bottom = simplifyProfileSpline(working.bottom);
+  const deck = simplifyProfileSpline(working.deck);
+  if (bottom.after >= bottom.before && deck.after >= deck.before) {
+    setStatus("status_profile_already_simple");
+    return;
+  }
+  working.bottom = bottom.knots;
+  working.deck = deck.knots;
+  state.board = working;
+  state.selection = null;
+  state.lastEditPoint = null;
+  state.contextEditPoint = null;
+  commitBoardMutation(before);
+  setStatus("status_profile_simplified", {
+    before: bottom.before + deck.before,
+    after: bottom.after + deck.after,
+    error: (Math.max(bottom.maxError, deck.maxError) * 10).toFixed(2)
+  });
+}
+
 function setSelectedControlPointFromPanel() {
   if (!state.selection || !state.board) return;
   const knot = state.selection.knots[state.selection.knotIndex];
@@ -23100,6 +23651,7 @@ function updateHistoryButtons() {
   if (els.addControlPointButton) els.addControlPointButton.disabled = !canAddControlPoint();
   if (els.deleteControlPointButton) els.deleteControlPointButton.disabled = !canDeleteControlPoint();
   if (els.simplifyOutlineButton) els.simplifyOutlineButton.disabled = !state.board;
+  if (els.simplifyProfileButton) els.simplifyProfileButton.disabled = !state.board;
   setDisabled([els.nextSectionButton, els.nextSectionPanelButton], !canStepCrossSection(1));
   setDisabled([els.previousSectionButton, els.previousSectionPanelButton], !canStepCrossSection(-1));
   setDisabled([els.addSectionButton, els.addSectionPanelButton], !canAddCrossSection());
@@ -23113,7 +23665,7 @@ function updateHistoryButtons() {
   setDisabled([els.importSectionButton, els.importSectionPanelButton, els.exportSectionButton, els.exportSectionPanelButton], !activeSection);
   setDisabled([els.addSectionGuidePointButton], !activeSection);
   setDisabled([els.editSectionGuidePointButton, els.removeSectionGuidePointButton], !activeSection || !sectionGuidePoints.length);
-  setDisabled([els.railMode, els.railStrength, els.setRailButton, els.edgeType, els.edgeStrength, els.edgeLength, els.edgeFade, els.setEdgeButton], !state.board);
+  setDisabled([els.railMode, els.railNoseMode, els.railTailMode, els.railStrength, els.setRailButton, els.edgeType, els.edgeStrength, els.edgeLength, els.edgeFade, els.setEdgeButton], !state.board);
   setDisabled([
     els.scaleBoardButton, els.boardInfoButton, els.flipBoardViewButton,
     els.tailButton, els.noseButton, els.wingButton, els.rockerButton, els.bottomButton, els.finsButton, els.guidePointsButton, els.weightCalcButton,
@@ -23189,6 +23741,7 @@ function cloneBoard(board) {
     wingShoulder: Number(board.wingShoulder) || 0,
     wingTransition: Number(board.wingTransition) || 0,
     railMode: normalizeRailModeKey(board.railMode),
+    railProfile: normalizeRailProfile(board.railProfile, board.railMode),
     railStrength: Number.isFinite(Number(board.railStrength)) ? clampNumber(board.railStrength, 0, 1, 1) : 1,
     edgeType: normalizeEdgeTypeKey(board.edgeType),
     edgeStrength: Number.isFinite(Number(board.edgeStrength)) ? clampNumber(board.edgeStrength, 0, 1, 0) : 0,
@@ -23315,9 +23868,9 @@ const BRD_WRITE_ORDER = [
   17, 18, 99, 19, 20, 21, 22, 23, 24, 25, 42, 26, 44, 46, 47, 38, 53,
   41, 48, 49, 51, 50, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 74, 68, 69, 70, 71, 72, 73, 75, 76, 77, 78, 79, 80, 81, 82,
   EDGE_TYPE_FIELD_ID, EDGE_STRENGTH_FIELD_ID, EDGE_LENGTH_FIELD_ID, EDGE_FADE_FIELD_ID, SHAPER_COMMENT_FIELD_ID,
-  BOTTOM_FEATURE_FIELD_ID, BOTTOM_PRESET_FIELD_ID, ROCKER_PRESET_FIELD_ID, ROCKER_CONFIG_FIELD_ID, TAIL_GUN_CURVE_FIELD_ID, NOSE_EXTENSION_FIELD_ID, NOSE_GUN_CURVE_FIELD_ID, RAIL_MODE_FIELD_ID, RAIL_STRENGTH_FIELD_ID, NOSE_TIP_SHAPE_FIELD_ID, 27, 28, 29, 30, 31
+  BOTTOM_FEATURE_FIELD_ID, BOTTOM_PRESET_FIELD_ID, ROCKER_PRESET_FIELD_ID, ROCKER_CONFIG_FIELD_ID, TAIL_GUN_CURVE_FIELD_ID, NOSE_EXTENSION_FIELD_ID, NOSE_GUN_CURVE_FIELD_ID, RAIL_MODE_FIELD_ID, RAIL_STRENGTH_FIELD_ID, RAIL_PROFILE_FIELD_ID, NOSE_TIP_SHAPE_FIELD_ID, 27, 28, 29, 30, 31
 ];
-const BRD_STRING_FIELDS = new Set([7, 8, 43, 45, 48, 49, 51, 54, 55, 56, 57, 58, 61, 62, 68, 71, 75, EDGE_TYPE_FIELD_ID, BOTTOM_FEATURE_FIELD_ID, BOTTOM_PRESET_FIELD_ID, ROCKER_PRESET_FIELD_ID, ROCKER_CONFIG_FIELD_ID, TAIL_GUN_CURVE_FIELD_ID, NOSE_GUN_CURVE_FIELD_ID, RAIL_MODE_FIELD_ID, NOSE_TIP_SHAPE_FIELD_ID, SHAPER_COMMENT_FIELD_ID]);
+const BRD_STRING_FIELDS = new Set([7, 8, 43, 45, 48, 49, 51, 54, 55, 56, 57, 58, 61, 62, 68, 71, 75, EDGE_TYPE_FIELD_ID, BOTTOM_FEATURE_FIELD_ID, BOTTOM_PRESET_FIELD_ID, ROCKER_PRESET_FIELD_ID, ROCKER_CONFIG_FIELD_ID, TAIL_GUN_CURVE_FIELD_ID, NOSE_GUN_CURVE_FIELD_ID, RAIL_MODE_FIELD_ID, RAIL_PROFILE_FIELD_ID, NOSE_TIP_SHAPE_FIELD_ID, SHAPER_COMMENT_FIELD_ID]);
 const BRD_ARRAY_FIELDS = new Set([50]);
 const BRD_BOOLEAN_FIELDS = new Set([41]);
 
@@ -23535,6 +24088,7 @@ function brdExportValue(board, id) {
   if (id === NOSE_TIP_SHAPE_FIELD_ID) return normalizeNoseTipShape(board.noseTipShape);
   if (id === RAIL_MODE_FIELD_ID) return normalizeRailModeKey(board.railMode) || "";
   if (id === RAIL_STRENGTH_FIELD_ID) return clampNumber(board.railStrength, 0, 1, 1);
+  if (id === RAIL_PROFILE_FIELD_ID) return JSON.stringify(normalizeRailProfile(board.railProfile, board.railMode));
   if (id === TAIL_GUN_CURVE_FIELD_ID) return serializeTailGunCurve(board.tailGunCurve);
   if (id === EDGE_TYPE_FIELD_ID) return normalizeEdgeTypeKey(board.edgeType) || "";
   if (id === EDGE_STRENGTH_FIELD_ID) return clampNumber(board.edgeStrength, 0, 1, 0);
@@ -24851,6 +25405,7 @@ window.boardcadWeb = {
     boardCadCrossSectionDeckAt,
     boardCadVolume,
     boardCadCenterOfMass,
+    slidingBoardX,
     boardCadMaxThickness,
     boardCadWeightEstimate,
     boardCadWidthAtPos,
@@ -24900,6 +25455,8 @@ window.boardcadWeb = {
     bottomFeatureEnvelopeAt,
     bottomFeatureAffectedSections,
     activeBottomFeaturesAt,
+    bottomFeatureAnchorWeightsAt,
+    hitBottomFeatureHandle,
     drawOutlineBottomFeatureRanges,
     bottomFeatureRailAnchorX,
     insertLowerHalfSplineKnotAtX,
@@ -25028,6 +25585,8 @@ window.boardcadWeb = {
     activeBottomFeatureCount,
     syncBottomFeatureList,
     normalizeRailModeKey,
+    normalizeRailProfile,
+    railProfileAtSection,
     normalizeEdgeTypeKey,
     normalizedEdgeConfig,
     edgeEffectAtSection,
@@ -25110,6 +25669,7 @@ window.boardcadWeb = {
     addControlPoint,
     deleteSelectedControlPoint,
     simplifyOutlineKnots,
+    simplifyProfileSpline,
     outlineSimplificationError,
     setSelectedControlPointFromPanel,
     addCrossSectionFromPanel,
@@ -25275,13 +25835,15 @@ function bottomFeatureOverlayPointerDown(event) {
 }
 
 function scheduleBottomFeatureDomOverlaySync() {
-  if (typeof window === "undefined") return;
+  if (typeof document === "undefined") return;
   if (bottomFeatureOverlaySyncQueued) return;
   bottomFeatureOverlaySyncQueued = true;
-  window.requestAnimationFrame(() => {
+  const run = () => {
     bottomFeatureOverlaySyncQueued = false;
     syncBottomFeatureDomOverlay();
-  });
+  };
+  if (typeof window !== "undefined" && typeof window.requestAnimationFrame === "function") window.requestAnimationFrame(run);
+  else run();
 }
 
 function scheduleBottomFeatureOverlayDraw() {
@@ -25480,10 +26042,10 @@ function syncBottomFeatureDomOverlay() {
     const controls = document.createElement("div");
     const controlsLeft = Number.isFinite(bottomFeatureOverlayControlsPosition?.left)
       ? bottomFeatureOverlayControlsPosition.left
-      : (canvasRect.left + 14);
+      : Math.max(canvasRect.left + 12, canvasRect.right - 270);
     const controlsTop = Number.isFinite(bottomFeatureOverlayControlsPosition?.top)
       ? bottomFeatureOverlayControlsPosition.top
-      : (canvasRect.top + 14);
+      : Math.max(canvasRect.top + 12, canvasRect.bottom - 238);
     controls.style.position = "fixed";
     controls.style.left = `${controlsLeft}px`;
     controls.style.top = `${controlsTop}px`;
@@ -25503,7 +26065,7 @@ function syncBottomFeatureDomOverlay() {
 
     const heading = document.createElement("div");
     heading.style.display = "grid";
-    heading.style.gridTemplateColumns = "1fr auto";
+    heading.style.gridTemplateColumns = "1fr auto auto";
     heading.style.alignItems = "center";
     heading.style.gap = "8px";
     heading.style.cursor = "grab";
@@ -25515,6 +26077,28 @@ function syncBottomFeatureDomOverlay() {
     headingTitle.style.color = "#dff4ff";
     headingTitle.style.font = "700 12px sans-serif";
     heading.appendChild(headingTitle);
+
+    const visibilityButton = document.createElement("button");
+    visibilityButton.type = "button";
+    visibilityButton.textContent = state.bottomFeatureOverlayVisible === false ? "表示" : "非表示";
+    visibilityButton.title = "ボトムの範囲表示を切り替え";
+    visibilityButton.style.pointerEvents = "auto";
+    visibilityButton.style.height = "24px";
+    visibilityButton.style.padding = "0 8px";
+    visibilityButton.style.borderRadius = "6px";
+    visibilityButton.style.border = "1px solid rgba(159,220,255,.25)";
+    visibilityButton.style.background = "rgba(255,255,255,.08)";
+    visibilityButton.style.color = "#dff4ff";
+    visibilityButton.style.font = "600 11px sans-serif";
+    visibilityButton.addEventListener("pointerdown", event => event.stopPropagation());
+    visibilityButton.addEventListener("click", event => {
+      event.preventDefault();
+      event.stopPropagation();
+      state.bottomFeatureOverlayVisible = state.bottomFeatureOverlayVisible === false;
+      bottomFeatureOverlaySignature = "";
+      draw();
+    });
+    heading.appendChild(visibilityButton);
 
     const collapseButton = document.createElement("button");
     collapseButton.type = "button";
@@ -25549,34 +26133,14 @@ function syncBottomFeatureDomOverlay() {
 
     const boardLength = Math.max(1, Number(state.board.length) || 1);
     appendBottomFeatureOverlaySlider(controls, {
-      shortLabel: "S",
-      label: "Start",
-      input: els.bottomFeatureStart,
-      min: 0,
-      max: boardLength,
-      step: 0.01,
-      value: Number(els.bottomFeatureStart?.value ?? selectedFeaturePreview.start),
-      accent: "#ff6b6b"
-    });
-    appendBottomFeatureOverlaySlider(controls, {
-      shortLabel: "M",
-      label: "Max effect",
+      shortLabel: "P",
+      label: "Shape position",
       input: els.bottomFeaturePeak,
       min: 0,
       max: boardLength,
       step: 0.01,
       value: Number(els.bottomFeaturePeak?.value ?? selectedFeaturePreview.peak),
       accent: "#ff9f0a"
-    });
-    appendBottomFeatureOverlaySlider(controls, {
-      shortLabel: "E",
-      label: "End",
-      input: els.bottomFeatureEnd,
-      min: 0,
-      max: boardLength,
-      step: 0.01,
-      value: Number(els.bottomFeatureEnd?.value ?? selectedFeaturePreview.end),
-      accent: "#ffd60a"
     });
 
     const maybeAddVisibleSlider = (input, shortLabel, labelText, accent) => {

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>BoardCAD Web</title>
-  <link rel="stylesheet" href="./styles.css?v=20260813-rail-panel-order">
+  <link rel="stylesheet" href="./styles.css?v=20260814-dark-base">
 </head>
 <body>
   <header class="app-chrome">
@@ -71,6 +71,7 @@
           <button id="addControlPointButton" type="button" data-action="add-controlpoint" disabled data-i18n="add_control_point">Add ControlPoint</button>
           <button id="deleteControlPointButton" type="button" data-action="delete-controlpoint" disabled data-i18n="delete_control_points">Delete ControlPoints</button>
           <button id="simplifyOutlineButton" type="button" data-action="simplify-outline" disabled data-i18n="simplify_outline">Simplify outline</button>
+          <button id="simplifyProfileButton" type="button" data-action="simplify-profile" disabled data-i18n="simplify_profile">Simplify profile</button>
         </div>
       </details>
       <details class="menu">
@@ -80,7 +81,6 @@
           <button type="button" data-view="profile" data-i18n="profile">Profile</button>
           <button type="button" data-view="sections" data-i18n="menu_cross_sections">Cross sections</button>
           <button type="button" data-view="quad" data-i18n="quad">Quad</button>
-          <button type="button" data-view="simulation" data-i18n="hydrodynamic_simulation">Hydrodynamic simulation</button>
           <button type="button" data-view="toolpath" data-i18n="toolpath">Toolpath</button>
           <hr>
           <button type="button" data-action="fit" data-i18n="fit">Fit</button>
@@ -255,6 +255,7 @@
       <details class="menu">
         <summary data-i18n="menu_scan">Scan</summary>
         <div class="menu-items">
+          <button type="button" data-action="open-pdf-curve-import">PDF曲線をBezier化</button>
           <button id="setTailPointButton" type="button" data-action="scan-set-tail" data-i18n="set_tail_point">Set Tail Point</button>
           <button id="setNosePointButton" type="button" data-action="scan-set-nose" data-i18n="set_nose_point">Set Nose Point</button>
           <button id="returnTailButton" type="button" data-action="scan-return-tail" data-i18n="return_to_tail">Return to Tail</button>
@@ -293,7 +294,6 @@
         <button class="tab" data-view="profile" type="button" data-i18n="profile">Profile</button>
         <button class="tab" data-view="sections" type="button" data-i18n="menu_cross_sections">Cross sections</button>
         <button class="tab" data-view="quad" type="button" data-i18n="quad">Quad</button>
-        <button class="tab" data-view="simulation" type="button" data-i18n="hydrodynamic_simulation">Hydrodynamic simulation</button>
         <button class="tab" data-view="toolpath" type="button" data-i18n="toolpath">Toolpath</button>
         <button class="tab" data-view="model3d" type="button" data-i18n="menu_3d_model">3D Model</button>
         <button class="tab" data-view="scan" type="button" data-i18n="menu_scan">Scan</button>
@@ -577,37 +577,12 @@
         <summary data-i18n="bottom">Bottom</summary>
         <div class="section-readout" id="bottomFeatureSummary" data-i18n="bottom_feature_none">Bottom features: 0</div>
         <div class="guide-list" id="bottomFeatureList" data-i18n="bottom_feature_none">Bottom features: 0</div>
-        <label>
-          <span data-i18n="bottom_preset">Preset</span>
-          <select id="bottomFeaturePreset" disabled>
-            <option value="custom" data-i18n="custom">Custom</option>
-            <option value="displacement-hull" data-i18n="bottom_preset_displacement_hull">Displacement hull</option>
-            <option value="longboard-rolled-vee" data-i18n="bottom_preset_longboard_rolled_vee">Longboard rolled to vee</option>
-            <option value="shortboard-single-to-double" data-i18n="bottom_preset_shortboard_single_to_double">Shortboard single to double</option>
-            <option value="shortboard-single-to-vee" data-i18n="bottom_preset_shortboard_single_to_vee">Shortboard single to vee</option>
-            <option value="performance-channel-quad" data-i18n="bottom_preset_performance_channel_quad">Performance channel quad</option>
-            <option value="rider-paddle-glide" data-i18n="bottom_preset_rider_paddle_glide">Paddle / glide</option>
-            <option value="rider-balanced-control" data-i18n="bottom_preset_rider_balanced_control">Balanced control</option>
-            <option value="rider-speed-drive" data-i18n="bottom_preset_rider_speed_drive">Speed / drive</option>
-            <option value="rider-loose-turn" data-i18n="bottom_preset_rider_loose_turn">Loose / quick turn</option>
-          </select>
-        </label>
-        <div class="button-row">
-          <button id="applyBottomPresetButton" type="button" data-action="apply-bottom-preset" disabled data-i18n="apply_preset">Apply preset</button>
-        </div>
-        <label>
-          <span data-i18n="bottom_feature_index">Feature</span>
-          <select id="bottomFeatureIndex" disabled>
-            <option value="-1" data-i18n="none">None</option>
-          </select>
-        </label>
-        <label class="inline-check">
-          <input id="bottomFeatureEnabled" type="checkbox" disabled>
-          <span data-i18n="enabled">Enabled</span>
-        </label>
-        <label>
-          <span data-i18n="bottom_feature_type">Feature type</span>
-          <select id="bottomFeatureType" disabled>
+        <select id="bottomFeatureIndex" hidden disabled><option value="-1">None</option></select>
+        <input id="bottomFeatureEnabled" type="checkbox" hidden disabled>
+        <select id="bottomFeatureType" hidden disabled>
+            <option value="flat" data-i18n="bottom_type_flat">Flat</option>
+            <option value="concave-vee" data-i18n="bottom_type_concave_vee">Concaved vee</option>
+            <option value="chine" data-i18n="bottom_type_chine">Chine</option>
             <option value="single-concave" data-i18n="bottom_type_single_concave">Single concave</option>
             <option value="double-concave" data-i18n="bottom_type_double_concave">Double concave</option>
             <option value="vee" data-i18n="bottom_type_vee">Vee</option>
@@ -615,46 +590,51 @@
             <option value="hull" data-i18n="bottom_type_hull">Hull</option>
             <option value="displacement-hull" data-i18n="bottom_type_displacement_hull">Displacement hull</option>
             <option value="channel" data-i18n="bottom_type_channel">Channel</option>
+        </select>
+        <label>
+          <span data-i18n="bottom_third_shape">ボトム形状を選択</span>
+          <select id="bottomExtraType" disabled>
+            <option value="" data-i18n="select_to_add">選択して追加</option>
+            <option value="flat" data-i18n="bottom_type_flat">Flat</option><option value="concave-vee" data-i18n="bottom_type_concave_vee">Concaved vee</option><option value="chine" data-i18n="bottom_type_chine">Chine</option><option value="single-concave" data-i18n="bottom_type_single_concave">Single concave</option><option value="double-concave" data-i18n="bottom_type_double_concave">Double concave</option><option value="vee" data-i18n="bottom_type_vee">Vee</option><option value="spiral-vee" data-i18n="bottom_type_spiral_vee">Spiral vee</option><option value="hull" data-i18n="bottom_type_hull">Hull</option><option value="displacement-hull" data-i18n="bottom_type_displacement_hull">Displacement hull</option><option value="channel" data-i18n="bottom_type_channel">Channel</option>
           </select>
         </label>
         <div class="button-row">
-          <button id="setBottomFeatureButton" type="button" data-action="set-bottom-feature" disabled data-i18n="set">Set</button>
-          <button id="addBottomFeatureButton" type="button" data-action="add-bottom-feature" disabled data-i18n="add">Add</button>
-          <button id="duplicateBottomFeatureButton" type="button" data-action="duplicate-bottom-feature" disabled data-i18n="duplicate">Duplicate</button>
-          <button id="removeBottomFeatureButton" type="button" data-action="remove-bottom-feature" disabled data-i18n="remove">Remove</button>
-        </div>
-        <div class="button-row">
-          <button id="fillBottomFeatureSectionsButton" type="button" data-action="fill-bottom-feature-sections" disabled data-i18n="fill_feature_sections">Fill feature sections</button>
-        </div>
-        <div class="button-row">
           <button id="resetBottomFeatureButton" type="button" data-action="reset-bottom-feature" disabled data-i18n="reset">Reset</button>
-          <button id="clearBottomFeaturesButton" type="button" data-action="clear-bottom-features" disabled data-i18n="clear">Clear</button>
+          <button id="removeBottomFeatureButton" type="button" data-action="remove-bottom-feature" disabled data-i18n="remove">Remove</button>
           <button id="moveBottomFeatureUpButton" type="button" data-action="move-bottom-feature-up" disabled data-i18n="move_up">Up</button>
           <button id="moveBottomFeatureDownButton" type="button" data-action="move-bottom-feature-down" disabled data-i18n="move_down">Down</button>
         </div>
         <label>
+          <span data-i18n="bottom_preset">Preset</span>
+          <select id="bottomFeaturePreset" disabled>
+            <option value="tri-plane-hull" data-i18n="bottom_preset_tri_plane_hull">Tri Plane Hull</option><option value="hydro-hull" data-i18n="bottom_preset_hydro_hull">Hydro Hull</option>
+            <option value="custom" data-i18n="custom">Custom</option><option value="displacement-hull" data-i18n="bottom_preset_displacement_hull">Displacement hull</option><option value="longboard-rolled-vee" data-i18n="bottom_preset_longboard_rolled_vee">Longboard rolled to vee</option><option value="shortboard-single-to-double" data-i18n="bottom_preset_shortboard_single_to_double">Shortboard single to double</option><option value="shortboard-single-to-vee" data-i18n="bottom_preset_shortboard_single_to_vee">Shortboard single to vee</option><option value="performance-channel-quad" data-i18n="bottom_preset_performance_channel_quad">Performance channel quad</option><option value="rider-paddle-glide" data-i18n="bottom_preset_rider_paddle_glide">Paddle / glide</option><option value="rider-balanced-control" data-i18n="bottom_preset_rider_balanced_control">Balanced control</option><option value="rider-speed-drive" data-i18n="bottom_preset_rider_speed_drive">Speed / drive</option><option value="rider-loose-turn" data-i18n="bottom_preset_rider_loose_turn">Loose / quick turn</option>
+          </select>
+        </label>
+        <div class="button-row"><button id="applyBottomPresetButton" type="button" data-action="apply-bottom-preset" disabled data-i18n="apply_preset">Apply preset</button></div>
+        <label hidden>
           <span data-i18n="bottom_feature_start">Start from tail</span>
           <input id="bottomFeatureStart" type="number" step="0.01" disabled>
         </label>
         <label>
-          <span data-i18n="bottom_feature_peak">Peak from tail</span>
+          <span data-i18n="bottom_feature_peak">Shape position from tail</span>
           <input id="bottomFeaturePeak" type="number" step="0.01" disabled>
         </label>
-        <label>
+        <label hidden>
           <span data-i18n="bottom_feature_end">End from tail</span>
           <input id="bottomFeatureEnd" type="number" step="0.01" disabled>
         </label>
         <label>
           <span data-i18n="bottom_feature_depth">Depth</span>
-          <input id="bottomFeatureDepth" type="number" step="0.01" disabled>
+          <input id="bottomFeatureDepth" type="number" step="0.005" disabled>
         </label>
         <label>
           <span data-i18n="bottom_feature_center_depth">Center depth</span>
-          <input id="bottomFeatureCenterDepth" type="number" step="0.01" disabled>
+          <input id="bottomFeatureCenterDepth" type="number" step="0.005" disabled>
         </label>
         <label>
           <span data-i18n="bottom_feature_rail_depth">Rail depth</span>
-          <input id="bottomFeatureRailDepth" type="number" step="0.01" disabled>
+          <input id="bottomFeatureRailDepth" type="number" step="0.005" disabled>
         </label>
         <label>
           <span data-i18n="bottom_feature_rail_lock_cm">Rail protection (cm)</span>
@@ -664,7 +644,7 @@
           <span data-i18n="bottom_feature_width">Width ratio</span>
           <input id="bottomFeatureWidth" type="number" min="0.05" max="1" step="0.01" disabled>
         </label>
-        <label>
+        <label hidden>
           <span data-i18n="bottom_feature_blend">Blend</span>
           <input id="bottomFeatureBlend" type="number" min="0.1" max="4" step="0.05" disabled>
         </label>
@@ -1030,8 +1010,18 @@
       <details id="crossSectionPanel" class="section-panel panel-group panel-stack-item" aria-label="Rail shape" data-i18n-aria-label="rail_shape">
         <summary data-i18n="rail_shape">Rail shape</summary>
         <div class="section-readout" id="sectionSummary" data-i18n="section_unselected">未選択</div>
+        <div class="guide-list" id="railProfileList">レール形状: 0</div>
+        <select id="railProfileIndex" hidden disabled><option value="-1">None</option></select>
         <label>
-          <span data-i18n="rail_shape">Rail shape</span>
+          <span data-i18n="rail_third_shape">レール形状を選択</span>
+          <select id="railExtraType" disabled>
+            <option value="" data-i18n="select_to_add">選択して追加</option>
+            <option value="5050">50/50</option><option value="6040">60/40</option><option value="7030">70/30</option><option value="8020">80/20</option>
+            <option value="egg">Egg rail</option><option value="full-soft">Semi boxy rail</option><option value="boxy">Boxy rail</option><option value="down">Down rail</option><option value="pinched">Tapered rail</option><option value="knifey">Knifey rail</option><option value="chine">Chined / beveled rail</option>
+          </select>
+        </label>
+        <label hidden>
+          <span data-i18n="rail_mid_shape">中央レール</span>
           <select id="railMode" disabled>
             <option value="" data-i18n="bezier_native">Bezier native</option>
             <option value="5050" data-i18n="rail_mode_5050">50/50</option>
@@ -1046,12 +1036,34 @@
             <option value="knifey" data-i18n="rail_mode_knifey">Knifey rail</option>
           </select>
         </label>
+        <label hidden>
+          <span data-i18n="rail_nose_shape">ノーズレール</span>
+          <select id="railNoseMode" disabled>
+            <option value="" data-i18n="bezier_native">Bezier native</option>
+            <option value="5050">50/50</option><option value="6040">60/40</option><option value="7030">70/30</option><option value="8020">80/20</option>
+            <option value="egg">Egg rail</option><option value="full-soft">Semi boxy</option><option value="boxy">Boxy rail</option><option value="down">Down rail</option><option value="pinched">Tapered rail</option><option value="knifey">Knifey rail</option>
+          </select>
+        </label>
+        <label hidden>
+          <span data-i18n="rail_tail_shape">テールレール</span>
+          <select id="railTailMode" disabled>
+            <option value="" data-i18n="bezier_native">Bezier native</option>
+            <option value="5050">50/50</option><option value="6040">60/40</option><option value="7030">70/30</option><option value="8020">80/20</option>
+            <option value="egg">Egg rail</option><option value="full-soft">Semi boxy</option><option value="boxy">Boxy rail</option><option value="down">Down rail</option><option value="pinched">Tapered rail</option><option value="knifey">Knifey rail</option>
+          </select>
+        </label>
+        <div class="button-row">
+          <button id="resetRailProfileButton" type="button" disabled data-i18n="reset">リセット</button>
+          <button id="removeRailProfileButton" type="button" disabled data-i18n="remove">削除</button>
+          <button id="moveRailProfileUpButton" type="button" disabled data-i18n="move_up">上へ</button>
+          <button id="moveRailProfileDownButton" type="button" disabled data-i18n="move_down">下へ</button>
+        </div>
         <label>
           <span data-i18n="rail_shape_blend">Rail shape blend</span>
           <input id="railStrength" type="number" min="0" max="1" step="0.05" disabled>
         </label>
         <div class="button-row">
-          <button id="setRailButton" type="button" data-action="set-rail" disabled data-i18n="set_rail">Set rail</button>
+          <button id="setRailButton" type="button" data-action="set-rail" hidden disabled data-i18n="set_rail">Set rail</button>
         </div>
         <label>
           <span data-i18n="edge_type">Edge type</span>
@@ -1136,6 +1148,6 @@
 
   <script src="./sample-data.js?v=20260628-samples1"></script>
   <script src="./app-downloads.js?v=20260814-overwrite-brd"></script>
-  <script src="./app.js?v=20260814-simplify-outline"></script>
+  <script src="./app.js?v=20260817-pdf-curve-import"></script>
 </body>
 </html>

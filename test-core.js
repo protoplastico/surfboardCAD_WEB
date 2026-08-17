@@ -445,6 +445,7 @@ function createElementStub(id) {
       const context = new Proxy({}, {
         get(_target, prop) {
           if (prop === "measureText") return text => ({ width: String(text).length * 7 });
+          if (prop === "createLinearGradient") return () => ({ addColorStop() {} });
           if (prop === "canvas") return { width: 1280, height: 720 };
           return () => {};
         },
@@ -2245,6 +2246,10 @@ simulationBoard.finExtra = simulationThruster.extra;
 const simulationMetrics = api._test.hydrodynamicSimulationMetrics(simulationBoard);
 assert(simulationMetrics.volumeLiters > 0, "simulation: volume integration should be positive");
 assert(Math.abs(simulationMetrics.seawaterSupportKg - simulationMetrics.volumeLiters * 1.025) < 1e-9, "simulation: seawater support should follow Archimedes' displacement relation");
+assert(simulationMetrics.prismaticCoefficient > 0 && simulationMetrics.prismaticCoefficient < 1, "simulation: prismatic coefficient should be a bounded volume-distribution ratio");
+assert(simulationMetrics.lengthDisplacementRatio > 0, "simulation: length-displacement ratio should be positive");
+assert(simulationMetrics.froudeNumber > 0, "simulation: Froude number should be positive at the comparison speed");
+assert(api._test.boardCadMomentOfInertia(simulationBoard, simulationBoard.length * 0.5, 0) > 0, "simulation: longitudinal moment of inertia estimate should be positive");
 assert(simulationMetrics.fins.count === 3 && simulationMetrics.fins.force > 0 && simulationMetrics.fins.moment > 0, "simulation: thruster should produce a finite three-fin yaw estimate");
 assert(simulationMetrics.comparisons.g5.force > simulationMetrics.comparisons.g3.force, "simulation: G5 should produce more estimated lateral force than G3 at equal conditions");
 assert(simulationMetrics.comparisons.g5.moment > simulationMetrics.comparisons.g3.moment, "simulation: G5 should produce more estimated yaw restoring moment than G3 at equal placement");
@@ -2546,6 +2551,24 @@ if (sectionEnabled("rail")) {
   const railMetadataRoundTrip = api.parseBrd(api.makeBrd(board), "Longboard-rail-metadata-roundtrip.brd");
   assert(railMetadataRoundTrip.railMode === "7030", "rail: canonical rail mode should roundtrip through BRD for later re-editing");
   assert(Math.abs(railMetadataRoundTrip.railStrength - 0.72) < 1e-9, "rail: rail shape blend should roundtrip through BRD for later re-editing");
+  board.railProfile = { nose: "5050", mid: "6040", tail: "down", order: ["5050", "6040", "down"], tailAnchor: 0.15, midAnchor: 0.52, noseAnchor: 0.86 };
+  const railProfileRoundTrip = api.parseBrd(api.makeBrd(board), "rail-profile-roundtrip.brd");
+  assert(railProfileRoundTrip.railProfile.nose === "5050" && railProfileRoundTrip.railProfile.mid === "6040" && railProfileRoundTrip.railProfile.tail === "down", "rail: longitudinal rail profile should roundtrip through BRD");
+  assert(railProfileRoundTrip.railProfile.order.join(",") === "5050,6040,down", "rail: nose-to-tail selection order should roundtrip through BRD");
+  assert(Math.abs(railProfileRoundTrip.railProfile.tailAnchor - 0.15) < 1e-9 && Math.abs(railProfileRoundTrip.railProfile.midAnchor - 0.52) < 1e-9 && Math.abs(railProfileRoundTrip.railProfile.noseAnchor - 0.86) < 1e-9, "rail: three visual shape anchors should roundtrip through BRD");
+  assert(api._test.railProfileAtSection(board, { position: board.length * 0.08 }).from === "down", "rail: tail pure zone should preserve the tail mode");
+  const middleRail = api._test.railProfileAtSection(board, { position: board.length * 0.5 });
+  assert(middleRail.from === "down" && middleRail.to === "6040" && middleRail.mix > 0.9, "rail: section before the middle anchor should approach the middle rail mode");
+  assert(api._test.railProfileAtSection(board, { position: board.length * 0.94 }).from === "5050", "rail: nose pure zone should preserve the nose mode");
+  const profileSections = [0.2, 0.5, 0.8].map(ratio => {
+    const source = shortboardRailReference.sections.reduce((best, section) => Math.abs(section.position / shortboardRailReference.length - ratio) < Math.abs(best.position / shortboardRailReference.length - ratio) ? section : best);
+    const section = { ...source, spline: api._test.boardCadCloneKnots(source.spline) };
+    const variant = { ...shortboardRailReference, railMode: "6040", railProfile: board.railProfile, railStrength: 1 };
+    api._test.applyBoardRailAndEdgeToSection(variant, section);
+    const apex = section.spline.reduce((best, knot) => knot.p.x > best.p.x ? knot : best, section.spline[0]);
+    return apex.p.y / api._test.boardCadCrossSectionCenterThickness(section.spline);
+  });
+  assert(profileSections[0] < profileSections[1] && profileSections[1] < profileSections[2], "rail: down→60/40→50/50 profile should raise the apex smoothly from tail to nose");
   board.railMode = "";
   board.railStrength = 1;
   const center = board.sections.reduce((best, section) => (
@@ -2838,6 +2861,8 @@ if (sectionEnabled("bottom-features")) {
   const presetSingleVee = api._test.bottomPresetFeatures("shortboard-single-to-vee", board);
   const presetRolledVee = api._test.bottomPresetFeatures("longboard-rolled-vee", board);
   const presetChannelQuad = api._test.bottomPresetFeatures("performance-channel-quad", board);
+  const presetTriPlane = api._test.bottomPresetFeatures("tri-plane-hull", board);
+  const presetHydro = api._test.bottomPresetFeatures("hydro-hull", board);
   const riderPaddle = api._test.bottomPresetFeatures("rider-paddle-glide", board);
   const riderBalanced = api._test.bottomPresetFeatures("rider-balanced-control", board);
   const riderSpeed = api._test.bottomPresetFeatures("rider-speed-drive", board);
@@ -2855,6 +2880,8 @@ if (sectionEnabled("bottom-features")) {
   assert(presetRolledVee[1].start > presetRolledVee[0].start, "bottom features: rolled vee preset should place vee aft of the entry hull");
   assert(Math.abs(presetRolledVee[1].end - board.length) < 1e-9, "bottom features: rolled vee preset should carry vee to the tail");
   assert(presetChannelQuad.some(feature => feature.type === "channel"), "bottom features: performance channel quad preset should include channels");
+  assert(presetTriPlane.length === 1 && presetTriPlane[0].type === "double-concave", "bottom features: tri plane hull preset should use shallow double concave");
+  assert(presetHydro.some(feature => feature.type === "vee") && presetHydro.some(feature => feature.type === "double-concave"), "bottom features: hydro hull preset should combine vee and double concave");
   assert(presetChannelQuad[2].start > presetChannelQuad[1].start, "bottom features: channel preset should place channels aft of the double concave");
   assert(Math.abs(presetChannelQuad[2].end - board.length) < 1e-9, "bottom features: channel preset should carry channels to the tail");
   assert(riderPaddle.length === 1 && riderPaddle[0].type === "hull", "bottom features: paddle/glide should use a smooth entry hull");
@@ -2908,6 +2935,7 @@ if (sectionEnabled("bottom-features")) {
   const longChannel = api._test.bottomFeatureDefault("channel", 0, 300, 58);
   assert(shortChannel.railDepth > longChannel.railDepth, "bottom features: shortboard channel should default deeper than longboard");
   assert(shortChannel.spacing < longChannel.spacing, "bottom features: shortboard channel should default tighter than longboard");
+  assert(shortChannel.count >= 4 && longChannel.count >= shortChannel.count, "bottom features: channel defaults should use a realistic 4+ groove layout");
   const narrowHull = api._test.bottomFeatureDefault("hull", 0, 300, 50);
   const wideHull = api._test.bottomFeatureDefault("hull", 0, 300, 60);
   assert(wideHull.width > narrowHull.width, "bottom features: wider hull boards should default to a broader hull panel");
@@ -2915,12 +2943,12 @@ if (sectionEnabled("bottom-features")) {
   const normalizedDouble = api._test.normalizeBottomFeatures([{ type: "double-concave", depth: 3.2, centerDepth: 0.22, railDepth: 0.64, offset: 0.1 }])[0];
   assert(normalizedDouble.depth === 0, "bottom features: double concave should ignore the scalar depth field");
   assert(Math.abs(normalizedDouble.centerDepth - 0.22) < 1e-9, "bottom features: double concave lost center depth");
-  assert(Math.abs(normalizedDouble.railDepth - 0.5) < 1e-9, "bottom features: double concave rail depth should clamp to the 5mm maximum");
+  assert(Math.abs(normalizedDouble.railDepth - 0.3) < 1e-9, "bottom features: double concave rail depth should clamp to the 3mm maximum");
   assert(Math.abs(normalizedDouble.offset - 0.15) < 1e-9, "bottom features: double concave offset did not clamp to the type minimum");
   const normalizedChannel = api._test.normalizeBottomFeatures([{ type: "channel", centerDepth: 5, width: 0.6, offset: 0.1, spacing: 0.8, count: 12 }])[0];
   assert(normalizedChannel.centerDepth === 0, "bottom features: channel should ignore center depth");
   assert(Math.abs(normalizedChannel.width - 0.35) < 1e-9, "bottom features: channel width did not clamp to the type maximum");
-  assert(normalizedChannel.railDepth >= 0 && normalizedChannel.railDepth <= 0.5, "bottom features: channel rail depth should remain inside the 5mm maximum");
+  assert(normalizedChannel.railDepth >= 0 && normalizedChannel.railDepth <= 0.3, "bottom features: channel rail depth should remain inside the 3mm maximum");
   assert(Math.abs(normalizedChannel.offset - 0.3) < 1e-9, "bottom features: channel offset did not clamp to the type minimum");
   assert(Math.abs(normalizedChannel.spacing - 0.25) < 1e-9, "bottom features: channel spacing did not clamp to the type maximum");
   assert(normalizedChannel.count === 10, "bottom features: channel count did not clamp to the type maximum");
@@ -2929,9 +2957,33 @@ if (sectionEnabled("bottom-features")) {
   assert(activeAtMid.some(item => item.feature.type === "single-concave"), "bottom features: active feature detection missed single concave at peak");
   const activeAtTail = api._test.activeBottomFeaturesAt(board, 168);
   assert(activeAtTail.some(item => item.feature.type === "vee"), "bottom features: active feature detection missed vee near tail");
+  const anchorBoard = {
+    bottomFeatures: [
+      { id: "tail", type: "vee", peak: 20 },
+      { id: "mid", type: "single-concave", peak: 50 },
+      { id: "nose", type: "hull", peak: 80 }
+    ]
+  };
+  const tailWeights = api._test.bottomFeatureAnchorWeightsAt(anchorBoard, 5);
+  assert(tailWeights.find(item => item.feature.id === "tail").envelope === 1, "bottom features: first anchor should remain pure toward the tail");
+  const blendWeights = api._test.bottomFeatureAnchorWeightsAt(anchorBoard, 35).filter(item => item.envelope > 0);
+  assert(blendWeights.length === 2 && Math.abs(blendWeights.reduce((sum, item) => sum + item.envelope, 0) - 1) < 1e-9, "bottom features: adjacent anchor blend should total 100 percent");
+  const noseWeights = api._test.bottomFeatureAnchorWeightsAt(anchorBoard, 95);
+  assert(noseWeights.find(item => item.feature.id === "nose").envelope === 1, "bottom features: last anchor should remain pure toward the nose");
+  const previousTool = api.state.tool;
+  const previousView = api.state.view;
+  const previousHandles = api.state.bottomFeatureHandles;
+  api.state.tool = "edit";
+  api.state.view = "profile";
+  api.state.bottomFeatureHandles = [{ mode: "profile", kind: "peak", x: 40, y: 20, transform: { x: value => value, y: value => value } }];
+  assert(api._test.hitBottomFeatureHandle({ x: 40, y: 20 })?.kind === "peak", "bottom features: profile anchor should be draggable");
+  api.state.tool = previousTool;
+  api.state.view = previousView;
+  api.state.bottomFeatureHandles = previousHandles;
   api.state.board = board;
-  getElement("bottomFeatureIndex").value = "0";
-  api._test.syncBottomFeaturePanel(0);
+  const singleIndex = api.state.board.bottomFeatures.findIndex(feature => feature.type === "single-concave");
+  getElement("bottomFeatureIndex").value = String(singleIndex);
+  api._test.syncBottomFeaturePanel(singleIndex);
   const affectedSections = api._test.bottomFeatureAffectedSections(board);
   assert(affectedSections.affectedCount > 0, "bottom features: affected section summary did not find any sections");
   assert(affectedSections.first && affectedSections.last, "bottom features: affected section summary did not expose first/last sections");
@@ -2939,6 +2991,28 @@ if (sectionEnabled("bottom-features")) {
   const lowBlendEnvelope = api._test.bottomFeatureEnvelopeAt({ start: 12, peak: 90, end: 156, blend: 0.5 }, 36);
   const highBlendEnvelope = api._test.bottomFeatureEnvelopeAt({ start: 12, peak: 90, end: 156, blend: 3.0 }, 36);
   assert(highBlendEnvelope < lowBlendEnvelope, "bottom features: blend did not soften the longitudinal envelope");
+  const rangedBoard = {
+    bottomFeatures: [
+      { id: "ranged-a", type: "single-concave", start: 10, peak: 40, end: 80 },
+      { id: "ranged-b", type: "vee", start: 60, peak: 100, end: 140 }
+    ]
+  };
+  assert(api._test.bottomFeatureAnchorWeightsAt(rangedBoard, 5).every(item => item.envelope === 0), "bottom features: range envelope leaked before start");
+  assert(api._test.bottomFeatureAnchorWeightsAt(rangedBoard, 40).find(item => item.feature.id === "ranged-a")?.envelope === 1, "bottom features: range peak was not pure");
+  const rangedOverlap = api._test.bottomFeatureAnchorWeightsAt(rangedBoard, 70);
+  assert(rangedOverlap.length === 2 && Math.abs(rangedOverlap.reduce((sum, item) => sum + item.envelope, 0) - 1) < 1e-9, "bottom features: overlapping ranges did not blend");
+  assert(api._test.bottomFeatureLateralProfile({ type: "flat" }, 0, 0, 1) === 0, "bottom features: flat baseline changed bottom displacement");
+  assert(api._test.bottomFeatureLateralProfile({ type: "concave-vee", depth: 0.14, centerDepth: 0.12, railDepth: 0.1, width: 0.72, offset: 0.35 }, 0.4, 0.4, 1) > 0, "bottom features: concaved vee did not combine panel vee and paired concaves");
+  assert(api._test.bottomFeatureLateralProfile({ type: "chine", depth: 0.1, width: 0.22, power: 1.2, edge: 0.85 }, 1, 1, 1) > 0, "bottom features: chine did not reach the rail band");
+  const doubleCenter = api._test.bottomFeatureLateralProfile({ type: "double-concave", centerDepth: 0.03, railDepth: 0.09, width: 0.72, offset: 0.4, power: 1.35 }, 0, 0, 1);
+  const doubleGroove = api._test.bottomFeatureLateralProfile({ type: "double-concave", centerDepth: 0.03, railDepth: 0.09, width: 0.72, offset: 0.4, power: 1.35 }, 0.4, 0.4, 1);
+  assert(doubleGroove > doubleCenter, "bottom features: double concave should peak in two rounded side grooves");
+  assert(api._test.bottomFeatureLateralProfile({ type: "channel", railDepth: 0.12, width: 0.18, offset: 0.62, count: 1, spacing: 0 }, 0.62, 0.62, 1) < 0, "bottom features: channel should remain a slot-like cut");
+  const flatBlend = api._test.bottomFeatureAnchorWeightsAt({ bottomFeatures: [
+    { id: "flat", type: "flat", start: 10, peak: 50, end: 90 },
+    { id: "concave", type: "single-concave", start: 30, peak: 50, end: 70 }
+  ] }, 50);
+  assert(flatBlend.some(item => item.feature.id === "flat"), "bottom features: flat baseline was not retained in ranged blending");
   api._test.drawOutlineBottomFeatureRanges(board, { x: value => value, y: value => value }, { top: 0, bottom: 400, height: 400 });
   assert(getElement("bottomFeatureSummary").textContent.includes(String(affectedSections.affectedCount)), "bottom features: panel summary did not include affected section count");
   board.bottomPreset = "shortboard-single-to-double";
@@ -2978,15 +3052,14 @@ if (sectionEnabled("bottom-features")) {
   const outlineRangeHandles = api.state.bottomFeatureHandles.filter(handle => handle.kind === "range");
   const outlineEditHandles = api.state.bottomFeatureHandles.filter(handle => ["start", "peak", "end"].includes(handle.kind));
   assert(
-    outlineRangeHandles.length === api._test.activeBottomFeatureCount(board.bottomFeatures),
-    "bottom features: outline range handles did not render for each active feature"
+    outlineRangeHandles.length === 0,
+    "bottom features: legacy start/end range handles should not render"
   );
   assert(
-    outlineEditHandles.length === 3 && outlineEditHandles.every(handle => Number(handle.featureIndex) === 0),
-    "bottom features: outline edit handles did not collapse to the selected feature only"
+    outlineEditHandles.length === api._test.activeBottomFeatureCount(board.bottomFeatures) && outlineEditHandles.every(handle => handle.kind === "peak"),
+    "bottom features: outline should expose one longitudinal anchor per shape"
   );
   assert(api.state.bottomFeatureHandles.some(handle => handle.kind === "width" && handle.action === "set-width"), "bottom features: outline width handle missing for selected feature");
-  assert(api.state.bottomFeatureHandles.some(handle => handle.kind === "depth" && handle.action === "set-depth"), "bottom features: outline depth handle missing for selected feature");
   const savedBottomFeatures = api._test.normalizeBottomFeatures(api.state.board.bottomFeatures);
   api.state.board.bottomFeatures = api._test.normalizeBottomFeatures([
     api._test.bottomFeatureDefault("single-concave", 0, board.length, board.width)
@@ -3021,23 +3094,20 @@ if (sectionEnabled("bottom-features")) {
   assert(api.state.bottomFeatureSectionHandles.some(handle => handle.kind === "center-depth"), "bottom features: section center-depth handle missing");
   assert(api.state.bottomFeatureSectionHandles.some(handle => handle.kind === "width"), "bottom features: section width handle missing");
   api.state.view = "outline";
-  const originalDragFeature = { ...api.state.board.bottomFeatures[0] };
-  api._test.moveBottomFeatureDrag({ featureIndex: 0, kind: "start" }, originalDragFeature, api._test.boardCadDisplayXFromRawX(board, originalDragFeature.start + 8));
-  assert(api.state.board.bottomFeatures[0].start > originalDragFeature.start, "bottom features: start drag did not move start forward");
-  assert(api.state.board.bottomFeatures[0].start < api.state.board.bottomFeatures[0].peak, "bottom features: start drag crossed the peak");
   const afterStartDrag = { ...api.state.board.bottomFeatures[0] };
   api._test.moveBottomFeatureDrag({ featureIndex: 0, kind: "peak" }, afterStartDrag, api._test.boardCadDisplayXFromRawX(board, afterStartDrag.peak + 10));
-  assert(api.state.board.bottomFeatures[0].peak > afterStartDrag.peak, "bottom features: peak drag did not move peak");
+  assert(api.state.board.bottomFeatures[0].peak > afterStartDrag.peak, "bottom features: shape-position drag did not move the anchor");
   assert(api.state.board.bottomFeatures[0].peak < api.state.board.bottomFeatures[0].end, "bottom features: peak drag crossed the end");
   const widthOutlineHandle = api.state.bottomFeatureHandles.find(handle => handle.kind === "width" && handle.action === "set-width");
-  const beforeOutlineWidthDrag = { ...api.state.board.bottomFeatures[0] };
+  const beforeOutlineWidthDrag = { ...api.state.board.bottomFeatures[widthOutlineHandle.featureIndex] };
   api._test.moveBottomFeatureDrag(
     widthOutlineHandle,
     beforeOutlineWidthDrag,
-    ((Math.min(widthOutlineHandle.hitBandLeftX, widthOutlineHandle.hitBandRightX) + Math.max(widthOutlineHandle.hitBandLeftX, widthOutlineHandle.hitBandRightX)) * 0.5)
+    widthOutlineHandle.x,
+    widthOutlineHandle.dragRangeTop
   );
   assert(
-    Math.abs(api.state.board.bottomFeatures[0].width - beforeOutlineWidthDrag.width) > 1e-6,
+    Math.abs(api.state.board.bottomFeatures[widthOutlineHandle.featureIndex].width - beforeOutlineWidthDrag.width) > 1e-6,
     "bottom features: outline width drag did not change width"
   );
   api.state.view = "sections";
@@ -3050,8 +3120,8 @@ if (sectionEnabled("bottom-features")) {
     y: depthHandle.baseY - ((beforeSectionDrag.depth * depthHandle.envelope) + 0.2)
   });
   assert(
-    api.state.board.bottomFeatures[0].depth > beforeSectionDrag.depth || Math.abs(api.state.board.bottomFeatures[0].depth - 0.5) < 1e-9,
-    "bottom features: section depth drag did not deepen the selected feature or clamp at the 5mm maximum"
+    api.state.board.bottomFeatures[0].depth > beforeSectionDrag.depth || Math.abs(api.state.board.bottomFeatures[0].depth - 0.3) < 1e-9,
+    "bottom features: section depth drag did not deepen the selected feature or clamp at the 3mm maximum"
   );
   const afterDepthDrag = { ...api.state.board.bottomFeatures[0] };
   api._test.moveBottomFeatureSectionDrag(widthHandle, afterDepthDrag, { x: widthHandle.x * 0.82, y: widthHandle.y });
@@ -3069,13 +3139,13 @@ if (sectionEnabled("bottom-features")) {
   assert(getElement("bottomFeatureCenterDepth").disabled === true, "bottom features: vee should not expose center depth");
   assert(getElement("bottomFeatureOffset").disabled === true, "bottom features: vee should not expose offset");
   trace("bottom-features:panel-sync-1-done");
-  getElement("bottomFeatureDepth").value = "0.42";
+  getElement("bottomFeatureDepth").value = "0.28";
   getElement("bottomFeatureCenterDepth").value = "0.11";
   getElement("bottomFeatureRailDepth").value = "0.37";
   getElement("bottomFeatureBlend").value = "1.55";
   api._test.setBottomFeatureFromPanel();
   trace("bottom-features:set-panel-1-done");
-  assert(Math.abs(api.state.board.bottomFeatures[1].depth - 0.42) < 1e-9, "bottom features: panel update did not persist depth");
+  assert(Math.abs(api.state.board.bottomFeatures[1].depth - 0.28) < 1e-9, "bottom features: panel update did not persist depth");
   assert(api.state.board.bottomFeatures[1].centerDepth === 0, "bottom features: vee should reset center depth to its default");
   assert(api.state.board.bottomFeatures[1].railDepth === 0, "bottom features: vee should reset rail depth to its default");
   assert(Math.abs(api.state.board.bottomFeatures[1].blend - 1.55) < 1e-9, "bottom features: panel update did not persist blend");
@@ -3092,7 +3162,7 @@ if (sectionEnabled("bottom-features")) {
   const boardBeforePreview = api.state.board.bottomFeatures[0];
   getElement("bottomFeatureDepth").value = "0.91";
   const previewBoard = api._test.boardWithPendingBottomFeaturePreview(api.state.board);
-  assert(Math.abs(previewBoard.bottomFeatures[0].depth - 0.5) < 1e-9, "bottom features: pending preview board should clamp unsaved depth to the 5mm maximum");
+  assert(Math.abs(previewBoard.bottomFeatures[0].depth - 0.3) < 1e-9, "bottom features: pending preview board should clamp unsaved depth to the 3mm maximum");
   assert(Math.abs(api.state.board.bottomFeatures[0].depth - boardBeforePreview.depth) < 1e-9, "bottom features: pending preview mutated the persisted board");
   trace("bottom-features:preview-done");
   getElement("bottomFeaturePreset").value = "performance-channel-quad";
@@ -3117,8 +3187,9 @@ if (sectionEnabled("bottom-features")) {
   getElement("bottomFeatureRailDepth").value = "0.99";
   traceMeasure("bottom-features:reset-ms", () => api._test.ACTION_HANDLERS["reset-bottom-feature"]());
   assert(api.state.board.bottomFeatures[2].railDepth < 0.99, "bottom features: reset did not restore type defaults");
-  getElement("bottomFeatureIndex").value = "0";
-  api._test.syncBottomFeaturePanel(0);
+  const singleEditIndex = api.state.board.bottomFeatures.findIndex(feature => feature.type === "single-concave");
+  getElement("bottomFeatureIndex").value = String(singleEditIndex);
+  api._test.syncBottomFeaturePanel(singleEditIndex);
   getElement("bottomFeatureDepth").value = "0.67";
   traceMeasure("bottom-features:set-panel-custom-ms", () => api._test.setBottomFeatureFromPanel());
   assert(api.state.board.bottomPreset === "custom", "bottom features: manual bottom feature edit should clear preset to custom");
@@ -3137,12 +3208,14 @@ if (sectionEnabled("bottom-features")) {
   assert(getElement("bottomFeatureDepth").disabled === true, "bottom features: channel should not expose scalar depth");
   assert(getElement("bottomFeatureRailDepth").disabled === false, "bottom features: channel should expose rail depth");
   assert(getElement("bottomFeatureSpacing").disabled === false, "bottom features: channel should expose spacing");
-  assert(getElement("bottomFeatureRailDepth").max === "0.5", "bottom features: rail depth input max should clamp to 5mm");
+  assert(getElement("bottomFeatureRailDepth").max === "0.3", "bottom features: rail depth input max should clamp to 3mm");
   assert(getElement("bottomFeatureWidth").max === "0.35", "bottom features: channel width max did not update");
   getElement("bottomFeatureIndex").value = String(channelIndex);
-  traceMeasure("bottom-features:move-up-ms", () => api._test.moveBottomFeatureFromPanel(-1));
-  assert(api.state.board.bottomFeatures[channelIndex - 1].type === "channel", "bottom features: move up did not reorder features");
-  assert(getElement("bottomFeatureIndex").value === String(channelIndex - 1), "bottom features: move up did not keep selection on the moved feature");
+  const moveDirection = channelIndex > 0 ? -1 : 1;
+  const movedChannelIndex = channelIndex + moveDirection;
+  traceMeasure("bottom-features:move-ms", () => api._test.moveBottomFeatureFromPanel(moveDirection));
+  assert(api.state.board.bottomFeatures[movedChannelIndex].type === "channel", "bottom features: move did not reorder features");
+  assert(getElement("bottomFeatureIndex").value === String(movedChannelIndex), "bottom features: move did not keep selection on the moved feature");
   trace("bottom-features:panel-editing-done");
   const featureCountBeforeAdd = api.state.board.bottomFeatures.length;
   getElement("bottomFeatureType").value = "channel";
@@ -3638,6 +3711,8 @@ if (sectionEnabled("render-cache")) {
   trace("render-cache:start");
   const board = api.parseBrd(fs.readFileSync(path.join(root, "Shortboard.brd"), "utf8"), "Shortboard-render-cache.brd");
   api.state.board = board;
+  api.state.slidingCrossSectionX = board.length * 0.37;
+  assert(Math.abs(api._test.slidingBoardX(board, "sections") - board.length * 0.37) < 1e-9, "sliding cross section should preserve the longitudinal position across views");
   for (const angle of [10, 27.5, 45, 90, 175]) {
     const line = api._test.boardCadSurfaceAngleLine(board, angle);
     const maxKink = Math.max(0, ...line.slice(1, -1).map((point, index) =>
@@ -3645,6 +3720,19 @@ if (sectionEnabled("render-cache")) {
     ));
     assert(maxKink < 1, `flowline: ${angle} degree line has a ${maxKink.toFixed(3)}cm profile kink`);
   }
+  const funboard = api.parseBrd(fs.readFileSync(path.join(root, "Funboard.brd"), "utf8"), "Funboard-render-cache.brd");
+  api.state.board = funboard;
+  api.state.geometryRevision += 1;
+  for (const angle of [10, 27.5, 45, 90, 175]) {
+    const line = api._test.boardCadSurfaceAngleLine(funboard, angle);
+    const interior = line.slice(Math.floor(line.length * 0.15), Math.ceil(line.length * 0.85));
+    const maxKink = Math.max(0, ...interior.slice(1, -1).map((point, index) =>
+      Math.abs(point.y - (interior[index].y + interior[index + 2].y) / 2)
+    ));
+    assert(maxKink < 3, `flowline: Funboard ${angle} degree line has a ${maxKink.toFixed(3)}cm outline jump`);
+  }
+  api.state.board = board;
+  api.state.geometryRevision += 1;
   api.state.view = "model3d";
   api.state.model3d.camera.yaw = -0.72;
   api.state.model3d.camera.pitch = -0.46;
@@ -3798,6 +3886,11 @@ const simplifyResult = api._test.simplifyOutlineKnots(simplifyBoard);
 assert(simplifyResult.after < simplifyResult.before, "outline simplify: redundant split CPs were not removed");
 assert(api._test.outlineSimplificationError(simplifyReference, simplifyBoard.outline) <= 0.05, "outline simplify: shape error exceeded 0.5mm");
 assert(simplifyResult.volumeRatio <= 0.001, "outline simplify: volume changed by more than 0.1%");
+let profileKnots = api._test.boardCadCloneKnots(simplifyBoard.bottom);
+for (const x of [45, 60, 75, 90, 105, 120, 135]) profileKnots = api._test.insertHalfSplineKnotAtX(profileKnots, x);
+const profileSimplifyResult = api._test.simplifyProfileSpline(profileKnots);
+assert(profileSimplifyResult.after < profileSimplifyResult.before, "profile simplify: redundant bottom CPs were not removed");
+assert(profileSimplifyResult.maxError <= 0.05, "profile simplify: bottom shape error exceeded tolerance");
 
 for (const [noseMode, tailMode] of combos) {
   const board = api.parseBrd(fs.readFileSync(path.join(root, "Shortboard.brd"), "utf8"), `spike-combo-${noseMode}-${tailMode}.brd`);
