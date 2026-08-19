@@ -25405,6 +25405,7 @@ window.boardcadWeb = {
     boardCadCrossSectionDeckAt,
     boardCadVolume,
     boardCadCenterOfMass,
+    boardCadMomentOfInertia,
     slidingBoardX,
     boardCadMaxThickness,
     boardCadWeightEstimate,

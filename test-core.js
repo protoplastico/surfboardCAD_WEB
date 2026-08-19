@@ -3521,6 +3521,47 @@ if (sectionEnabled("rocker")) {
   }
   assert(maxFlatDeviation < 1e-8, `rocker: mathematically flat board bent by ${maxFlatDeviation}cm during zero-rocker generation`);
   assert(flatBoard.bottom.every(knot => [knot.p.y, knot.prev.y, knot.next.y].every(y => Math.abs(y) < 1e-8)), "rocker: zero-rocker CP handles must all remain on the datum plane");
+
+  // Regression guard for the SOL_HANDOFF center-joint/tip-thickness bug:
+  // presets with nonzero tailKick/entryLift take the hasLocalEndModifier
+  // path in applyRockerConfigToBoard (monotoneGraphSplineFromPoints +
+  // fairRockerApexJoin), which historically could leave a near-duplicate
+  // knot at x~0/x~length with a large y jump, producing a near-vertical
+  // thickness spike right at the tip instead of a smooth taper.
+  const kickBoard = api.parseBrd(fs.readFileSync(path.join(root, "Shortboard.brd"), "utf8"), "Flat-rocker-kick-diagnostic.brd");
+  const kickLength = kickBoard.length;
+  kickBoard.bottom = [
+    { p: { x: 0, y: 0 }, prev: { x: 0, y: 0 }, next: { x: kickLength / 6, y: 0 }, continuous: true, other: false },
+    { p: { x: kickLength / 2, y: 0 }, prev: { x: kickLength / 3, y: 0 }, next: { x: kickLength * 2 / 3, y: 0 }, continuous: true, other: false },
+    { p: { x: kickLength, y: 0 }, prev: { x: kickLength * 5 / 6, y: 0 }, next: { x: kickLength, y: 0 }, continuous: true, other: false }
+  ];
+  kickBoard.deck = kickBoard.bottom.map(knot => ({
+    ...knot,
+    p: { x: knot.p.x, y: 6 }, prev: { x: knot.prev.x, y: 6 }, next: { x: knot.next.x, y: 6 }
+  }));
+  const kickConfig = api._test.normalizeRockerConfig({
+    preset: "performance-curve", enabled: true, noseRocker: 12.5, tailRocker: 2.5,
+    entryLift: 0.18, tailKick: 0.18, middleFlatness: -0.22, apexShift: 0.03,
+    tailKickLengthRatio: 0.2, entryLengthRatio: 0.2, blend: 1.28,
+    preserveFoil: true, preserveDeck: false
+  });
+  assert(api._test.applyRockerConfigToBoard(kickBoard, kickConfig), "rocker: tailKick/entryLift apply should succeed");
+  const minKnotXGap = knots => knots.slice(1).reduce((min, knot, i) => Math.min(min, knot.p.x - knots[i].p.x), Infinity);
+  assert(minKnotXGap(kickBoard.bottom) > 0.5, "rocker: tailKick/entryLift bottom should not leave near-duplicate knots at the tips");
+  assert(minKnotXGap(kickBoard.deck) > 0.5, "rocker: tailKick/entryLift deck should not leave near-duplicate knots at the tips");
+  const thicknessAt = x => api._test.boardCadSplineValueAt(kickBoard.deck, x) - api._test.boardCadSplineValueAt(kickBoard.bottom, x);
+  for (const tipX of [0, kickLength]) {
+    const step = tipX === 0 ? 0.1 : -0.1;
+    let maxJump = 0;
+    let previous = thicknessAt(tipX);
+    for (let i = 1; i <= 30; i += 1) {
+      const current = thicknessAt(tipX + (step * i));
+      maxJump = Math.max(maxJump, Math.abs(current - previous));
+      previous = current;
+    }
+    assert(maxJump < 0.3, `rocker: thickness must taper smoothly near x=${tipX}, saw a ${maxJump.toFixed(3)}cm jump between 0.1cm samples`);
+  }
+
   assert(api._test.normalizeRockerPresetKey("staged") === "staged-speed", "rocker: staged alias did not normalize");
   assert(api._test.normalizeRockerPresetKey("fish") === "fish-retro-flat", "rocker: fish alias did not normalize");
   const config = api._test.normalizeRockerConfig({
