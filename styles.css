@@ -14,6 +14,11 @@
   --shadow: rgba(0, 0, 0, .42);
 }
 
+/* Earth-tone surfaces for the remaining legacy hard-coded chrome colors. */
+.menu-bar, .toolbar { background: #222224; }
+.menu-items, .app-build-version { background: #2b2b2d; }
+.menu-items button:not(:disabled):hover, .menu-file:hover, .menu-check:hover { background: #3a3a3c; }
+
 * { box-sizing: border-box; }
 
 body {
@@ -28,6 +33,9 @@ body.dialog-open {
 }
 
 .app-chrome {
+  position: sticky;
+  top: 0;
+  z-index: 100;
   border-bottom: 1px solid var(--line);
   background: var(--panel);
 }
@@ -218,6 +226,77 @@ button,
   gap: 1px;
 }
 
+.rocker-preset-picker {
+  display: grid;
+  gap: 2px;
+  margin-bottom: 8px;
+}
+
+.rocker-preset-flat {
+  display: grid;
+  gap: 1px;
+}
+
+.rocker-preset-group > summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 26px;
+  padding: 5px 8px;
+  border-radius: 3px;
+  font-size: 13px;
+  cursor: default;
+}
+
+.rocker-preset-group > summary::-webkit-details-marker {
+  display: none;
+}
+
+.rocker-preset-group[open] > summary,
+.rocker-preset-group > summary:hover {
+  background: #3a3a3c;
+}
+
+.rocker-preset-group > summary::after {
+  content: "▼";
+  color: var(--muted);
+}
+
+.rocker-preset-group[open] > summary::after {
+  content: "▲";
+  color: var(--ink);
+}
+
+.rocker-preset-subitems {
+  margin: 4px 0 4px 10px;
+  padding-left: 8px;
+  border-left: 1px solid var(--line);
+  display: grid;
+  gap: 1px;
+}
+
+.rocker-preset-option {
+  width: 100%;
+  min-height: 26px;
+  padding: 5px 8px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.rocker-preset-option:not(:disabled):hover {
+  background: #3a3a3c;
+}
+
+.rocker-preset-option.active {
+  background: #12314f;
+  color: var(--accent-dark);
+}
+
 .menu-check {
   display: flex;
   align-items: center;
@@ -387,6 +466,11 @@ button:disabled {
   border-bottom: 1px solid var(--line);
 }
 
+.simulation-compare-controls { display: flex; gap: 8px; flex-wrap: wrap; }
+.simulation-compare-controls[hidden] { display: none; }
+.simulation-compare-controls label { display: flex; align-items: center; gap: 4px; font-size: 12px; }
+.simulation-compare-controls select { min-width: 76px; }
+
 #boardMeta {
   color: var(--muted);
   margin-left: 8px;
@@ -415,11 +499,101 @@ canvas {
   background: var(--canvas-bg);
 }
 
+canvas.is-panning {
+  cursor: grabbing !important;
+}
+
 canvas[data-tool="edit"] { cursor: default; }
 canvas[data-tool="zoom"] { cursor: zoom-in; }
 canvas[data-tool="pan"] { cursor: grab; }
 canvas[data-tool="pan"]:active { cursor: grabbing; }
 canvas[data-tool="spot"] { cursor: crosshair; }
+
+.viewer.station-editor-visible canvas {
+  height: calc(100vh - 172px);
+}
+
+.station-editor {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 36px;
+  z-index: 4;
+  padding: 10px 12px 12px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: rgba(44, 44, 46, .96);
+  box-shadow: 0 4px 18px var(--shadow);
+  overflow-x: auto;
+}
+
+.station-editor-controls,
+.station-length-fields {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.station-editor-controls {
+  justify-content: flex-end;
+  margin-bottom: 7px;
+  font-size: 12px;
+}
+
+.station-editor-controls select {
+  margin-left: 5px;
+  background: var(--field);
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+
+.station-length-fields input {
+  width: 72px;
+  padding: 3px 5px;
+  background: var(--field);
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+
+.station-volume {
+  padding: 3px 8px;
+  border-left: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.station-volume strong {
+  color: #bf5af2;
+}
+
+.station-editor-grid {
+  display: grid;
+  grid-template-columns: 86px repeat(7, minmax(78px, 1fr));
+  gap: 6px;
+  min-width: 720px;
+  align-items: center;
+}
+
+.station-editor-grid strong,
+.station-editor-grid span {
+  font-size: 12px;
+  text-align: center;
+}
+
+.station-editor-grid .station-metric {
+  text-align: left;
+  color: var(--muted);
+}
+
+.station-editor-grid input {
+  width: 100%;
+  min-width: 0;
+  padding: 5px 6px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--field);
+  color: var(--ink);
+  text-align: right;
+}
 
 .shortcut-help {
   position: absolute;
@@ -525,9 +699,18 @@ canvas[data-tool="spot"] { cursor: crosshair; }
 }
 
 .workspace > .panel {
+  display: flex;
+  flex-direction: column;
   max-height: calc(100vh - 16px);
   overflow: auto;
 }
+
+#nosePanel { order: -60; }
+#tailPanel { order: -50; }
+#rockerPanel { order: -40; }
+#bottomPanel { order: -30; }
+#wingPanel { order: -20; }
+#crossSectionPanel { order: -10; }
 
 .panel h2 {
   margin: 0 0 14px;

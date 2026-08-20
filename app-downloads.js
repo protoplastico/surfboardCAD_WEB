@@ -16,12 +16,30 @@ function downloadBrd() {
   els.status.textContent = "BRDを書き出しました。Bezier制御点を保持し、ノーズ/テールのデッキ・ハル接合を保存用に補正しています。";
 }
 
-function downloadBoardProject() {
+let brdOverwriteHandle = null;
+
+function resetBrdOverwriteHandle() {
+  brdOverwriteHandle = null;
+}
+
+async function overwriteBrd() {
   if (!state.board) return;
-  const source = state.board.name || state.board.filename || "board";
-  const base = safeName(String(source).replace(/\.(?:boardcad\.json|brd)$/i, ""));
-  downloadBlob(`${base}.boardcad.json`, makeBoardProject(state.board), "application/json");
-  els.status.textContent = "非破壊プロジェクトを保存しました。曲線・制御ハンドル・厚みは変更されません。";
+  if (!window.showSaveFilePicker) {
+    downloadBrd();
+    return;
+  }
+  try {
+    brdOverwriteHandle ||= await window.showSaveFilePicker({
+      suggestedName: defaultBrdFilename(),
+      types: [{ description: "BoardCAD BRD", accept: { "text/plain": [".brd"] } }]
+    });
+    const writable = await brdOverwriteHandle.createWritable();
+    await writable.write(makeBrd(state.board));
+    await writable.close();
+    els.status.textContent = `${brdOverwriteHandle.name} を上書き保存しました。`;
+  } catch (error) {
+    if (error?.name !== "AbortError") throw error;
+  }
 }
 
 function downloadBrdAs() {
@@ -112,8 +130,9 @@ function downloadCncGCode() {
 Object.assign(window, {
   downloadPdf,
   downloadTemplatePdf,
-  downloadBoardProject,
   downloadBrd,
+  overwriteBrd,
+  resetBrdOverwriteHandle,
   downloadBrdAs,
   downloadOtl,
   downloadPfl,
