@@ -135,6 +135,7 @@
           <button id="noseButton" type="button" data-action="show-panel" data-panel-target="nosePanel" disabled data-i18n="nose">Nose</button>
           <button id="wingButton" type="button" data-action="show-panel" data-panel-target="wingPanel" disabled data-i18n="wing">Wing</button>
           <button id="rockerButton" type="button" data-action="show-panel" data-panel-target="rockerPanel" disabled data-i18n="rocker">Rocker</button>
+          <button id="volumeButton" type="button" data-action="show-panel" data-panel-target="volumePanel" disabled data-i18n="volume">Volume</button>
           <button id="bottomButton" type="button" data-action="show-panel" data-panel-target="bottomPanel" disabled data-i18n="bottom">Bottom</button>
           <button id="finsButton" type="button" data-action="show-panel" data-panel-target="finsPanel" disabled data-i18n="fins">Fins</button>
           <button id="guidePointsButton" type="button" data-action="show-panel" data-panel-target="guidePointPanel" disabled data-i18n="guide_points">Guide points</button>
@@ -342,7 +343,7 @@
         <label class="context-check"><input id="contextViewBottomToolpath" type="checkbox" data-context-view-option="showBottomToolpath"><span data-i18n="view_bottom_toolpath">View bottom toolpath</span></label>
         <hr>
         <button type="button" data-context-action="spot-check" data-i18n="tool_spot_check">Spot check</button>
-        <button type="button" data-context-action="toggle-deck-bottom" data-i18n="toggle_deck_bottom">Toggle Deck/Bottom</button>
+        <button type="button" data-context-action="toggle-deck-bottom" data-i18n="toggle_deck_bottom">Flip (nose/tail)</button>
         <button id="contextAddGuidePoint" type="button" data-context-action="add-guidepoint" data-i18n="add_guide_point">Add Guide Point</button>
         <button type="button" data-context-action="guide-points" data-i18n="guide_points">Guide points</button>
         <button id="contextEditGuidePoint" type="button" data-context-action="edit-guidepoint" data-i18n="edit_guide_point">Edit Guide Point</button>
@@ -506,7 +507,7 @@
         <div class="section-readout" id="rockerSummary" data-i18n="rocker_summary_empty">Rocker: -</div>
         <label>
           <span data-i18n="rocker_preset">Rocker preset</span>
-          <select id="rockerPreset" disabled>
+          <select id="rockerPreset" hidden disabled>
             <option value="custom" data-i18n="custom">Custom</option>
             <option value="continuous-neutral" data-i18n="rocker_preset_continuous_neutral">Continuous neutral</option>
             <option value="relaxed-drive" data-i18n="rocker_preset_relaxed_drive">Relaxed drive</option>
@@ -515,8 +516,181 @@
             <option value="fish-retro-flat" data-i18n="rocker_preset_fish_retro_flat">Fish / retro flat</option>
             <option value="gun-continuous" data-i18n="rocker_preset_gun_continuous">Gun continuous</option>
             <option value="longboard-glide" data-i18n="rocker_preset_longboard_glide">Longboard glide</option>
+            <optgroup label="" data-i18n-label="rocker_preset_group_fish">
+              <option value="blank-modern-fish" data-i18n="rocker_preset_blank_modern_fish">Modern fish (5'10")</option>
+              <option value="blank-groveler" data-i18n="rocker_preset_blank_groveler">Groveler (6'2")</option>
+              <option value="blank-performance-fish" data-i18n="rocker_preset_blank_performance_fish">Performance fish (6'5")</option>
+              <option value="blank-universal-fish" data-i18n="rocker_preset_blank_universal_fish">Universal fish (6'8")</option>
+              <option value="blank-7-3-a" data-i18n="rocker_preset_blank_7_3_a">Long fish (7'3")</option>
+              <option value="blank-7-5-a" data-i18n="rocker_preset_blank_7_5_a">Long fish, enlarged (7'5")</option>
+              <option value="blank-7-7-a" data-i18n="rocker_preset_blank_7_7_a">Long fish, enlarged 2 (7'7")</option>
+            </optgroup>
+            <optgroup label="" data-i18n-label="rocker_preset_group_performance_shortboard">
+              <option value="blank-compact-shortboard" data-i18n="rocker_preset_blank_compact_shortboard">Compact shortboard (6'3")</option>
+              <option value="blank-6-4-ea" data-i18n="rocker_preset_blank_6_4_ea">Modern full-nose (6'4")</option>
+              <option value="blank-hp-shortboard" data-i18n="rocker_preset_blank_hp_shortboard">High-performance shortboard (6'5")</option>
+              <option value="blank-6-5x-eps" data-i18n="rocker_preset_blank_6_5x_eps">High-performance, extra-thick, fish-capable (6'5")</option>
+              <option value="blank-6-6-ea" data-i18n="rocker_preset_blank_6_6_ea">Mid-size all-round (6'6")</option>
+              <option value="blank-team-mid" data-i18n="rocker_preset_blank_team_mid">Team board, mid (6'7")</option>
+              <option value="blank-team-standard" data-i18n="rocker_preset_blank_team_standard">Team board, standard (6'8")</option>
+              <option value="blank-6-8-a" data-i18n="rocker_preset_blank_6_8_a">Proven rocker, enlarged (6'8")</option>
+              <option value="blank-6-9-ea" data-i18n="rocker_preset_blank_6_9_ea">Versatile modern shortboard (6'9")</option>
+              <option value="blank-6-10-a" data-i18n="rocker_preset_blank_6_10_a">Versatile modern shortboard, wide (6'10")</option>
+              <option value="blank-7-1-a" data-i18n="rocker_preset_blank_7_1_a">Proven rocker, enlarged (7'1")</option>
+            </optgroup>
+            <optgroup label="" data-i18n-label="rocker_preset_group_funboard">
+              <option value="blank-6-8-eps" data-i18n="rocker_preset_blank_6_8_eps">Fish-to-big-guy versatile (6'8")</option>
+              <option value="blank-7-1-ea" data-i18n="rocker_preset_blank_7_1_ea">Compact funboard (7'1")</option>
+              <option value="blank-7-6-ea" data-i18n="rocker_preset_blank_7_6_ea">Funboard (7'6")</option>
+              <option value="blank-7-8-eps" data-i18n="rocker_preset_blank_7_8_eps">Multi-purpose: fun/big-guy/gun (7'8")</option>
+              <option value="blank-7-8x-eps" data-i18n="rocker_preset_blank_7_8x_eps">Multi-purpose, max volume (7'8")</option>
+              <option value="blank-8-1-ea" data-i18n="rocker_preset_blank_8_1_ea">Wide-nose funboard (8'1")</option>
+            </optgroup>
+            <optgroup label="" data-i18n-label="rocker_preset_group_stepup_semigun">
+              <option value="blank-step-up" data-i18n="rocker_preset_blank_step_up">Step-up (7'0")</option>
+              <option value="blank-semigun-eps" data-i18n="rocker_preset_blank_semigun_eps">High-performance semi-gun, EPS (7'2")</option>
+              <option value="blank-semigun-ea" data-i18n="rocker_preset_blank_semigun_ea">High-performance semi-gun, EA (7'2")</option>
+              <option value="blank-gun-series" data-i18n="rocker_preset_blank_gun_series">Gun series (7'8")</option>
+              <option value="blank-7-11-a" data-i18n="rocker_preset_blank_7_11_a">Versatile, enlarged rocker (7'11")</option>
+            </optgroup>
+            <optgroup label="" data-i18n-label="rocker_preset_group_bigguy_gun">
+              <option value="blank-bigguy-gun" data-i18n="rocker_preset_blank_bigguy_gun">Big-guy gun (8'2")</option>
+              <option value="blank-8-6-ea" data-i18n="rocker_preset_blank_8_6_ea">Big fun / big-guy gun (8'6")</option>
+              <option value="blank-big-wave-gun" data-i18n="rocker_preset_blank_big_wave_gun">Big-wave gun (9'3")</option>
+              <option value="blank-xl-gun" data-i18n="rocker_preset_blank_xl_gun">XL gun (12'1")</option>
+            </optgroup>
+            <optgroup label="" data-i18n-label="rocker_preset_group_classic_midlength">
+              <option value="blank-noserider" data-i18n="rocker_preset_blank_noserider">Noserider (8'4")</option>
+              <option value="blank-8-5-a" data-i18n="rocker_preset_blank_8_5_a">Thick, enlarged rocker (8'5")</option>
+              <option value="blank-8-8-eps" data-i18n="rocker_preset_blank_8_8_eps">Versatile mid-longboard (8'8")</option>
+              <option value="blank-allround-midlength" data-i18n="rocker_preset_blank_allround_midlength">All-round mid-length (8'9")</option>
+            </optgroup>
+            <optgroup label="" data-i18n-label="rocker_preset_group_performance_longboard">
+              <option value="blank-hp-longboard" data-i18n="rocker_preset_blank_hp_longboard">High-performance longboard (9'5")</option>
+              <option value="blank-10-6-a" data-i18n="rocker_preset_blank_10_6_a">Stronger-rocker large longboard (10'6")</option>
+            </optgroup>
+            <optgroup label="" data-i18n-label="rocker_preset_group_classic_longboard">
+              <option value="blank-9-8-eps" data-i18n="rocker_preset_blank_9_8_eps">Versatile longboard, thin (9'8")</option>
+              <option value="blank-9-8x-eps" data-i18n="rocker_preset_blank_9_8x_eps">Versatile longboard (9'8")</option>
+              <option value="blank-9-3-y" data-i18n="rocker_preset_blank_9_3_y">Middle-of-the-road rocker longboard (9'3")</option>
+              <option value="blank-classic-longboard-2" data-i18n="rocker_preset_blank_classic_longboard_2">Classic longboard 2 (9'4")</option>
+              <option value="blank-9-8-y" data-i18n="rocker_preset_blank_9_8_y">Middle-of-the-road rocker longboard (9'8")</option>
+              <option value="blank-classic-longboard" data-i18n="rocker_preset_blank_classic_longboard">Classic longboard (9'9")</option>
+              <option value="blank-10-2-b" data-i18n="rocker_preset_blank_10_2_b">Close-tolerance longboard (10'2")</option>
+              <option value="blank-10-8-y" data-i18n="rocker_preset_blank_10_8_y">Middle-of-the-road rocker longboard (10'8")</option>
+            </optgroup>
+            <optgroup label="" data-i18n-label="rocker_preset_group_sup">
+              <option value="blank-sup-gun" data-i18n="rocker_preset_blank_sup_gun">SUP, gun rocker (11'3")</option>
+              <option value="blank-11-3-d-s" data-i18n="rocker_preset_blank_11_3_d_s">Wide SUP, stand-up rocker (11'3")</option>
+            </optgroup>
           </select>
         </label>
+        <div class="rocker-preset-picker" id="rockerPresetPicker">
+          <div class="rocker-preset-flat">
+            <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="custom" data-i18n="custom">Custom</button>
+            <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="continuous-neutral" data-i18n="rocker_preset_continuous_neutral">Continuous neutral</button>
+            <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="relaxed-drive" data-i18n="rocker_preset_relaxed_drive">Relaxed drive</button>
+            <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="performance-curve" data-i18n="rocker_preset_performance_curve">Performance curve</button>
+            <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="staged-speed" data-i18n="rocker_preset_staged_speed">Staged speed</button>
+            <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="fish-retro-flat" data-i18n="rocker_preset_fish_retro_flat">Fish / retro flat</button>
+            <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="gun-continuous" data-i18n="rocker_preset_gun_continuous">Gun continuous</button>
+            <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="longboard-glide" data-i18n="rocker_preset_longboard_glide">Longboard glide</button>
+          </div>
+          <details class="rocker-preset-group" name="rockerPresetGroup">
+            <summary data-i18n="rocker_preset_group_fish">Fish / Groveler</summary>
+            <div class="rocker-preset-subitems">
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-modern-fish" data-i18n="rocker_preset_blank_modern_fish">Modern fish (5'10")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-groveler" data-i18n="rocker_preset_blank_groveler">Groveler (6'2")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-performance-fish" data-i18n="rocker_preset_blank_performance_fish">Performance fish (6'5")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-universal-fish" data-i18n="rocker_preset_blank_universal_fish">Universal fish (6'8")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-7-3-a" data-i18n="rocker_preset_blank_7_3_a">Long fish (7'3")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-7-5-a" data-i18n="rocker_preset_blank_7_5_a">Long fish, enlarged (7'5")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-7-7-a" data-i18n="rocker_preset_blank_7_7_a">Long fish, enlarged 2 (7'7")</button>
+            </div>
+          </details>
+          <details class="rocker-preset-group" name="rockerPresetGroup">
+            <summary data-i18n="rocker_preset_group_performance_shortboard">Performance Shortboard</summary>
+            <div class="rocker-preset-subitems">
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-compact-shortboard" data-i18n="rocker_preset_blank_compact_shortboard">Compact shortboard (6'3")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-6-4-ea" data-i18n="rocker_preset_blank_6_4_ea">Modern full-nose (6'4")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-hp-shortboard" data-i18n="rocker_preset_blank_hp_shortboard">High-performance shortboard (6'5")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-6-5x-eps" data-i18n="rocker_preset_blank_6_5x_eps">High-performance, extra-thick, fish-capable (6'5")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-6-6-ea" data-i18n="rocker_preset_blank_6_6_ea">Mid-size all-round (6'6")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-team-mid" data-i18n="rocker_preset_blank_team_mid">Team board, mid (6'7")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-team-standard" data-i18n="rocker_preset_blank_team_standard">Team board, standard (6'8")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-6-8-a" data-i18n="rocker_preset_blank_6_8_a">Proven rocker, enlarged (6'8")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-6-9-ea" data-i18n="rocker_preset_blank_6_9_ea">Versatile modern shortboard (6'9")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-6-10-a" data-i18n="rocker_preset_blank_6_10_a">Versatile modern shortboard, wide (6'10")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-7-1-a" data-i18n="rocker_preset_blank_7_1_a">Proven rocker, enlarged (7'1")</button>
+            </div>
+          </details>
+          <details class="rocker-preset-group" name="rockerPresetGroup">
+            <summary data-i18n="rocker_preset_group_funboard">Funboard</summary>
+            <div class="rocker-preset-subitems">
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-6-8-eps" data-i18n="rocker_preset_blank_6_8_eps">Fish-to-big-guy versatile (6'8")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-7-1-ea" data-i18n="rocker_preset_blank_7_1_ea">Compact funboard (7'1")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-7-6-ea" data-i18n="rocker_preset_blank_7_6_ea">Funboard (7'6")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-7-8-eps" data-i18n="rocker_preset_blank_7_8_eps">Multi-purpose: fun/big-guy/gun (7'8")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-7-8x-eps" data-i18n="rocker_preset_blank_7_8x_eps">Multi-purpose, max volume (7'8")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-8-1-ea" data-i18n="rocker_preset_blank_8_1_ea">Wide-nose funboard (8'1")</button>
+            </div>
+          </details>
+          <details class="rocker-preset-group" name="rockerPresetGroup">
+            <summary data-i18n="rocker_preset_group_stepup_semigun">Step-up / Semi-gun</summary>
+            <div class="rocker-preset-subitems">
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-step-up" data-i18n="rocker_preset_blank_step_up">Step-up (7'0")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-semigun-eps" data-i18n="rocker_preset_blank_semigun_eps">High-performance semi-gun, EPS (7'2")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-semigun-ea" data-i18n="rocker_preset_blank_semigun_ea">High-performance semi-gun, EA (7'2")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-gun-series" data-i18n="rocker_preset_blank_gun_series">Gun series (7'8")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-7-11-a" data-i18n="rocker_preset_blank_7_11_a">Versatile, enlarged rocker (7'11")</button>
+            </div>
+          </details>
+          <details class="rocker-preset-group" name="rockerPresetGroup">
+            <summary data-i18n="rocker_preset_group_bigguy_gun">Big-guy / Gun</summary>
+            <div class="rocker-preset-subitems">
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-bigguy-gun" data-i18n="rocker_preset_blank_bigguy_gun">Big-guy gun (8'2")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-8-6-ea" data-i18n="rocker_preset_blank_8_6_ea">Big fun / big-guy gun (8'6")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-big-wave-gun" data-i18n="rocker_preset_blank_big_wave_gun">Big-wave gun (9'3")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-xl-gun" data-i18n="rocker_preset_blank_xl_gun">XL gun (12'1")</button>
+            </div>
+          </details>
+          <details class="rocker-preset-group" name="rockerPresetGroup">
+            <summary data-i18n="rocker_preset_group_classic_midlength">Classic Midlength</summary>
+            <div class="rocker-preset-subitems">
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-noserider" data-i18n="rocker_preset_blank_noserider">Noserider (8'4")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-8-5-a" data-i18n="rocker_preset_blank_8_5_a">Thick, enlarged rocker (8'5")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-8-8-eps" data-i18n="rocker_preset_blank_8_8_eps">Versatile mid-longboard (8'8")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-allround-midlength" data-i18n="rocker_preset_blank_allround_midlength">All-round mid-length (8'9")</button>
+            </div>
+          </details>
+          <details class="rocker-preset-group" name="rockerPresetGroup">
+            <summary data-i18n="rocker_preset_group_performance_longboard">Performance Longboard</summary>
+            <div class="rocker-preset-subitems">
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-hp-longboard" data-i18n="rocker_preset_blank_hp_longboard">High-performance longboard (9'5")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-10-6-a" data-i18n="rocker_preset_blank_10_6_a">Stronger-rocker large longboard (10'6")</button>
+            </div>
+          </details>
+          <details class="rocker-preset-group" name="rockerPresetGroup">
+            <summary data-i18n="rocker_preset_group_classic_longboard">Classic Longboard</summary>
+            <div class="rocker-preset-subitems">
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-9-8-eps" data-i18n="rocker_preset_blank_9_8_eps">Versatile longboard, thin (9'8")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-9-8x-eps" data-i18n="rocker_preset_blank_9_8x_eps">Versatile longboard (9'8")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-9-3-y" data-i18n="rocker_preset_blank_9_3_y">Middle-of-the-road rocker longboard (9'3")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-classic-longboard-2" data-i18n="rocker_preset_blank_classic_longboard_2">Classic longboard 2 (9'4")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-9-8-y" data-i18n="rocker_preset_blank_9_8_y">Middle-of-the-road rocker longboard (9'8")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-classic-longboard" data-i18n="rocker_preset_blank_classic_longboard">Classic longboard (9'9")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-10-2-b" data-i18n="rocker_preset_blank_10_2_b">Close-tolerance longboard (10'2")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-10-8-y" data-i18n="rocker_preset_blank_10_8_y">Middle-of-the-road rocker longboard (10'8")</button>
+            </div>
+          </details>
+          <details class="rocker-preset-group" name="rockerPresetGroup">
+            <summary data-i18n="rocker_preset_group_sup">SUP</summary>
+            <div class="rocker-preset-subitems">
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-sup-gun" data-i18n="rocker_preset_blank_sup_gun">SUP, gun rocker (11'3")</button>
+              <button type="button" class="rocker-preset-option" data-action="select-rocker-preset" data-preset-value="blank-11-3-d-s" data-i18n="rocker_preset_blank_11_3_d_s">Wide SUP, stand-up rocker (11'3")</button>
+            </div>
+          </details>
+        </div>
         <div class="button-row">
           <button id="setRockerButton" type="button" data-action="set-rocker" disabled data-i18n="set_rocker">Set rocker</button>
         </div>
@@ -572,6 +746,21 @@
           <span data-i18n="rocker_preserve_deck">Preserve deck</span>
         </label>
         <div class="guide-list" id="rockerStationList" data-i18n="rocker_station_empty">Rocker stations: -</div>
+      </details>
+      <details id="volumePanel" class="panel-group panel-stack-item volume-panel" aria-label="Volume" data-i18n-aria-label="volume">
+        <summary data-i18n="volume">Volume</summary>
+        <label>
+          <span data-i18n="volume_level">Volume level</span>
+          <select id="volumeLevel" disabled>
+            <option value="thin" data-i18n="volume_level_thin">Thin (-20%)</option>
+            <option value="standard" data-i18n="volume_level_standard">Standard</option>
+            <option value="thick" data-i18n="volume_level_thick">Thick (+20%)</option>
+            <option value="extra-thick" data-i18n="volume_level_extra_thick">Extra-thick (+30%)</option>
+          </select>
+        </label>
+        <div class="button-row">
+          <button id="setVolumeLevelButton" type="button" data-action="set-volume-level" disabled data-i18n="set_volume_level">Set volume</button>
+        </div>
       </details>
       <details id="bottomPanel" class="panel-group panel-stack-item bottom-panel" aria-label="Bottom" data-i18n-aria-label="bottom">
         <summary data-i18n="bottom">Bottom</summary>
@@ -1021,6 +1210,14 @@
           </select>
         </label>
         <label hidden>
+          <span data-i18n="rail_nose_shape">ノーズレール</span>
+          <select id="railNoseMode" disabled>
+            <option value="" data-i18n="bezier_native">Bezier native</option>
+            <option value="5050">50/50</option><option value="6040">60/40</option><option value="7030">70/30</option><option value="8020">80/20</option>
+            <option value="egg">Egg rail</option><option value="full-soft">Semi boxy</option><option value="boxy">Boxy rail</option><option value="down">Down rail</option><option value="pinched">Tapered rail</option><option value="knifey">Knifey rail</option>
+          </select>
+        </label>
+        <label hidden>
           <span data-i18n="rail_mid_shape">中央レール</span>
           <select id="railMode" disabled>
             <option value="" data-i18n="bezier_native">Bezier native</option>
@@ -1034,14 +1231,6 @@
             <option value="down" data-i18n="rail_mode_down">Down rail</option>
             <option value="pinched" data-i18n="rail_mode_pinched">Tapered rail (pinched)</option>
             <option value="knifey" data-i18n="rail_mode_knifey">Knifey rail</option>
-          </select>
-        </label>
-        <label hidden>
-          <span data-i18n="rail_nose_shape">ノーズレール</span>
-          <select id="railNoseMode" disabled>
-            <option value="" data-i18n="bezier_native">Bezier native</option>
-            <option value="5050">50/50</option><option value="6040">60/40</option><option value="7030">70/30</option><option value="8020">80/20</option>
-            <option value="egg">Egg rail</option><option value="full-soft">Semi boxy</option><option value="boxy">Boxy rail</option><option value="down">Down rail</option><option value="pinched">Tapered rail</option><option value="knifey">Knifey rail</option>
           </select>
         </label>
         <label hidden>

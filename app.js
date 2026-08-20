@@ -533,7 +533,7 @@ const I18N = {
     view_blank: "ブランクを表示",
     view_deck_toolpath: "デッキ側ツールパスを表示",
     view_bottom_toolpath: "ボトム側ツールパスを表示",
-    toggle_deck_bottom: "デッキ/ボトム切替",
+    toggle_deck_bottom: "反転（ノーズ/テール）",
     add_guide_point: "ガイドポイントを追加",
     edit_guide_point: "ガイドポイントを編集",
     delete_guide_point: "ガイドポイントを削除",
@@ -1023,6 +1023,55 @@ const I18N = {
     rocker_preset_fish_retro_flat: "フィッシュ / レトロフラット",
     rocker_preset_gun_continuous: "ガン / 連続",
     rocker_preset_longboard_glide: "ロングボード / グライド",
+    rocker_preset_blank_modern_fish: "モダンフィッシュ (5'10\")",
+    rocker_preset_blank_classic_longboard: "クラシックロングボード (9'9\")",
+    rocker_preset_blank_groveler: "グローバー (6'2\")",
+    rocker_preset_blank_performance_fish: "パフォーマンスフィッシュ (6'5\")",
+    rocker_preset_blank_step_up: "ステップアップ (7'0\")",
+    rocker_preset_blank_big_wave_gun: "ビッグウェーブガン (9'3\")",
+    rocker_preset_blank_compact_shortboard: "コンパクトショートボード (6'3\")",
+    rocker_preset_blank_universal_fish: "ユニバーサルフィッシュ (6'8\")",
+    rocker_preset_blank_noserider: "ノーズライダー (8'4\")",
+    rocker_preset_blank_allround_midlength: "オールラウンドミッドレングス (8'9\")",
+    rocker_preset_blank_classic_longboard_2: "クラシックロングボード2 (9'4\")",
+    rocker_preset_blank_hp_longboard: "ハイパフォーマンスロングボード (9'5\")",
+    rocker_preset_blank_xl_gun: "XLガン (12'1\")",
+    rocker_preset_blank_hp_shortboard: "ハイパフォーマンスショートボード (6'5\")",
+    rocker_preset_blank_team_mid: "チームボード中間サイズ (6'7\")",
+    rocker_preset_blank_team_standard: "チームボード標準 (6'8\")",
+    rocker_preset_blank_semigun_eps: "高性能セミガンEPS (7'2\")",
+    rocker_preset_blank_semigun_ea: "高性能セミガンEA (7'2\")",
+    rocker_preset_blank_gun_series: "ガンシリーズ (7'8\")",
+    rocker_preset_blank_bigguy_gun: "ビッグガイガン (8'2\")",
+    rocker_preset_blank_sup_gun: "SUPガン仕様 (11'3\")",
+    rocker_preset_blank_6_4_ea: "モダンフルノーズ (6'4\")",
+    rocker_preset_blank_6_5x_eps: "ハイパフォーマンス厚手フィッシュ対応 (6'5\")",
+    rocker_preset_blank_6_6_ea: "ミッドサイズオールラウンド (6'6\")",
+    rocker_preset_blank_6_8_a: "定番ロッカー拡張版 (6'8\")",
+    rocker_preset_blank_6_8_eps: "フィッシュ〜ビッグガイ汎用 (6'8\")",
+    rocker_preset_blank_6_9_ea: "汎用モダンショートボード (6'9\")",
+    rocker_preset_blank_6_10_a: "汎用モダンショートボード・ワイド (6'10\")",
+    rocker_preset_blank_7_1_a: "定番ロッカー拡張版 (7'1\")",
+    rocker_preset_blank_7_1_ea: "コンパクトファンボード (7'1\")",
+    rocker_preset_blank_7_3_a: "ロングフィッシュ (7'3\")",
+    rocker_preset_blank_7_5_a: "ロングフィッシュ拡張 (7'5\")",
+    rocker_preset_blank_7_6_ea: "ファンボード (7'6\")",
+    rocker_preset_blank_7_7_a: "ロングフィッシュ拡張2 (7'7\")",
+    rocker_preset_blank_7_8_eps: "マルチパーパス：ファン/ビッグガイ/ガン (7'8\")",
+    rocker_preset_blank_7_8x_eps: "マルチパーパス大容量 (7'8\")",
+    rocker_preset_blank_7_11_a: "汎用拡張ロッカー (7'11\")",
+    rocker_preset_blank_8_1_ea: "ワイドノーズファンボード (8'1\")",
+    rocker_preset_blank_8_6_ea: "ビッグファン/ビッグガイガン (8'6\")",
+    rocker_preset_blank_8_5_a: "厚手拡張ロッカー (8'5\")",
+    rocker_preset_blank_8_8_eps: "ミッドロングボード汎用 (8'8\")",
+    rocker_preset_blank_9_8_eps: "ロングボード汎用・薄め (9'8\")",
+    rocker_preset_blank_9_8x_eps: "ロングボード汎用 (9'8\")",
+    rocker_preset_blank_9_3_y: "標準ロッカーロングボード (9'3\")",
+    rocker_preset_blank_9_8_y: "標準ロッカーロングボード (9'8\")",
+    rocker_preset_blank_10_2_b: "クローズトレランスロングボード (10'2\")",
+    rocker_preset_blank_10_6_a: "ロッカー強め大型ロングボード (10'6\")",
+    rocker_preset_blank_10_8_y: "標準ロッカーロングボード (10'8\")",
+    rocker_preset_blank_11_3_d_s: "ワイドSUPロッカー (11'3\")",
     rocker_preview_enabled: "目標線を表示",
     rocker_nose: "ノーズロッカー",
     rocker_tail: "テールロッカー",
@@ -1036,9 +1085,26 @@ const I18N = {
     rocker_preserve_foil: "フォイルを維持",
     rocker_preserve_deck: "デッキを固定",
     rocker_station_row: "{label}: x {x} / rocker {rocker} / deck {deck} / thick {thickness}",
+    rocker_preset_group_fish: "フィッシュ／グロベラー",
+    rocker_preset_group_performance_shortboard: "パフォーマンス・ショートボード",
+    rocker_preset_group_funboard: "ファンボード",
+    rocker_preset_group_stepup_semigun: "ステップアップ／セミガン",
+    rocker_preset_group_bigguy_gun: "ビッグガイ／ガン",
+    rocker_preset_group_classic_midlength: "クラシック・ミッドレングス",
+    rocker_preset_group_performance_longboard: "パフォーマンス・ロングボード",
+    rocker_preset_group_classic_longboard: "クラシック・ロングボード",
+    rocker_preset_group_sup: "SUP",
     set_rocker: "ロッカーを設定",
     status_rocker_updated: "ロッカー設定: {preset}",
     status_rocker_reset: "ロッカー設定をリセットしました。",
+    volume: "ボリューム",
+    volume_level: "ボリュームレベル",
+    volume_level_thin: "薄め (-20%)",
+    volume_level_standard: "標準",
+    volume_level_thick: "厚め (+20%)",
+    volume_level_extra_thick: "極厚 (+30%)",
+    set_volume_level: "ボリュームを設定",
+    status_volume_level_updated: "ボリューム設定: {level}",
     tail_mode_square: "スクエア",
     tail_mode_squash: "スカッシュ",
     tail_mode_round: "ラウンド",
@@ -1400,7 +1466,7 @@ I18N.en = {
   view_blank: "View blank",
   view_deck_toolpath: "View deck toolpath",
   view_bottom_toolpath: "View bottom toolpath",
-  toggle_deck_bottom: "Toggle Deck/Bottom",
+  toggle_deck_bottom: "Flip (nose/tail)",
   add_guide_point: "Add Guide Point",
   edit_guide_point: "Edit Guide Point",
   delete_guide_point: "Delete Guide Point",
@@ -1475,6 +1541,55 @@ I18N.en = {
   rocker_preset_fish_retro_flat: "Fish / retro flat",
   rocker_preset_gun_continuous: "Gun continuous",
   rocker_preset_longboard_glide: "Longboard glide",
+  rocker_preset_blank_modern_fish: "Modern fish (5'10\")",
+  rocker_preset_blank_classic_longboard: "Classic longboard (9'9\")",
+  rocker_preset_blank_groveler: "Groveler (6'2\")",
+  rocker_preset_blank_performance_fish: "Performance fish (6'5\")",
+  rocker_preset_blank_step_up: "Step-up (7'0\")",
+  rocker_preset_blank_big_wave_gun: "Big-wave gun (9'3\")",
+  rocker_preset_blank_compact_shortboard: "Compact shortboard (6'3\")",
+  rocker_preset_blank_universal_fish: "Universal fish (6'8\")",
+  rocker_preset_blank_noserider: "Noserider (8'4\")",
+  rocker_preset_blank_allround_midlength: "All-round mid-length (8'9\")",
+  rocker_preset_blank_classic_longboard_2: "Classic longboard 2 (9'4\")",
+  rocker_preset_blank_hp_longboard: "High-performance longboard (9'5\")",
+  rocker_preset_blank_xl_gun: "XL gun (12'1\")",
+  rocker_preset_blank_hp_shortboard: "High-performance shortboard (6'5\")",
+  rocker_preset_blank_team_mid: "Team board, mid (6'7\")",
+  rocker_preset_blank_team_standard: "Team board, standard (6'8\")",
+  rocker_preset_blank_semigun_eps: "High-performance semi-gun, EPS (7'2\")",
+  rocker_preset_blank_semigun_ea: "High-performance semi-gun, EA (7'2\")",
+  rocker_preset_blank_gun_series: "Gun series (7'8\")",
+  rocker_preset_blank_bigguy_gun: "Big-guy gun (8'2\")",
+  rocker_preset_blank_sup_gun: "SUP, gun rocker (11'3\")",
+  rocker_preset_blank_6_4_ea: "Modern full-nose (6'4\")",
+  rocker_preset_blank_6_5x_eps: "High-performance, extra-thick, fish-capable (6'5\")",
+  rocker_preset_blank_6_6_ea: "Mid-size all-round (6'6\")",
+  rocker_preset_blank_6_8_a: "Proven rocker, enlarged (6'8\")",
+  rocker_preset_blank_6_8_eps: "Fish-to-big-guy versatile (6'8\")",
+  rocker_preset_blank_6_9_ea: "Versatile modern shortboard (6'9\")",
+  rocker_preset_blank_6_10_a: "Versatile modern shortboard, wide (6'10\")",
+  rocker_preset_blank_7_1_a: "Proven rocker, enlarged (7'1\")",
+  rocker_preset_blank_7_1_ea: "Compact funboard (7'1\")",
+  rocker_preset_blank_7_3_a: "Long fish (7'3\")",
+  rocker_preset_blank_7_5_a: "Long fish, enlarged (7'5\")",
+  rocker_preset_blank_7_6_ea: "Funboard (7'6\")",
+  rocker_preset_blank_7_7_a: "Long fish, enlarged 2 (7'7\")",
+  rocker_preset_blank_7_8_eps: "Multi-purpose: fun/big-guy/gun (7'8\")",
+  rocker_preset_blank_7_8x_eps: "Multi-purpose, max volume (7'8\")",
+  rocker_preset_blank_7_11_a: "Versatile, enlarged rocker (7'11\")",
+  rocker_preset_blank_8_1_ea: "Wide-nose funboard (8'1\")",
+  rocker_preset_blank_8_6_ea: "Big fun / big-guy gun (8'6\")",
+  rocker_preset_blank_8_5_a: "Thick, enlarged rocker (8'5\")",
+  rocker_preset_blank_8_8_eps: "Versatile mid-longboard (8'8\")",
+  rocker_preset_blank_9_8_eps: "Versatile longboard, thin (9'8\")",
+  rocker_preset_blank_9_8x_eps: "Versatile longboard (9'8\")",
+  rocker_preset_blank_9_3_y: "Middle-of-the-road rocker longboard (9'3\")",
+  rocker_preset_blank_9_8_y: "Middle-of-the-road rocker longboard (9'8\")",
+  rocker_preset_blank_10_2_b: "Close-tolerance longboard (10'2\")",
+  rocker_preset_blank_10_6_a: "Stronger-rocker large longboard (10'6\")",
+  rocker_preset_blank_10_8_y: "Middle-of-the-road rocker longboard (10'8\")",
+  rocker_preset_blank_11_3_d_s: "Wide SUP, stand-up rocker (11'3\")",
   rocker_preview_enabled: "Show target line",
   rocker_nose: "Nose rocker",
   rocker_tail: "Tail rocker",
@@ -1488,9 +1603,26 @@ I18N.en = {
   rocker_preserve_foil: "Preserve foil",
   rocker_preserve_deck: "Preserve deck",
   rocker_station_row: "{label}: x {x} / rocker {rocker} / deck {deck} / thick {thickness}",
+  rocker_preset_group_fish: "Fish / Groveler",
+  rocker_preset_group_performance_shortboard: "Performance Shortboard",
+  rocker_preset_group_funboard: "Funboard",
+  rocker_preset_group_stepup_semigun: "Step-up / Semi-gun",
+  rocker_preset_group_bigguy_gun: "Big-guy / Gun",
+  rocker_preset_group_classic_midlength: "Classic Midlength",
+  rocker_preset_group_performance_longboard: "Performance Longboard",
+  rocker_preset_group_classic_longboard: "Classic Longboard",
+  rocker_preset_group_sup: "SUP",
   set_rocker: "Set rocker",
   status_rocker_updated: "Rocker settings: {preset}",
   status_rocker_reset: "Rocker settings reset.",
+  volume: "Volume",
+  volume_level: "Volume level",
+  volume_level_thin: "Thin (-20%)",
+  volume_level_standard: "Standard",
+  volume_level_thick: "Thick (+20%)",
+  volume_level_extra_thick: "Extra-thick (+30%)",
+  set_volume_level: "Set volume",
+  status_volume_level_updated: "Volume settings: {level}",
   type: "Type",
   template: "Template",
   fin_setup: "Fin Setup",
@@ -1867,6 +1999,9 @@ function applyLanguageToStaticUI() {
   document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
     el.setAttribute("placeholder", t(el.dataset.i18nPlaceholder));
   });
+  document.querySelectorAll("[data-i18n-label]").forEach(el => {
+    el.setAttribute("label", t(el.dataset.i18nLabel));
+  });
   if (document.body && typeof document.createTreeWalker === "function" && typeof NodeFilter !== "undefined") {
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     const nodes = [];
@@ -2072,6 +2207,10 @@ const els = {
   resetRockerButton: document.getElementById("resetRockerButton"),
   rockerSummary: document.getElementById("rockerSummary"),
   rockerStationList: document.getElementById("rockerStationList"),
+  rockerPresetPicker: document.getElementById("rockerPresetPicker"),
+  volumeButton: document.getElementById("volumeButton"),
+  volumeLevel: document.getElementById("volumeLevel"),
+  setVolumeLevelButton: document.getElementById("setVolumeLevelButton"),
   railMode: document.getElementById("railMode"),
   railNoseMode: document.getElementById("railNoseMode"),
   railTailMode: document.getElementById("railTailMode"),
@@ -2261,7 +2400,7 @@ const RAIL_STRENGTH_FIELD_ID = 95;
 const NOSE_TIP_SHAPE_FIELD_ID = 96;
 const SHAPER_COMMENT_FIELD_ID = 97;
 const RAIL_PROFILE_FIELD_ID = 98;
-const ROCKER_PRESET_KEYS = Object.freeze(["custom", "continuous-neutral", "relaxed-drive", "performance-curve", "staged-speed", "fish-retro-flat", "gun-continuous", "longboard-glide"]);
+const ROCKER_PRESET_KEYS = Object.freeze(["custom", "continuous-neutral", "relaxed-drive", "performance-curve", "staged-speed", "fish-retro-flat", "gun-continuous", "longboard-glide", "blank-modern-fish", "blank-classic-longboard", "blank-groveler", "blank-performance-fish", "blank-step-up", "blank-big-wave-gun", "blank-compact-shortboard", "blank-universal-fish", "blank-noserider", "blank-allround-midlength", "blank-classic-longboard-2", "blank-hp-longboard", "blank-xl-gun", "blank-hp-shortboard", "blank-team-mid", "blank-team-standard", "blank-semigun-eps", "blank-semigun-ea", "blank-gun-series", "blank-bigguy-gun", "blank-sup-gun", "blank-6-4-ea", "blank-6-5x-eps", "blank-6-6-ea", "blank-6-8-a", "blank-6-8-eps", "blank-6-9-ea", "blank-6-10-a", "blank-7-1-a", "blank-7-1-ea", "blank-7-3-a", "blank-7-5-a", "blank-7-6-ea", "blank-7-7-a", "blank-7-8-eps", "blank-7-8x-eps", "blank-7-11-a", "blank-8-1-ea", "blank-8-6-ea", "blank-8-5-a", "blank-8-8-eps", "blank-9-8-eps", "blank-9-8x-eps", "blank-9-3-y", "blank-9-8-y", "blank-10-2-b", "blank-10-6-a", "blank-10-8-y", "blank-11-3-d-s"]);
 const ROCKER_STATION_12_INCH_CM = 30.48;
 const ROCKER_STATION_24_INCH_CM = 60.96;
 const ROCKER_STATION_3_INCH_CM = 7.62;
@@ -2280,8 +2419,34 @@ const ROCKER_CONFIG_DEFAULTS = Object.freeze({
   apexShift: 0,
   blend: 1,
   preserveFoil: true,
-  preserveDeck: false
+  preserveDeck: false,
+  thicknessScale: 1
 });
+const VOLUME_LEVEL_KEYS = Object.freeze(["thin", "standard", "thick", "extra-thick"]);
+const VOLUME_LEVEL_SCALE = Object.freeze({
+  thin: 0.8,
+  standard: 1,
+  thick: 1.2,
+  "extra-thick": 1.3
+});
+function normalizeVolumeLevelKey(value) {
+  const key = String(value || "").trim().toLowerCase();
+  return VOLUME_LEVEL_KEYS.includes(key) ? key : "";
+}
+function volumeLevelForThicknessScale(scale) {
+  const value = Number(scale);
+  if (!Number.isFinite(value)) return "standard";
+  let best = "standard";
+  let bestDiff = Infinity;
+  for (const key of VOLUME_LEVEL_KEYS) {
+    const diff = Math.abs(VOLUME_LEVEL_SCALE[key] - value);
+    if (diff < bestDiff) {
+      bestDiff = diff;
+      best = key;
+    }
+  }
+  return best;
+}
 const ROCKER_PRESET_PARAMETER_DEFAULTS = Object.freeze({
   "continuous-neutral": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
   "relaxed-drive": { entryLengthRatio: 0.27, entryLift: 0.12, middleFlatness: 0.16, tailKickLengthRatio: 0.24, tailKick: 0.08, apexShift: -0.04, blend: 0.92, preserveFoil: true, preserveDeck: false },
@@ -2289,7 +2454,60 @@ const ROCKER_PRESET_PARAMETER_DEFAULTS = Object.freeze({
   "staged-speed": { entryLengthRatio: 0.18, entryLift: 0.1, middleFlatness: 0.12, tailKickLengthRatio: 0.16, tailKick: 0.16, apexShift: -0.02, blend: 0.84, preserveFoil: true, preserveDeck: false },
   "fish-retro-flat": { entryLengthRatio: 0.3, entryLift: 0.05, middleFlatness: 0.2, tailKickLengthRatio: 0.22, tailKick: 0.04, apexShift: -0.08, blend: 0.8, preserveFoil: true, preserveDeck: false },
   "gun-continuous": { entryLengthRatio: 0.18, entryLift: 0.2, middleFlatness: -0.38, tailKickLengthRatio: 0.18, tailKick: 0.22, apexShift: 0.05, blend: 1.4, preserveFoil: true, preserveDeck: false },
-  "longboard-glide": { entryLengthRatio: 0.28, entryLift: 0.04, middleFlatness: 0.28, tailKickLengthRatio: 0.24, tailKick: 0.06, apexShift: -0.05, blend: 0.88, preserveFoil: true, preserveDeck: false }
+  "longboard-glide": { entryLengthRatio: 0.28, entryLift: 0.04, middleFlatness: 0.28, tailKickLengthRatio: 0.24, tailKick: 0.06, apexShift: -0.05, blend: 0.88, preserveFoil: true, preserveDeck: false },
+  // These three reuse the plain single-quadratic shape (no local kick/lift):
+  // the source blanks' own apex sits within a couple percent of board center,
+  // so a fair quadratic through tail/apex/nose alone already tracks them
+  // closely without hand-tuned kick/lift/flatness knobs.
+  "blank-modern-fish": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-classic-longboard": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-groveler": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-performance-fish": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-step-up": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-big-wave-gun": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-compact-shortboard": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-universal-fish": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-noserider": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-allround-midlength": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-classic-longboard-2": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-hp-longboard": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-xl-gun": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-hp-shortboard": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-team-mid": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-team-standard": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-semigun-eps": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-semigun-ea": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-gun-series": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-bigguy-gun": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false, thicknessScale: 1.2 },
+  "blank-sup-gun": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-6-4-ea": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-6-5x-eps": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-6-6-ea": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-6-8-a": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-6-8-eps": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-6-9-ea": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-6-10-a": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-7-1-a": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-7-1-ea": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-7-3-a": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-7-5-a": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-7-6-ea": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-7-7-a": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-7-8-eps": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false, thicknessScale: 1.2 },
+  "blank-7-8x-eps": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-7-11-a": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-8-1-ea": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-8-6-ea": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false, thicknessScale: 1.2 },
+  "blank-8-5-a": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-8-8-eps": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-9-8-eps": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-9-8x-eps": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-9-3-y": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-9-8-y": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-10-2-b": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-10-6-a": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-10-8-y": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
+  "blank-11-3-d-s": { entryLengthRatio: 0.25, entryLift: 0, middleFlatness: 0, tailKickLengthRatio: 0.25, tailKick: 0, apexShift: 0, blend: 1, preserveFoil: true, preserveDeck: false },
 });
 // Greenlight Surfboard Design Guide: Typical Surfboard Rocker Numbers.
 // Published feet/inches are converted to centimeters. These are preset
@@ -2301,7 +2519,59 @@ const ROCKER_NUMERIC_REFERENCES = Object.freeze({
   "staged-speed": { boardType: "Shortboard", lengthCm: 74 * 2.54, noseCm: 5 * 2.54, tailCm: 2.5 * 2.54 },
   "fish-retro-flat": { boardType: "Retro fish", lengthCm: 68 * 2.54, noseCm: 3.5 * 2.54, tailCm: 1.5 * 2.54 },
   "gun-continuous": { boardType: "Gun", lengthCm: 90 * 2.54, noseCm: 6.75 * 2.54, tailCm: 2.75 * 2.54 },
-  "longboard-glide": { boardType: "HP longboard", lengthCm: 108 * 2.54, noseCm: 5.25 * 2.54, tailCm: 3.25 * 2.54 }
+  "longboard-glide": { boardType: "HP longboard", lengthCm: 108 * 2.54, noseCm: 5.25 * 2.54, tailCm: 3.25 * 2.54 },
+  // Measured directly off boardCadRockerAtPos(0)/(length) for the named
+  // US Blanks catalog entry (blanks/us-blanks/catalog.json), not a published
+  // spec sheet number.
+  "blank-modern-fish": { boardType: "US Blanks 5'10\"RP", lengthCm: 182.25, noseCm: 13.1271, tailCm: 6.0636 },
+  "blank-classic-longboard": { boardType: "US Blanks 9'9\"B", lengthCm: 300.67, noseCm: 13.013, tailCm: 11.1466 },
+  "blank-groveler": { boardType: "US Blanks 6'2\"A", lengthCm: 190.34, noseCm: 13.7065, tailCm: 6.1829 },
+  "blank-performance-fish": { boardType: "US Blanks 6'5\"A", lengthCm: 197.8, noseCm: 14.3322, tailCm: 6.4569 },
+  "blank-step-up": { boardType: "US Blanks 7'0\"A", lengthCm: 213.84, noseCm: 15.9965, tailCm: 7.5783 },
+  "blank-big-wave-gun": { boardType: "US Blanks 9'3\"A", lengthCm: 285.12, noseCm: 20.3025, tailCm: 8.8701 },
+  "blank-compact-shortboard": { boardType: "US Blanks 6'3\"EA", lengthCm: 183.83, noseCm: 13.0179, tailCm: 7.6655 },
+  "blank-universal-fish": { boardType: "US Blanks 6'8\"RP", lengthCm: 207.96, noseCm: 14.7155, tailCm: 7.0856 },
+  "blank-noserider": { boardType: "US Blanks 8'4\"SP", lengthCm: 256.54, noseCm: 14.1918, tailCm: 8.2521 },
+  "blank-allround-midlength": { boardType: "US Blanks 8'9\"Y", lengthCm: 267.97, noseCm: 12.274, tailCm: 9.3704 },
+  "blank-classic-longboard-2": { boardType: "US Blanks 9'4\"B", lengthCm: 285.12, noseCm: 12.7487, tailCm: 11.0692 },
+  "blank-hp-longboard": { boardType: "US Blanks 9'5\"M", lengthCm: 286.86, noseCm: 14.3745, tailCm: 10.5654 },
+  "blank-xl-gun": { boardType: "US Blanks 12'1\"EPS", lengthCm: 370.21, noseCm: 20.2019, tailCm: 11.5566 },
+  "blank-hp-shortboard": { boardType: "US Blanks 6'5\"EPS", lengthCm: 197.64, noseCm: 13.7093, tailCm: 7.8511 },
+  "blank-team-mid": { boardType: "US Blanks 6'7\"P", lengthCm: 201.93, noseCm: 14.8894, tailCm: 6.7661 },
+  "blank-team-standard": { boardType: "US Blanks 6'8\"P", lengthCm: 203.2, noseCm: 15.0969, tailCm: 6.1915 },
+  "blank-semigun-eps": { boardType: "US Blanks 7'2\"EPS", lengthCm: 220.35, noseCm: 15.0121, tailCm: 6.2248 },
+  "blank-semigun-ea": { boardType: "US Blanks 7'2\"EA", lengthCm: 221.3, noseCm: 16.5072, tailCm: 7.2545 },
+  "blank-gun-series": { boardType: "US Blanks 7'8\"EA", lengthCm: 237.81, noseCm: 16.8619, tailCm: 8.0062 },
+  "blank-bigguy-gun": { boardType: "US Blanks 8'2\"A", lengthCm: 251.78, noseCm: 17.7674, tailCm: 8.3282 },
+  "blank-sup-gun": { boardType: "US Blanks 11'3\"d-g", lengthCm: 343.85, noseCm: 23.3415, tailCm: 10.8223 },
+  "blank-6-4-ea": { boardType: "US Blanks 6'4\"EA", lengthCm: 194.47, noseCm: 13.7634, tailCm: 7.6493 },
+  "blank-6-5x-eps": { boardType: "US Blanks 6'5X\"EPS", lengthCm: 197.64, noseCm: 12.7956, tailCm: 7.8058 },
+  "blank-6-6-ea": { boardType: "US Blanks 6'6\"EA", lengthCm: 199.39, noseCm: 14.7079, tailCm: 7.3841 },
+  "blank-6-8-a": { boardType: "US Blanks 6'8\"A", lengthCm: 203.52, noseCm: 14.1067, tailCm: 6.7455 },
+  "blank-6-8-eps": { boardType: "US Blanks 6'8\"EPS", lengthCm: 205.74, noseCm: 14.0632, tailCm: 8.3298 },
+  "blank-6-9-ea": { boardType: "US Blanks 6'9\"EA", lengthCm: 206.69, noseCm: 15.6108, tailCm: 7.7762 },
+  "blank-6-10-a": { boardType: "US Blanks 6'10\"A", lengthCm: 209.39, noseCm: 15.0922, tailCm: 6.7614 },
+  "blank-7-1-a": { boardType: "US Blanks 7'1\"A", lengthCm: 216.22, noseCm: 15.7729, tailCm: 7.3371 },
+  "blank-7-1-ea": { boardType: "US Blanks 7'1\"EA", lengthCm: 216.22, noseCm: 15.2084, tailCm: 7.1825 },
+  "blank-7-3-a": { boardType: "US Blanks 7'3\"A", lengthCm: 222.41, noseCm: 15.5965, tailCm: 7.0187 },
+  "blank-7-5-a": { boardType: "US Blanks 7'5\"A", lengthCm: 226.22, noseCm: 16.9465, tailCm: 6.5592 },
+  "blank-7-6-ea": { boardType: "US Blanks 7'6\"EA", lengthCm: 230.2, noseCm: 16.0835, tailCm: 6.8275 },
+  "blank-7-7-a": { boardType: "US Blanks 7'7\"A", lengthCm: 231.78, noseCm: 16.7455, tailCm: 6.8639 },
+  "blank-7-8-eps": { boardType: "US Blanks 7'8\"EPS", lengthCm: 236.22, noseCm: 15.7327, tailCm: 7.3956 },
+  "blank-7-8x-eps": { boardType: "US Blanks 7'8X\"EPS", lengthCm: 236.22, noseCm: 15.06, tailCm: 8.6369 },
+  "blank-7-11-a": { boardType: "US Blanks 7'11\"A", lengthCm: 244.16, noseCm: 8.2024, tailCm: 3.2463 },
+  "blank-8-1-ea": { boardType: "US Blanks 8'1\"EA", lengthCm: 246.54, noseCm: 18.7465, tailCm: 7.9674 },
+  "blank-8-6-ea": { boardType: "US Blanks 8'6\"EA", lengthCm: 260.67, noseCm: 19.1308, tailCm: 7.657 },
+  "blank-8-5-a": { boardType: "US Blanks 8'5\"A", lengthCm: 261.62, noseCm: 16.6703, tailCm: 6.7688 },
+  "blank-8-8-eps": { boardType: "US Blanks 8'8\"EPS", lengthCm: 263.84, noseCm: 12.223, tailCm: 6.8727 },
+  "blank-9-8-eps": { boardType: "US Blanks 9'8\"EPS", lengthCm: 274.32, noseCm: 11.6737, tailCm: 8.0925 },
+  "blank-9-8x-eps": { boardType: "US Blanks 9'8X\"EPS", lengthCm: 274.32, noseCm: 10.5202, tailCm: 8.0291 },
+  "blank-9-3-y": { boardType: "US Blanks 9'3\"Y", lengthCm: 284.32, noseCm: 13.0643, tailCm: 10.1165 },
+  "blank-9-8-y": { boardType: "US Blanks 9'8\"Y", lengthCm: 297.18, noseCm: 12.8831, tailCm: 10.2656 },
+  "blank-10-2-b": { boardType: "US Blanks 10'2\"B", lengthCm: 312.1, noseCm: 13.7814, tailCm: 10.0993 },
+  "blank-10-6-a": { boardType: "US Blanks 10'6\"A", lengthCm: 325.12, noseCm: 21.0597, tailCm: 9.4908 },
+  "blank-10-8-y": { boardType: "US Blanks 10'8\"Y", lengthCm: 327.03, noseCm: 14.7921, tailCm: 11.4729 },
+  "blank-11-3-d-s": { boardType: "US Blanks 11'3\"d-s", lengthCm: 343.85, noseCm: 17.4224, tailCm: 10.2669 },
 });
 const BOTTOM_FEATURE_TYPES = Object.freeze(["flat", "single-concave", "concave-vee", "double-concave", "vee", "spiral-vee", "hull", "displacement-hull", "channel", "chine"]);
 const BOTTOM_PRESET_KEYS = Object.freeze(["custom", "displacement-hull", "tri-plane-hull", "hydro-hull", "longboard-rolled-vee", "shortboard-single-to-double", "shortboard-single-to-vee", "performance-channel-quad", "rider-paddle-glide", "rider-balanced-control", "rider-speed-drive", "rider-loose-turn"]);
@@ -2453,6 +2723,8 @@ const ACTION_HANDLERS = Object.freeze({
   "set-wing": () => setWingFromPanel(),
   "set-rocker": () => setRockerFromPanel(),
   "reset-rocker": () => resetRockerFromPanel(),
+  "select-rocker-preset": target => selectRockerPresetFromPicker(target.dataset.presetValue),
+  "set-volume-level": () => setVolumeLevelFromPanel(),
   "set-rail": () => setRailFromPanel(),
   "set-edge": () => setEdgeFromPanel(),
   "apply-bottom-preset": () => applyBottomPresetFromPanel(),
@@ -6408,7 +6680,8 @@ function normalizeRockerConfig(config = {}, preset = "") {
     apexShift: clampNumber(source.apexShift, -1, 1, 0),
     blend: clampNumber(source.blend, 0.1, 4, ROCKER_CONFIG_DEFAULTS.blend),
     preserveFoil: preserveDeck ? false : source.preserveFoil !== false && source.preserveFoil !== "false",
-    preserveDeck
+    preserveDeck,
+    thicknessScale: clampNumber(source.thicknessScale, 0.5, 2, ROCKER_CONFIG_DEFAULTS.thicknessScale)
   };
 }
 
@@ -8881,21 +9154,30 @@ function rockerTargetEndpointValue(value, fallback) {
 }
 
 function rockerQuadraticModel(length, tailY, apexX, apexY, noseY) {
+  // Vertex-form pair of parabolas meeting at (apexX, apexY) with zero slope
+  // on both sides (C1 continuous, never a tangent "V"). A single quadratic
+  // through all three points only has 3 degrees of freedom (a,b,c), which
+  // are fully consumed by the three point constraints — the curve's true
+  // vertex then drifts wherever tailY/noseY pull it, away from apexX,
+  // especially hard when nose and tail rocker differ a lot. Splitting into
+  // two independently-solved parabolas anchored at the same vertex removes
+  // that drift: apexX is an exact, free input, not a derived side effect.
   const span = Math.max(1e-6, length);
   const xA = clampNumber(apexX, span * 0.12, span * 0.88, span * 0.5);
-  const denominator = xA * (xA - span);
-  const a = Math.abs(denominator) > 1e-9
-    ? ((apexY - tailY) - (((noseY - tailY) * xA) / span)) / denominator
-    : 0;
-  const b = (noseY - tailY - (a * span * span)) / span;
+  const leftSpan = Math.max(1e-6, xA);
+  const rightSpan = Math.max(1e-6, span - xA);
+  const aLeft = (tailY - apexY) / (leftSpan * leftSpan);
+  const aRight = (noseY - apexY) / (rightSpan * rightSpan);
   return {
     value(x) {
       const px = clampNumber(x, 0, span, 0);
-      return (a * px * px) + (b * px) + tailY;
+      const dx = px - xA;
+      return ((px <= xA ? aLeft : aRight) * dx * dx) + apexY;
     },
     slope(x) {
       const px = clampNumber(x, 0, span, 0);
-      return (2 * a * px) + b;
+      const dx = px - xA;
+      return 2 * (px <= xA ? aLeft : aRight) * dx;
     }
   };
 }
@@ -9110,7 +9392,10 @@ function applyRockerConfigToBoard(board, config = null) {
     const apexY = targetAt(apexX);
     const noseY = targetAt(length);
     const exactModel = rockerQuadraticModel(length, tailY, apexX, apexY, noseY);
-    board.bottom = rockerQuadraticSpline(length, exactModel, resolvedApexX);
+    // Split exactly at apexX (not the sampled-and-refined resolvedApexX):
+    // the vertex-form model's true vertex is apexX by construction, so this
+    // is exact rather than a 240-sample search's residual approximation.
+    board.bottom = rockerQuadraticSpline(length, exactModel, apexX);
   } else {
   // Local kick/lift profiles need only their transition boundaries in addition
   // to the three base-rocker landmarks.  The inch stations remain measurements,
@@ -9143,10 +9428,72 @@ function applyRockerConfigToBoard(board, config = null) {
         slope: x => foil.slope(x) * volumeScale
       }, length);
     }
+    // thicknessScale intentionally applies AFTER volume preservation has
+    // converged, as a deliberate extra multiplier on foam thickness alone.
+    // Bottom/deck rocker (their vertical curve shape) is untouched either
+    // way -- only how far the deck sits above the bottom changes.
+    const thicknessScale = Number(normalized.thicknessScale) || 1;
+    if (Math.abs(thicknessScale - 1) > 1e-9) {
+      const finalScale = volumeScale * thicknessScale;
+      board.deck = rockerDeckFromBottomAndFoil(board.bottom, {
+        ...foil,
+        value: x => foil.value(x) * finalScale,
+        slope: x => foil.slope(x) * finalScale
+      }, length);
+    }
     markGeometryDirty();
   }
   board.rockerPreset = normalized.preset;
   board.rockerConfig = normalized;
+  return true;
+}
+
+// Rescales deck-above-bottom thickness to a named Volume level, independent of
+// whatever rocker preset (if any) is active. Unlike applyRockerConfigToBoard,
+// this never rebuilds board.bottom -- it only rebuilds board.deck from the
+// board's own native foil (thickness) distribution, scaled by the level's
+// factor. thicknessScale on rockerConfig is still the persisted value (it
+// already round-trips through BRD export/undo), this just writes it without
+// running the rocker-curve regeneration that owns board.bottom.
+function applyVolumeLevelToBoard(board, level) {
+  if (!board || !Array.isArray(board.bottom) || board.bottom.length < 2 || !Array.isArray(board.deck) || board.deck.length < 2) return false;
+  const length = Number(board.length) || 0;
+  if (!(length > 0)) return false;
+  const normalizedLevel = normalizeVolumeLevelKey(level) || "standard";
+  const scale = VOLUME_LEVEL_SCALE[normalizedLevel];
+  captureRockerRuntimeBase(board);
+  const sourceBottom = Array.isArray(board.rockerRuntimeBaseBottom) && board.rockerRuntimeBaseBottom.length
+    ? board.rockerRuntimeBaseBottom
+    : board.bottom;
+  const sourceDeck = Array.isArray(board.rockerRuntimeBaseDeck) && board.rockerRuntimeBaseDeck.length
+    ? board.rockerRuntimeBaseDeck
+    : board.deck;
+  const originalVolume = rockerVolume({ ...board, bottom: sourceBottom, deck: sourceDeck });
+  const foilLandmark = rockerFoilLandmark(sourceBottom, sourceDeck, length);
+  const foil = rockerFoilThicknessModel(length, foilLandmark);
+  board.deck = rockerDeckFromBottomAndFoil(board.bottom, foil, length);
+  let volumeScale = 1;
+  for (let i = 0; i < 2; i += 1) {
+    const approximatedVolume = rockerVolume(board);
+    if (approximatedVolume <= 1e-9) break;
+    volumeScale *= originalVolume / approximatedVolume;
+    board.deck = rockerDeckFromBottomAndFoil(board.bottom, {
+      ...foil,
+      value: x => foil.value(x) * volumeScale,
+      slope: x => foil.slope(x) * volumeScale
+    }, length);
+  }
+  const finalScale = volumeScale * scale;
+  board.deck = rockerDeckFromBottomAndFoil(board.bottom, {
+    ...foil,
+    value: x => foil.value(x) * finalScale,
+    slope: x => foil.slope(x) * finalScale
+  }, length);
+  board.rockerConfig = normalizeRockerConfig({
+    ...normalizeRockerConfig(board.rockerConfig, board.rockerPreset || board.rockerConfig?.preset),
+    thicknessScale: scale
+  }, board.rockerPreset || board.rockerConfig?.preset);
+  markGeometryDirty();
   return true;
 }
 
@@ -19516,6 +19863,7 @@ function boardPanelInputs() {
     els.rockerPreset, els.rockerEnabled, els.rockerNose, els.rockerTail, els.rockerEntryLength, els.rockerEntryLift,
     els.rockerMiddleFlatness, els.rockerTailKickLength, els.rockerTailKick, els.rockerApexShift, els.rockerBlend,
     els.rockerPreserveFoil, els.rockerPreserveDeck, els.setRockerButton, els.resetRockerButton,
+    els.volumeLevel, els.setVolumeLevelButton,
     els.railMode, els.railNoseMode, els.railTailMode, els.railStrength, els.setRailButton,
     els.edgeType, els.edgeStrength, els.edgeLength, els.edgeFade, els.setEdgeButton,
     els.bottomFeaturePreset, els.applyBottomPresetButton,
@@ -19536,6 +19884,7 @@ function updateBoardPanel(options = {}) {
     updateNosePanelFields();
     updateWingPanelFields();
     updateRockerPanelFields();
+    updateVolumePanelFields();
     updateRailPanelFields();
     updateEdgePanelFields();
     syncBottomFeaturePanel(-1);
@@ -19664,6 +20013,7 @@ function updateBoardPanel(options = {}) {
   updateNosePanelFields();
   updateWingPanelFields();
   updateRockerPanelFields();
+  updateVolumePanelFields();
   updateRailPanelFields();
   updateEdgePanelFields();
   syncBottomFeaturePanel();
@@ -19747,6 +20097,55 @@ function rockerPresetLabel(preset) {
   if (key === "fish-retro-flat") return t("rocker_preset_fish_retro_flat");
   if (key === "gun-continuous") return t("rocker_preset_gun_continuous");
   if (key === "longboard-glide") return t("rocker_preset_longboard_glide");
+  if (key === "blank-modern-fish") return t("rocker_preset_blank_modern_fish");
+  if (key === "blank-classic-longboard") return t("rocker_preset_blank_classic_longboard");
+  if (key === "blank-groveler") return t("rocker_preset_blank_groveler");
+  if (key === "blank-performance-fish") return t("rocker_preset_blank_performance_fish");
+  if (key === "blank-step-up") return t("rocker_preset_blank_step_up");
+  if (key === "blank-big-wave-gun") return t("rocker_preset_blank_big_wave_gun");
+  if (key === "blank-compact-shortboard") return t("rocker_preset_blank_compact_shortboard");
+  if (key === "blank-universal-fish") return t("rocker_preset_blank_universal_fish");
+  if (key === "blank-noserider") return t("rocker_preset_blank_noserider");
+  if (key === "blank-allround-midlength") return t("rocker_preset_blank_allround_midlength");
+  if (key === "blank-classic-longboard-2") return t("rocker_preset_blank_classic_longboard_2");
+  if (key === "blank-hp-longboard") return t("rocker_preset_blank_hp_longboard");
+  if (key === "blank-xl-gun") return t("rocker_preset_blank_xl_gun");
+  if (key === "blank-hp-shortboard") return t("rocker_preset_blank_hp_shortboard");
+  if (key === "blank-team-mid") return t("rocker_preset_blank_team_mid");
+  if (key === "blank-team-standard") return t("rocker_preset_blank_team_standard");
+  if (key === "blank-semigun-eps") return t("rocker_preset_blank_semigun_eps");
+  if (key === "blank-semigun-ea") return t("rocker_preset_blank_semigun_ea");
+  if (key === "blank-gun-series") return t("rocker_preset_blank_gun_series");
+  if (key === "blank-bigguy-gun") return t("rocker_preset_blank_bigguy_gun");
+  if (key === "blank-sup-gun") return t("rocker_preset_blank_sup_gun");
+  if (key === "blank-6-4-ea") return t("rocker_preset_blank_6_4_ea");
+  if (key === "blank-6-5x-eps") return t("rocker_preset_blank_6_5x_eps");
+  if (key === "blank-6-6-ea") return t("rocker_preset_blank_6_6_ea");
+  if (key === "blank-6-8-a") return t("rocker_preset_blank_6_8_a");
+  if (key === "blank-6-8-eps") return t("rocker_preset_blank_6_8_eps");
+  if (key === "blank-6-9-ea") return t("rocker_preset_blank_6_9_ea");
+  if (key === "blank-6-10-a") return t("rocker_preset_blank_6_10_a");
+  if (key === "blank-7-1-a") return t("rocker_preset_blank_7_1_a");
+  if (key === "blank-7-1-ea") return t("rocker_preset_blank_7_1_ea");
+  if (key === "blank-7-3-a") return t("rocker_preset_blank_7_3_a");
+  if (key === "blank-7-5-a") return t("rocker_preset_blank_7_5_a");
+  if (key === "blank-7-6-ea") return t("rocker_preset_blank_7_6_ea");
+  if (key === "blank-7-7-a") return t("rocker_preset_blank_7_7_a");
+  if (key === "blank-7-8-eps") return t("rocker_preset_blank_7_8_eps");
+  if (key === "blank-7-8x-eps") return t("rocker_preset_blank_7_8x_eps");
+  if (key === "blank-7-11-a") return t("rocker_preset_blank_7_11_a");
+  if (key === "blank-8-1-ea") return t("rocker_preset_blank_8_1_ea");
+  if (key === "blank-8-6-ea") return t("rocker_preset_blank_8_6_ea");
+  if (key === "blank-8-5-a") return t("rocker_preset_blank_8_5_a");
+  if (key === "blank-8-8-eps") return t("rocker_preset_blank_8_8_eps");
+  if (key === "blank-9-8-eps") return t("rocker_preset_blank_9_8_eps");
+  if (key === "blank-9-8x-eps") return t("rocker_preset_blank_9_8x_eps");
+  if (key === "blank-9-3-y") return t("rocker_preset_blank_9_3_y");
+  if (key === "blank-9-8-y") return t("rocker_preset_blank_9_8_y");
+  if (key === "blank-10-2-b") return t("rocker_preset_blank_10_2_b");
+  if (key === "blank-10-6-a") return t("rocker_preset_blank_10_6_a");
+  if (key === "blank-10-8-y") return t("rocker_preset_blank_10_8_y");
+  if (key === "blank-11-3-d-s") return t("rocker_preset_blank_11_3_d_s");
   return t("custom");
 }
 
@@ -19770,6 +20169,29 @@ function updateRockerPanelFields() {
   if (els.rockerPreserveDeck) els.rockerPreserveDeck.checked = !!config.preserveDeck;
   if (els.rockerPreserveFoil) els.rockerPreserveFoil.checked = !config.preserveDeck && config.preserveFoil !== false;
   updateRockerPanelReadout(config, currentMeasurement);
+  syncRockerPresetPickerSelection();
+}
+
+// Highlights the picker button matching the current rocker preset and opens
+// its collapsible category group so the active choice is visible without the
+// user having to hunt through every group.
+function syncRockerPresetPickerSelection() {
+  if (!els.rockerPresetPicker) return;
+  const current = els.rockerPreset?.value || "custom";
+  els.rockerPresetPicker.querySelectorAll(".rocker-preset-option").forEach(button => {
+    const isActive = button.dataset.presetValue === current;
+    button.classList.toggle("active", isActive);
+    if (isActive) {
+      const group = button.closest("details.rocker-preset-group");
+      if (group) group.open = true;
+    }
+  });
+}
+
+function selectRockerPresetFromPicker(value) {
+  if (!state.board || !els.rockerPreset) return;
+  els.rockerPreset.value = value;
+  els.rockerPreset.dispatchEvent(new Event("change"));
 }
 
 function rockerPresetConfigForBoard(preset, board) {
@@ -19809,6 +20231,7 @@ function applyRockerPresetToPanel(preset, board = state.board) {
   if (els.rockerPreserveDeck) els.rockerPreserveDeck.checked = !!config.preserveDeck;
   if (els.rockerPreserveFoil) els.rockerPreserveFoil.checked = !config.preserveDeck && config.preserveFoil !== false;
   updateRockerPanelReadout(config);
+  syncRockerPresetPickerSelection();
 }
 
 function updateRockerPanelReadout(config = normalizeRockerConfig(), measurements = null) {
@@ -19857,7 +20280,8 @@ function readRockerConfigFromPanel() {
     apexShift: Number(els.rockerApexShift?.value),
     blend: Number(els.rockerBlend?.value),
     preserveFoil: preserveDeck ? false : !!els.rockerPreserveFoil?.checked,
-    preserveDeck
+    preserveDeck,
+    thicknessScale: preset === current.preset ? current.thicknessScale : defaultRockerConfig(preset).thicknessScale
   }, preset);
 }
 
@@ -19879,6 +20303,21 @@ function resetRockerFromPanel() {
   state.board.rockerConfig = defaultRockerConfig("custom");
   commitBoardMutation(before);
   setStatus("status_rocker_reset");
+}
+
+function updateVolumePanelFields() {
+  const board = state.board;
+  const config = normalizeRockerConfig(board?.rockerConfig, board?.rockerPreset || board?.rockerConfig?.preset);
+  if (els.volumeLevel) els.volumeLevel.value = volumeLevelForThicknessScale(config.thicknessScale);
+}
+
+function setVolumeLevelFromPanel() {
+  if (!state.board) return;
+  const before = cloneBoard(state.board);
+  const level = normalizeVolumeLevelKey(els.volumeLevel?.value) || "standard";
+  if (!applyVolumeLevelToBoard(state.board, level)) return;
+  commitBoardMutation(before);
+  setStatus("status_volume_level_updated", { level: t(`volume_level_${level.replace(/-/g, "_")}`) });
 }
 
 function normalizeRailModeKey(value) {
@@ -23282,9 +23721,9 @@ function outlineWithoutKnot(knots, index) {
   return source;
 }
 
-function outlineSimplificationError(reference, candidate, steps = 240) {
-  const start = reference[0].p.x;
-  const end = reference[reference.length - 1].p.x;
+function outlineSimplificationError(reference, candidate, steps = 240, rangeStart, rangeEnd) {
+  const start = rangeStart ?? reference[0].p.x;
+  const end = rangeEnd ?? reference[reference.length - 1].p.x;
   let maxError = 0;
   for (let i = 0; i <= steps; i++) {
     const x = lerp(start, end, i / steps);
@@ -23293,10 +23732,22 @@ function outlineSimplificationError(reference, candidate, steps = 240) {
   return maxError;
 }
 
-function simplifyOutlineKnots(board, maxErrorCm = 0.05, maxVolumeRatio = 0.001) {
+function simplifyOutlineKnots(board, maxErrorCm = 0.01, maxVolumeRatio = 0.001) {
   const reference = boardCadCloneKnots(board.outline || []);
   const referenceVolume = outlineVolumeUncached(board);
-  const protectedEndRange = Math.min(30.48, (Number(board.length) || 0) * 0.2);
+  // A notched tail (swallow/split/fish/star/half-moon/bat) traces the notch
+  // wall back to the horn tip, so x briefly decreases before climbing again:
+  // the outline isn't single-valued in that span. boardCadSplineValueAt walks
+  // knots in array order and returns the first x-range match, so sampling
+  // inside that span can silently read the notch's other branch. Track how
+  // far that backtrack reaches so candidates anywhere near it are skipped
+  // rather than evaluated against the wrong branch.
+  let nonMonotonicGuardX = -Infinity;
+  let runningMaxX = reference.length ? reference[0].p.x : -Infinity;
+  for (let i = 1; i < reference.length; i++) {
+    if (reference[i].p.x < runningMaxX) nonMonotonicGuardX = Math.max(nonMonotonicGuardX, runningMaxX);
+    runningMaxX = Math.max(runningMaxX, reference[i].p.x);
+  }
   let maxError = 0;
   let volumeRatio = 0;
   let changed = true;
@@ -23305,9 +23756,19 @@ function simplifyOutlineKnots(board, maxErrorCm = 0.05, maxVolumeRatio = 0.001) 
     let best = null;
     for (let index = 1; index < board.outline.length - 1; index++) {
       const knot = board.outline[index];
-      if (!knot.continuous || knot.p.x <= protectedEndRange || knot.p.x >= board.length - protectedEndRange) continue;
+      if (!knot.continuous) continue;
+      const left = board.outline[index - 1];
+      const right = board.outline[index + 1];
+      if (left.p.x >= right.p.x || left.p.x < nonMonotonicGuardX) continue;
       const candidate = outlineWithoutKnot(board.outline, index);
-      const error = outlineSimplificationError(reference, candidate);
+      // A removed knot can only change the curve between its two neighbors;
+      // everywhere else candidate and reference share the same knots. Sampling
+      // that narrow span densely (instead of spreading a fixed sample count
+      // across the whole board) is what actually catches a shape change in a
+      // short, tightly curved region like a procedural tail/nose tip.
+      const span = Math.max(0.01, right.p.x - left.p.x);
+      const localSteps = Math.min(400, Math.max(40, Math.ceil(span / 0.2)));
+      const error = outlineSimplificationError(reference, candidate, localSteps, left.p.x, right.p.x);
       if (error > maxErrorCm) continue;
       const candidateBoard = { ...board, outline: candidate };
       const candidateVolume = outlineVolumeUncached(candidateBoard);
@@ -23668,7 +24129,7 @@ function updateHistoryButtons() {
   setDisabled([els.railMode, els.railNoseMode, els.railTailMode, els.railStrength, els.setRailButton, els.edgeType, els.edgeStrength, els.edgeLength, els.edgeFade, els.setEdgeButton], !state.board);
   setDisabled([
     els.scaleBoardButton, els.boardInfoButton, els.flipBoardViewButton,
-    els.tailButton, els.noseButton, els.wingButton, els.rockerButton, els.bottomButton, els.finsButton, els.guidePointsButton, els.weightCalcButton,
+    els.tailButton, els.noseButton, els.wingButton, els.rockerButton, els.volumeButton, els.bottomButton, els.finsButton, els.guidePointsButton, els.weightCalcButton,
     els.setFinsButton, els.setTailButton, els.setNoseButton, els.setWingButton, els.setRockerButton, els.resetRockerButton, els.setBottomFeatureButton,
     els.addBottomFeatureButton, els.removeBottomFeatureButton, els.finTemplate, els.guideTarget, els.addGuidePointButton,
     els.weightDefaultsButton, els.weightCalcPanelButton
@@ -23681,6 +24142,7 @@ function updateHistoryButtons() {
     els.editNurbsButton
   ], !state.board);
   setDisabled(boardPanelInputs(), !state.board);
+  if (els.rockerPresetPicker) setDisabled(els.rockerPresetPicker.querySelectorAll(".rocker-preset-option"), !state.board);
   updateTailPanelFields();
   updateRailPanelFields();
   updateEdgePanelFields();
@@ -25435,6 +25897,7 @@ window.boardcadWeb = {
     rockerPresetOrDefault,
     defaultRockerConfig,
     rockerPresetConfigForBoard,
+    rockerPresetLabel,
     normalizeRockerConfig,
     parseRockerConfig,
     serializeRockerConfig,
@@ -25446,6 +25909,16 @@ window.boardcadWeb = {
     syncStationEditor,
     rockerTargetCurvePoints,
     applyRockerConfigToBoard,
+    applyRockerPresetToPanel,
+    readRockerConfigFromPanel,
+    setRockerFromPanel,
+    setVolumeLevelFromPanel,
+    applyVolumeLevelToBoard,
+    updateVolumePanelFields,
+    normalizeVolumeLevelKey,
+    volumeLevelForThicknessScale,
+    VOLUME_LEVEL_SCALE,
+    markGeometryDirty,
     boardCadMaxRawWidthPos,
     boardCadRockerApexPos,
     distributeBottomFeatureRangesEvenly,
@@ -25672,6 +26145,7 @@ window.boardcadWeb = {
     simplifyOutlineKnots,
     simplifyProfileSpline,
     outlineSimplificationError,
+    bakeProceduralOutlineForExport,
     setSelectedControlPointFromPanel,
     addCrossSectionFromPanel,
     moveCrossSectionFromPanel,
